@@ -16,16 +16,20 @@ public:
 	Client& operator=(Client&&) noexcept;
 public:
 	/** 
-	 * Parse received response from Server.
-	 * 
-	 * @param[in] 
-	 *		rawRequest is received raw response message.
-		*
-		* @return
-		*		A shared_ptr to Response object that has been parsed.
-		*/
-	std::shared_ptr< Message::Response > parseResponse(const std::string& rawResponse);
+	 * @brief
+	 * 		Parse received response from Server.
+	 * @return
+	 *		true/false.
+	 */
+	bool parseResponse();
 
+	/**
+	 * @brief
+	 * 		Generate request message.
+	 * @return 
+	 * 		true/false
+	 */
+	bool generateRequest();
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

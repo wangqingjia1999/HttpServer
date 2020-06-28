@@ -19,11 +19,17 @@ namespace Message
 		Request& operator=(Request&&) noexcept;
 
 	public:
-		// TODO: this is not a complete method.
-		std::string generateRequest();
+		/**
+		 * @brief
+		 * 		Generate request message.
+		 * @return 
+		 * 		true/false.
+		 */
+		bool generateRequest();
 
 		/**
-		 * Parse given request line(first line of request message).
+		 * @brief
+		 * 		Parse given request line(first line of request message).
 		 *
 		 * @param[in] 
 		 *		requestLine is the given request line.

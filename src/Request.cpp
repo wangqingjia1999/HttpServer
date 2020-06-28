@@ -1,5 +1,6 @@
 #include "Uri.hpp"
 #include "Request.hpp"
+#include <sstream>
 
 namespace Message
 {
@@ -17,17 +18,15 @@ namespace Message
         std::string body = "";
     };
 
+    // lifecycle management
     Message::Request::~Request() = default;
     Message::Request::Request() : impl_(new Impl)
     {
     }
-
-    // copy constructor
     Message::Request::Request(const Request& other) noexcept
     {
         *this = other;
     }
-    // copy assignment operator
     Request& Message::Request::operator=(const Request& other) noexcept
     {
         if(this!=&other)
@@ -36,19 +35,30 @@ namespace Message
         }
         return *this;
     }
-
     Message::Request::Request(Request&&) noexcept = default;
     Request& Message::Request::operator=(Request&& ) noexcept = default;
 
+    // public methods
     bool Message::Request::setRawRequest(std::string rawRequestString)
     {
         impl_->rawRequest = rawRequestString;
         return true;
     }
 
-    std::string Message::Request::generateRequest()
+    bool Message::Request::generateRequest()
     {
-        return "";
+        std::stringstream rawRequestStream;
+
+        rawRequestStream << impl_->method << impl_->requestUri << impl_->httpVersion;
+        rawRequestStream << impl_->headers.c_str();
+
+        for(auto position = impl_->headersMap.cbegin(); position != impl_->headersMap.cend(); ++position)
+        {
+            rawRequestStream << position->first.c_str() << ": " << position->second.c_str();    
+        }
+
+        impl_->rawRequest = rawRequestStream.str();
+        return true;
     }
 
     bool Message::Request::parseRawRequest()

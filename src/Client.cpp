@@ -1,11 +1,15 @@
 #include "Client.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Uri.hpp"
 
 struct Client::Impl
 {
-    // TODO:
-    // write private members & methods of Client class here.
+    std::shared_ptr< Message::Request > request = std::make_shared< Message::Request >();
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 };
 
+// lifecylce management
 Client::~Client() = default;
 Client::Client() : impl_(new Impl)
 {
@@ -28,10 +32,11 @@ Client& Client::operator=(const Client& other) noexcept
 Client::Client(Client&&) noexcept = default;
 Client& Client::operator=(Client&&) noexcept = default;
 
-#ifdef _WIN32
-std::shared_ptr<Message::Response> HTTP::Client::parseResponse(const std::string& rawResponse)
+// public methods
+bool Client::parseResponse()
 {
-    std::shared_ptr< Message::Response > responsePtr{ new Message::Response };
+    // TODO: add impl_ to memebers of request
+    #ifdef _WIN32
 
     auto statusLineEndDelimiter = rawResponse.find("\r\n");
 
@@ -64,8 +69,13 @@ std::shared_ptr<Message::Response> HTTP::Client::parseResponse(const std::string
     responsePtr->setBody(rawResponse.substr(headersEndDelimiter + 4));
     
     return responsePtr;
+    #endif
+    #ifdef __linux__
+
+    #endif
 }
 
-#elif defined(__linux__)
-
-#endif
+bool Client::generateRequest()
+{
+    return impl_->request->generateRequest();
+}

@@ -245,10 +245,10 @@ namespace Message
 		std::ostringstream response;
 		response << impl_->protocolVersion << " " << std::to_string(impl_->statusCode) << " " << impl_->reasonPhrase << "\r\n";
 
-		for (auto begin = impl_->headers.cbegin(); begin != impl_->headers.cend(); ++begin)
+		for (auto position = impl_->headers.cbegin(); position != impl_->headers.cend(); ++position)
 		{
-			std::string name = begin->first.c_str();
-			std::string value = begin->second.c_str();
+			std::string name = position->first.c_str();
+			std::string value = position->second.c_str();
 
 			response << name << ": " << value << "\r\n";
 		}

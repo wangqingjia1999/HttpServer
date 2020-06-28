@@ -44,19 +44,17 @@ namespace Uri
 		std::string getHost();
 
 		/**
-		 * This function is used to get path.
-		 *
+		 * @brief
+		 * 		Get path vector.
 		 * @return
 		 *		A vector of path elements
 		 */
 		std::vector< std::string > getPath();
 
 		/**
-		 * This function is used to get port.
-		 *
-		 * @param[in] s
-		 *
-		 * return
+		 * @brief
+		 * 		Get port number.
+		 * @return
 		 *		A int number of port.
 		 */
 		int getPort();

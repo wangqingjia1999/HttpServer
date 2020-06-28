@@ -7,7 +7,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 
 ## Enviroment & Dependence
-* Cross Platform
+* Linux and Windows10
 * CMake Build System
 * Google Test Framework
 
