@@ -52,25 +52,36 @@ public:
 	bool listenAt(const std::string& host, const int port);
 
 	/**
-	 * Send generated response to client.
-	 *
-	 * @param[in] 
-	 *		data is the generated response string.
-	 *		size is the response size/length.
-	 *
+	 * @brief
+	 * 		Send generated response to client.
 	 * @return 
 	 *		true/false.
 	 */
-	bool sendResponse(const std::string& data, const size_t size);
+	bool sendResponse();
 
 	/**
-	 * Receive request from client.
-	 *
+	 * @brief
+	 * 		Receive request from client.
 	 * @return 
-	 *		request string.
+	 *		true/false.
 	 */
 	bool receiveRequest();
+	
+	/**
+	 * @brief
+	 * 		Parse raw request.
+	 * @return
+	 * 		true/false.
+	 */
+	bool parseRequest();
 
+	/**
+	 * @brief
+	 * 		Generate response message.
+	 * @return 
+	 * 		true/false.
+	 */
+	bool generateResponse();
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

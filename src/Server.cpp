@@ -165,10 +165,15 @@ bool Server::listenAt(const std::string& host, const int port)
     #endif
 }
 
-bool Server::sendResponse(const std::string& data, const size_t size)
+bool Server::sendResponse()
 {
     #ifdef _WIN32
-    auto sendResult = send(clientSocket, data.c_str(), size, 0);
+    int sendResult = send(
+        clientSocket, 
+        impl_->response->getResponseMessage().c_str(), 
+        impl_->response->getResponseMessageLength(), 
+        0
+    );
     if (sendResult == SOCKET_ERROR)
     {
         return false;
@@ -177,7 +182,13 @@ bool Server::sendResponse(const std::string& data, const size_t size)
     #endif
 
     #ifdef __linux__
-    int sendResult = send(clientSocket, data.c_str(), size, 0);
+    int sendResult = send(
+        clientSocket, 
+        impl_->response->getResponseMessage().c_str(), 
+        impl_->response->getResponseMessageLength(), 
+        0
+    );
+
     if(sendResult == -1)
     {
         return false;
@@ -220,3 +231,12 @@ bool Server::receiveRequest()
     #endif
 }
 
+bool Server::parseRequest()
+{
+    return impl_->request->parseRawRequest();
+}
+
+bool Server::generateResponse()
+{
+    return impl_->response->generateResponse();
+}
