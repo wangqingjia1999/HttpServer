@@ -34,28 +34,35 @@ namespace Message
 		bool parserequestLine(const std::string& requestLine);
 
 		/** 
-		 * Parse given headers.
-		 *
+		 * @brief
+		 * 		Parse given headers.
 		 * @param[in] 
 		 *		headers is the map that stores name-value
 		 *		header pairs.
-		 *
 		 * @return 
 		 *		true/false.
 		 */
 		bool parseHeaders(const std::string& headers);
 
 		/**
-		 * Parse raw request received from client.
-		 * 
-		 * @param[in] 
-		 *		rawRequest is the raw request.
-		 *
+		 * @brief
+		 * 		Parse raw request that has already set by setRawRequest()
 		 * @return 
 		 *		true/false.
 		 */
-		bool parseRawRequest(const std::string& rawRequest);
+		bool parseRawRequest();
 
+		/**
+		 * @brief
+		 * 		Set received raw request message to request object's member variable.
+		 * @param[in]
+		 * 		Received raw request message string.
+		 * @param[out] 
+		 * 		Object request's member rawRequest is set.
+		 * @return 
+		 * 		true/false
+		 */
+		bool setRawRequest(std::string rawRequestString);
 
 		std::string getMethod();
 		std::string getRequestUri();

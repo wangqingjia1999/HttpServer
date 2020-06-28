@@ -173,9 +173,10 @@ namespace Message
 		return impl_->responseMessage.size();
 	}
 
-	bool Message::Response::setStatusCode(int statusCodeInput)
+	bool Message::Response::setStatus(int statusCodeInput)
 	{
 		impl_->statusCode = statusCodeInput;
+		impl_->reasonPhrase = impl_->statusCodeMap[statusCodeInput];
 		return true;
 	}
 
@@ -184,13 +185,7 @@ namespace Message
 		impl_->protocolVersion = versionProtocolInput;
 		return true;
 	}
-
-	bool Message::Response::setReasonPhrase(const std::string& reasonPhraseInput)
-	{
-		impl_->reasonPhrase = reasonPhraseInput;
-		return true;
-	}
-
+	
 	bool Message::Response::setBody(const std::string& bodyInput)
 	{
 		if (!impl_->body.empty())

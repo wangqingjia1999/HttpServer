@@ -16,8 +16,7 @@ TEST(ResponseTests, generateGetResponse)
 {
     Message::Response response;
 
-    response.setStatusCode(200);
-    response.setReasonPhrase("OK");
+    response.setStatus(200);
     response.setBody("Hello World! My payload includes a trailing CRLF.\r\n");
 
     ASSERT_EQ(response.addHeader("Accept-Ranges", "bytes"), true);

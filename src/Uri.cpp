@@ -1,4 +1,5 @@
 #include "PercentEncoding.hpp"
+#include "CharacterSet.hpp"
 #include "Uri.hpp"
 #include <algorithm>
 #include <functional>
@@ -33,7 +34,6 @@ namespace Uri
 		bool hasFragmentBool;
 		std::string fragment;
 
-		
 		// Methods 
 		bool parseScheme(const std::string& uriString, std::string & restString)
 		{
@@ -399,13 +399,13 @@ namespace Uri
     }
     
 	Uri::Uri(Uri&&) noexcept = default;
+
 	Uri& Uri::operator=(Uri&&) noexcept = default;
 
     Uri::Uri() : impl_(new Impl)
     {
     }
-
-
+	
 	// Getters
 	std::string Uri::getScheme()
 	{

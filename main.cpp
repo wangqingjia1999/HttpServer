@@ -15,14 +15,13 @@ int main()
     while(server.listenAt("localhost", 54321))
     {
         std::cout << "I'm listening" << std::endl;
-        std::string rawRequest = server.receiveRequest();
 
-        request.parseRawRequest(rawRequest);
+        server.receiveRequest();
+        request.parseRawRequest();
 
         response.setContent(request.getRequestUri());
         
-        response.setStatusCode(200);
-        response.setReasonPhrase("OK");
+        response.setStatus(200);
         response.addHeader("Accept-Ranges", "bytes");
         response.addHeader("Date", "Mon, 27 Jul 2009 12:28:53 GMT");
         response.generateResponse();

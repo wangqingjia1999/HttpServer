@@ -21,14 +21,14 @@ TEST(RequestTests, parseRawGetRequest)
 		"Accept-Language: en,zh-CN;q=0.9,zh;q=0.8\r\n"
 		"\r\n"
 		);
-
-	ASSERT_TRUE(request.parseRawRequest(rawRequest));
+	ASSERT_TRUE(request.setRawRequest(rawRequest));
+	ASSERT_TRUE(request.parseRawRequest());
 
 	// test request line
 	ASSERT_EQ(request.getMethod(), "GET");
 	ASSERT_EQ(request.getRequestUri(), "/");
 	ASSERT_EQ(request.getHttpVersion(), "HTTP/1.1");
-
+	
 	// test headers
 	ASSERT_EQ(request.getHeader("Host"), "localhost");
 	ASSERT_EQ(request.getHeader("Connection"), "keep-alive");

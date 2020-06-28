@@ -14,6 +14,7 @@
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string.h>
 #endif
 
@@ -68,11 +69,9 @@ public:
 	 * @return 
 	 *		request string.
 	 */
-	std::string receiveRequest();
+	bool receiveRequest();
 
 private:
-	std::unique_ptr< Message::Response > responsePointer;
-	//std::unique_ptr< Message::Request > requestPointer;
 	struct Impl;
 	std::unique_ptr< Impl > impl_;
 };

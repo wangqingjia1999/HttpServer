@@ -24,8 +24,8 @@ namespace
 
 struct Server::Impl
 {
-    // TODO:
-    // write private members & methods of Client class here.
+    std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
+    std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
 };
 
 Server::~Server() = default;
@@ -186,34 +186,37 @@ bool Server::sendResponse(const std::string& data, const size_t size)
     #endif
 }
 
-std::string Server::receiveRequest()
+bool Server::receiveRequest()
 {
     #ifdef _WIN32
     memset(receiveBuffer, 0, bufferLength);
     auto receiveResult = recv(clientSocket, receiveBuffer, bufferLength, 0);
     if (receiveResult == SOCKET_ERROR)
     {
-        return "";
+        impl_->rawRequest = "";
+        return false;
     }
 
-    std::string data = receiveBuffer;
+    impl_->rawRequest = receiveBuffer;
 
     memset(receiveBuffer, 0, bufferLength);
 
-    return data;
+    return true;
     #endif
 
     #ifdef __linux__
     int receiveResult = recv(clientSocket, receiveBuffer, bufferLength, 0);
     if(receiveResult == -1)
     {
-        return "";
+        impl_->request->setRawRequest("");
+        return false;
     }
-    std::string data = receiveBuffer;
+    
+    impl_->request->setRawRequest(receiveBuffer);
 
     memset(receiveBuffer, 0, bufferLength);
 
-    return data;
+    return true;
     #endif
 }
 

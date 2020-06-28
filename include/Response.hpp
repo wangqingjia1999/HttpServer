@@ -40,9 +40,16 @@ namespace Message
 		std::string getResponseMessage();
 		size_t getResponseMessageLength();
 
-		bool setStatusCode(const int statusCodeInput);
+		/**
+		 * @brief
+		 * 		Set status code and corresponding reason phrase.
+		 * @param[in]
+		 * 		status code
+		 * @return 
+		 * 		bool
+		 */
+		bool setStatus(const int statusCodeInput);
 		bool setProtocolVersion(const std::string versionProtocolInput);
-		bool setReasonPhrase(const std::string& reasonPhraseInput);
 		bool setBody(const std::string& bodyInput);
 		bool setBodyLength(const std::streamoff bodyLengthInput);
 		bool addHeader(const std::string& name, const std::string& value);
@@ -69,7 +76,7 @@ namespace Message
 		bool setContentType(const std::string& path);
 
 		/** 
-		 * Set the body and the corresponding headers.
+		 * Set the HTTP body and the corresponding headers.
 		 *
 		 * @return
 		 *		true/false

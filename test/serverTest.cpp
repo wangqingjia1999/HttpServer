@@ -20,8 +20,7 @@ TEST(ServerTests, sendResponse)
     //     request.parseRawRequest(rawRequest);
 
     //     response.setContent(request.getRequestUri());
-    //     response.setStatusCode(200);
-    //     response.setReasonPhrase("OK");
+    //     response.setStatus(200);
 
     //     ASSERT_TRUE(response.addHeader("Accept-Ranges", "bytes"));
     //     ASSERT_TRUE(response.addHeader("Date", "Mon, 27 Jul 2009 12:28:53 GMT"));

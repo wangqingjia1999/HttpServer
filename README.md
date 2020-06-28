@@ -22,11 +22,16 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 
 ## References
+* Uri
+  * https://nodejs.org/api/url.html#url_url
 * Percent encoding
   * https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
   * https://tools.ietf.org/html/rfc3986#section-2.1
   * https://en.wikipedia.org/wiki/Percent-encoding
   * https://developer.twitter.com/en/docs/basics/authentication/oauth-1-0a/percent-encoding-parameters
+
+* Http Status Code
+  * https://evertpot.com/http/
 * Message Content
   * https://stackoverflow.com/questions/18180539/how-to-determine-the-content-type-in-an-http-response
   * https://stackoverflow.com/questions/5661596/do-i-need-a-content-type-header-for-http-get-requests

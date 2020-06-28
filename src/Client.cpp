@@ -41,8 +41,7 @@ std::shared_ptr<Message::Response> HTTP::Client::parseResponse(const std::string
     auto secondSpace = statusLine.find_last_of(" ");
 
     responsePtr->setProtocolVersion(statusLine.substr(0, firstSpace));
-    responsePtr->setStatusCode(std::stoi(statusLine.substr(firstSpace, secondSpace)));
-    responsePtr->setReasonPhrase(statusLine.substr(secondSpace + 1));
+    responsePtr->setStatus(std::stoi(statusLine.substr(firstSpace, secondSpace)));
 
     auto headersEndDelimiter = rawResponse.find("\r\n\r\n");
     std::string headers = rawResponse.substr(statusLineEndDelimiter+2, headersEndDelimiter);

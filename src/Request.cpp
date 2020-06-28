@@ -1,10 +1,14 @@
-#include "Request.hpp"
 #include "Uri.hpp"
+#include "Request.hpp"
 
 namespace Message
 {
     struct Message::Request::Impl
     {
+        std::shared_ptr< Uri::Uri > uri = std::shared_ptr< Uri::Uri >();
+
+        std::string rawRequest;
+    
         std::string method;
         std::string httpVersion;
         std::string headers;
@@ -36,29 +40,35 @@ namespace Message
     Message::Request::Request(Request&&) noexcept = default;
     Request& Message::Request::operator=(Request&& ) noexcept = default;
 
+    bool Message::Request::setRawRequest(std::string rawRequestString)
+    {
+        impl_->rawRequest = rawRequestString;
+        return true;
+    }
+
     std::string Message::Request::generateRequest()
     {
         return "";
     }
 
-    bool Message::Request::parseRawRequest(const std::string& rawRequest)
+    bool Message::Request::parseRawRequest()
     {
         // TODO: check whether the rawRequest is valid
 
-        auto requestLineEndDelimiter = rawRequest.find("\r\n");
+        auto requestLineEndDelimiter = impl_->rawRequest.find("\r\n");
         if (requestLineEndDelimiter == std::string::npos)
         {
             return false;
         }
 
-        std::string requestLine = rawRequest.substr(0, requestLineEndDelimiter);
+        std::string requestLine = impl_->rawRequest.substr(0, requestLineEndDelimiter);
 
         if (!parserequestLine(requestLine))
         {
             return false;
         }
 
-        std::string rawRequestRemainder = rawRequest.substr(requestLineEndDelimiter + 2);
+        std::string rawRequestRemainder = impl_->rawRequest.substr(requestLineEndDelimiter + 2);
 
         auto headersEndDelimiter = rawRequestRemainder.find("\r\n\r\n");
 
