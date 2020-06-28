@@ -1,6 +1,48 @@
 #include <gtest/gtest.h>
 #include "Request.hpp"
 
+TEST(RequestTests, defaultMethodGET)
+{
+	Message::Request request;
+	ASSERT_TRUE(request.setMethod());
+	ASSERT_EQ(request.getMethod(), "GET");
+}
+
+TEST(RequestTests, defaultHttpVersion)
+{
+	Message::Request request;
+	ASSERT_TRUE(request.setHttpVersion());
+	ASSERT_EQ(request.getHttpVersion(), "HTTP/1.1");
+}
+
+TEST(RequestTests, defaultUserAgent)
+{
+	Message::Request request;
+	ASSERT_TRUE(request.setUserAgent());
+	ASSERT_EQ(request.getHeader("User-Agent"), "Bitate");
+}
+
+TEST(RequestTests, generateRequestFromUri)
+{
+	Message::Request request;
+	
+	ASSERT_TRUE(request.parseUri("http://localhost:2333/"));
+	ASSERT_TRUE(request.setMethod());
+	ASSERT_TRUE(request.setHttpVersion());
+	ASSERT_TRUE(request.setUserAgent());
+
+	std::string rawRequest = 
+	{
+		"GET / HTTP/1.1\r\n"
+		"Host: localhost:2333\r\n"
+		"User-Agent: Bitate"
+		"\r\n\n"
+	};
+
+	ASSERT_TRUE(request.generateRequest());
+	ASSERT_EQ(request.getGeneratedRequestString(), rawRequest);
+}
+
 TEST(RequestTests, parseRawGetRequest)
 {
 	Message::Request request;

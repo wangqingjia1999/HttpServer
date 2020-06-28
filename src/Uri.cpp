@@ -427,6 +427,16 @@ namespace Uri
 		return impl_->path;
 	}
 
+	std::string Uri::getPathString()
+	{
+		std::string pathString;
+		for(auto &element : impl_->path)
+		{
+			pathString += element;
+		}
+		return pathString;
+	}
+
 	int Uri::getPort()
 	{
 		return impl_->port;

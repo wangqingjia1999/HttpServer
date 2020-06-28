@@ -53,6 +53,14 @@ namespace Uri
 
 		/**
 		 * @brief
+		 * 		Get path string.
+		 * @return 
+		 * 		A path string.
+		 */
+		std::string getPathString();
+
+		/**
+		 * @brief
 		 * 		Get port number.
 		 * @return
 		 *		A int number of port.

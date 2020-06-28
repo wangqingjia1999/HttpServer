@@ -60,6 +60,15 @@ namespace Message
 
 		/**
 		 * @brief
+		 * 		Parse Uri.
+		 * @param[in]
+		 * 		Uri string.
+		 * @return
+		 * 		true/false.
+		 */
+		bool parseUri(const std::string& Uri);
+		/**
+		 * @brief
 		 * 		Set received raw request message to request object's member variable.
 		 * @param[in]
 		 * 		Received raw request message string.
@@ -70,11 +79,42 @@ namespace Message
 		 */
 		bool setRawRequest(std::string rawRequestString);
 
+		/**
+		 * @brief
+		 * 		Set method field.
+		 * @param[in] 
+		 * 		A method string. Default value is "GET".
+		 * @return
+		 * 		true/false.
+		 */
+		bool setMethod(const std::string method = "GET");
+
+		/**
+		 * @brief
+		 * 		Set http version field.
+		 * @param[in]
+		 * 		A http version string. Default value is "HTTP/1.1"
+		 * @return
+		 * 		true/false.
+		 */
+		bool setHttpVersion(const std::string httpVersion = "HTTP/1.1");
+
+		/**
+		 * @brief
+		 * 		Set User-Agent header field.
+		 * @param[in]
+		 * 		An User-Agent string with default value of "Bitate".
+		 * @return 
+		 * 		true/false.
+		 */
+		bool setUserAgent(std::string UserAgent = "Bitate");
+
 		std::string getMethod();
 		std::string getRequestUri();
 		std::string getHttpVersion();
 		std::string getHeader(const std::string& headerName);
 		std::string getBody();
+		std::string getGeneratedRequestString();
 
 	private:
 		struct Impl;

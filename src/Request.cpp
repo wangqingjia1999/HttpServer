@@ -48,14 +48,17 @@ namespace Message
     bool Message::Request::generateRequest()
     {
         std::stringstream rawRequestStream;
-
+        // set status line
         rawRequestStream << impl_->method << impl_->requestUri << impl_->httpVersion;
-        rawRequestStream << impl_->headers.c_str();
-
+        // set headers
         for(auto position = impl_->headersMap.cbegin(); position != impl_->headersMap.cend(); ++position)
         {
-            rawRequestStream << position->first.c_str() << ": " << position->second.c_str();    
+            rawRequestStream << position->first.c_str() << ": " << position->second.c_str() << "\r\n";    
         }
+        // set headers end delimiter
+        rawRequestStream << "\r\n";
+        // set body 
+        rawRequestStream << impl_->body << "\r\n";
 
         impl_->rawRequest = rawRequestStream.str();
         return true;
@@ -183,6 +186,50 @@ namespace Message
         return true;
     }
 
+    bool Message::Request::parseUri(const std::string& Uri)
+    {
+        // BUG: maybe it's caued by ending of uri life
+        if(!impl_->uri->parseFromString(Uri))
+        {
+            return false;
+        }
+        
+        // parse requst path from uri if any 
+        impl_->requestUri = impl_->uri->getPathString();
+        // parse request host header from uri if any
+        impl_->headersMap.insert({"Host", impl_->uri->getHost()});
+    }
+
+    bool Message::Request::setMethod(const std::string method)
+    {
+        if(method.empty())
+        {
+            return false;
+        }
+        impl_->method = method;
+        return true;
+    }
+
+    bool Message::Request::setHttpVersion(const std::string httpVersion)
+    {
+        if(httpVersion.empty())
+        {
+            return false;
+        }
+        impl_->httpVersion = httpVersion;
+        return true;
+    }
+
+    bool Message::Request::setUserAgent(const std::string UserAgent)
+    {
+        if(UserAgent.empty())
+        {
+            return false;
+        }
+        impl_->headersMap.insert({"User-Agent", UserAgent});
+        return true;
+    }
+
     std::string Message::Request::getMethod()
     {
         return impl_->method;
@@ -211,5 +258,10 @@ namespace Message
     std::string Message::Request::getBody()
     {
         return impl_->body;
+    }
+
+    std::string Message::Request::getGeneratedRequestString()
+    {
+        return impl_->rawRequest;
     }
 }
