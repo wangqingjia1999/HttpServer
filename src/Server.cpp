@@ -8,8 +8,8 @@ struct Server::Impl
     #endif
 
     #ifdef __linux__
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    int clientSocket;
+    int serverSocket;
     #endif
 
     static const int bufferLength = 1024;
@@ -230,4 +230,9 @@ bool Server::parseRequest()
 bool Server::generateResponse()
 {
     return impl_->response->generateResponse();
+}
+
+std::string Server::getRawRequest()
+{
+    return impl_->request->getRawRequest();
 }

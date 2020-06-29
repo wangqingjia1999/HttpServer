@@ -82,6 +82,16 @@ public:
 	 * 		true/false.
 	 */
 	bool generateResponse();
+
+	/**
+	 * @brief
+	 * 		Get raw request string.
+	 * @return 
+	 * 		Raw request string.
+	 */
+	std::string getRawRequest();
+
+	
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

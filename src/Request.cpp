@@ -288,4 +288,9 @@ namespace Message
     {
         return impl_->rawRequest;
     }
+
+    std::string Message::Request::getRawRequest()
+    {
+        return impl_->rawRequest;
+    }
 }

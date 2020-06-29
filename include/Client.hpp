@@ -1,5 +1,5 @@
 #pragma once
-#include <memory>
+
 #include "Request.hpp"
 #include "Response.hpp"
 
@@ -15,6 +15,26 @@ public:
 	Client& operator=(const Client&) noexcept;
 	Client& operator=(Client&&) noexcept;
 public:
+	/**
+	 * @brief
+	 * 		Connect to target server.
+	 * @param[in] 
+	 * 		Host string.
+	 * @param[in]
+	 * 		Port string.
+	 * @return
+	 * 		true/false.
+	 */
+	bool connectTo(const std::string host, int port);
+	
+	/**
+	 * @brief
+	 * 		Send request to server.
+	 * @return 
+	 * 		true/false.
+	 */
+	bool sendRequest();
+
 	/** 
 	 * @brief
 	 * 		Parse received response from Server.
@@ -48,7 +68,7 @@ public:
 	 * 		Generated Request String.
 	 */
 	std::string getGeneratedRequest();
-	
+
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

@@ -3,8 +3,23 @@
 #include "Response.hpp"
 #include "Uri.hpp"
 
+#ifdef __linux__
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#endif
+
+#include <memory>
+#include <string>
+
 struct Client::Impl
 {
+    #ifdef __linux__
+    int clientSocket;
+    int serverSocket;
+    #endif
+
     std::shared_ptr< Message::Request > request = std::make_shared< Message::Request >();
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 };
@@ -33,6 +48,66 @@ Client::Client(Client&&) noexcept = default;
 Client& Client::operator=(Client&&) noexcept = default;
 
 // public methods
+bool Client::connectTo(const std::string host, int port)
+{
+    #ifdef __linux__
+    impl_->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if(impl_->clientSocket == -1)
+    {
+        return false;
+    }
+
+    // set address that contains host and post
+    // struct addrinfo hints;
+    // struct addrinfo* result;
+    // memset(&hints, 0, sizeof(struct addrinfo));
+    // hints.ai_family = AF_INET;
+    // hints.ai_socktype = SOCK_DGRAM;
+    // hints.ai_protocol = 0;
+    // hints.ai_flags = 0;
+    // int addrResult = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
+    // if(addrResult != 0)
+    // {
+    //     return false;
+    // }
+    // size_t addressLength = sizeof(struct addrinfo);
+    // int connectResult = connect(impl_->clientSocket, hints.ai_addr, addressLength);
+    // if(connectResult == -1)
+    // {
+    //     return false;
+    // }
+    
+    sockaddr_in addr = {0};
+    addr.sin_family = PF_INET;
+    addr.sin_port = htons(port);
+    inet_pton(AF_INET, host.c_str(), &addr.sin_addr);
+    if(connect(impl_->clientSocket, (sockaddr*)&addr, sizeof(addr)) == -1)
+    {
+        return false;
+    }
+
+
+    return true;
+    #endif
+}
+
+bool Client::sendRequest()
+{
+    #ifdef __linux__
+    int sendResult = send(impl_->clientSocket, 
+        impl_->request->getGeneratedRequestString().c_str(), 
+        impl_->request->getGeneratedRequestString().size(), 
+        0
+    );
+    if(sendResult == -1)
+    {
+        return false;
+    }
+
+    return true;
+    #endif
+}
+
 bool Client::parseResponse()
 {
     // TODO: add impl_ to memebers of request

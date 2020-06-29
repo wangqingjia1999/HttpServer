@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "Client.hpp"
+#include <thread>
 
 TEST(ClientTests, generateRequestTest)
 {
@@ -18,4 +19,12 @@ TEST(ClientTests, generateRequestTest)
 
     ASSERT_EQ(client.getGeneratedRequest(), generatedRequest);
     
+}
+
+TEST(ClientTests, connectToSpecificServer)
+{
+    Client client;
+    ASSERT_TRUE(client.connectTo("localhost", 2333));
+    ASSERT_TRUE(client.generateRequest());
+    ASSERT_TRUE(client.sendRequest());
 }

@@ -115,6 +115,13 @@ namespace Message
 		std::string getHeader(const std::string& headerName);
 		std::string getBody();
 		std::string getGeneratedRequestString();
+		/**
+		 * @brief
+		 * 		Get raw request.
+		 * @return 
+		 * 		Raw request string.
+		 */
+		std::string getRawRequest();
 
 	private:
 		struct Impl;
