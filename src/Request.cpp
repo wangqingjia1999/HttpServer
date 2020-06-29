@@ -6,8 +6,8 @@ namespace Message
 {
     struct Message::Request::Impl
     {
-        std::shared_ptr< Uri::Uri > uri = std::shared_ptr< Uri::Uri >();
-
+        std::shared_ptr< Uri::Uri > uri = std::make_shared< Uri::Uri > ();
+        
         std::string rawRequest;
     
         std::string method;
@@ -23,6 +23,7 @@ namespace Message
     Message::Request::Request() : impl_(new Impl)
     {
     }
+
     Message::Request::Request(const Request& other) noexcept
     {
         *this = other;
@@ -49,7 +50,7 @@ namespace Message
     {
         std::stringstream rawRequestStream;
         // set status line
-        rawRequestStream << impl_->method << impl_->requestUri << impl_->httpVersion;
+        rawRequestStream << impl_->method << " " << impl_->requestUri << " " << impl_->httpVersion << "\r\n";
         // set headers
         for(auto position = impl_->headersMap.cbegin(); position != impl_->headersMap.cend(); ++position)
         {
@@ -58,7 +59,7 @@ namespace Message
         // set headers end delimiter
         rawRequestStream << "\r\n";
         // set body 
-        rawRequestStream << impl_->body << "\r\n";
+        rawRequestStream << impl_->body;
 
         impl_->rawRequest = rawRequestStream.str();
         return true;
@@ -188,16 +189,28 @@ namespace Message
 
     bool Message::Request::parseUri(const std::string& Uri)
     {
-        // BUG: maybe it's caued by ending of uri life
+        if(impl_->uri == nullptr)
+        {
+            return false;
+        }
+        
         if(!impl_->uri->parseFromString(Uri))
         {
             return false;
         }
         
-        // parse requst path from uri if any 
-        impl_->requestUri = impl_->uri->getPathString();
+        if(impl_->uri->getPathString() == "")
+        {
+            impl_->requestUri = "/";
+        }
+        else
+        {
+            impl_->requestUri = impl_->uri->getPathString();
+        }
+    
         // parse request host header from uri if any
         impl_->headersMap.insert({"Host", impl_->uri->getHost()});
+        return true;
     }
 
     bool Message::Request::setMethod(const std::string method)

@@ -551,6 +551,7 @@ namespace Uri
 		std::string decodedString = percentEncoding.Decode(uriString);
 
 		std::string uriStringWithoutScheme;
+
 		if(!impl_->parseScheme(decodedString, uriStringWithoutScheme))
 		{
 			return false;

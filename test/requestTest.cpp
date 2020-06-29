@@ -34,9 +34,9 @@ TEST(RequestTests, generateRequestFromUri)
 	std::string rawRequest = 
 	{
 		"GET / HTTP/1.1\r\n"
-		"Host: localhost:2333\r\n"
-		"User-Agent: Bitate"
-		"\r\n\n"
+		"Host: localhost\r\n"
+		"User-Agent: Bitate\r\n"
+		"\r\n"
 	};
 
 	ASSERT_TRUE(request.generateRequest());

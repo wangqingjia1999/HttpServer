@@ -341,7 +341,7 @@ namespace Message
 			}
 		}
 
-		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\Resources" + pathWithForwardSlashes;
+		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\public_html" + pathWithForwardSlashes;
 
 		return true;
 	#endif // win32
@@ -371,7 +371,7 @@ namespace Message
 			}
 		}
 
-		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\Resources" + pathWithForwardSlashes;
+		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\public_html" + pathWithForwardSlashes;
 		return true;
 	#endif // __LINUX__
 	}
