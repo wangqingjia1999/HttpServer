@@ -73,9 +73,21 @@ bool Client::parseResponse()
     #ifdef __linux__
 
     #endif
+
+    return true;
 }
 
 bool Client::generateRequest()
 {
     return impl_->request->generateRequest();
+}
+
+bool Client::parseUri(const std::string uri)
+{
+    return impl_->request->parseUri(uri);
+}
+
+std::string Client::getGeneratedRequest()
+{
+    return impl_->request->getGeneratedRequestString();
 }

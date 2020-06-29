@@ -47,10 +47,25 @@ namespace Message
     }
 
     bool Message::Request::generateRequest()
-    {
+    {   
+        if(!setMethod())
+        {
+            return false;
+        }
+
+        if(!setHttpVersion())
+        {
+            return false;
+        }
+
+        if(!setUserAgent())
+        {
+            return false;
+        }
+        
         std::stringstream rawRequestStream;
         // set status line
-        rawRequestStream << impl_->method << " " << impl_->requestUri << " " << impl_->httpVersion << "\r\n";
+        rawRequestStream << impl_->method << " " << impl_->uri->getPathString() << " " << impl_->httpVersion << "\r\n";
         // set headers
         for(auto position = impl_->headersMap.cbegin(); position != impl_->headersMap.cend(); ++position)
         {
@@ -215,10 +230,6 @@ namespace Message
 
     bool Message::Request::setMethod(const std::string method)
     {
-        if(method.empty())
-        {
-            return false;
-        }
         impl_->method = method;
         return true;
     }

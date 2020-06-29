@@ -30,6 +30,25 @@ public:
 	 * 		true/false
 	 */
 	bool generateRequest();
+
+	/**
+	 * @brief
+	 * 		Parse uri string.
+	 * @param[in]
+	 * 		Uri string.
+	 * @return
+	 * 		true/false
+	 */
+	bool parseUri(const std::string uri);
+
+	/**
+	 * @brief
+	 * 		Get generated request string.
+	 * @return
+	 * 		Generated Request String.
+	 */
+	std::string getGeneratedRequest();
+	
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

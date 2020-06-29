@@ -429,6 +429,8 @@ namespace Uri
 
 	std::string Uri::getPathString()
 	{
+		if(impl_->path[0] == "")
+			return "/";
 		std::string pathString;
 		for(auto &element : impl_->path)
 		{
@@ -463,11 +465,11 @@ namespace Uri
 		return false;
 	}
 
-	bool Uri::setHost(std::string& h)
+	bool Uri::setHost(std::string& host)
 	{
 		if (impl_->host.empty()) 
 		{ 
-			impl_->host = h; 
+			impl_->host = host; 
 			return true;
 		}
 		return false;
