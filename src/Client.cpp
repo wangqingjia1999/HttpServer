@@ -23,6 +23,28 @@ struct Client::Impl
 
     std::shared_ptr< Message::Request > request = std::make_shared< Message::Request >();
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
+
+    bool createServerSocket()
+    {
+        #ifdef __linux__
+        struct addrinfo hints;
+        struct addrinfo *result, *resultPtr;
+        memset(&hints, 0, sizeof(struct addrinfo));
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = 0;
+
+        serverSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
+
+        if(serverSocket == -1)
+        {
+            perror("socket");
+            return false;
+        }
+
+        return true;
+        #endif
+    }
 };
 
 // lifecylce management
@@ -49,7 +71,7 @@ Client::Client(Client&&) noexcept = default;
 Client& Client::operator=(Client&&) noexcept = default;
 
 // public methods
-bool Client::connectTo(const std::string host, const std::string port)
+bool Client::connectTo()
 {
     #ifdef __linux__
     // set address that contains host and post
@@ -60,7 +82,11 @@ bool Client::connectTo(const std::string host, const std::string port)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = 0;
     hints.ai_flags = 0;
-    int addrResult = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
+    int addrResult = getaddrinfo(impl_->request->getHost().c_str(), 
+        impl_->request->getPort().c_str(), 
+        &hints, 
+        &result
+    );
     if(addrResult != 0)
     {
         perror("getaddrinfo");
@@ -73,7 +99,6 @@ bool Client::connectTo(const std::string host, const std::string port)
         return false;
     }
 
-    size_t addressLength = sizeof(struct addrinfo);
     resultPtr = result;
     int connectResult = connect(impl_->clientSocket, resultPtr->ai_addr, resultPtr->ai_addrlen);
     if(connectResult == -1)
@@ -89,13 +114,19 @@ bool Client::connectTo(const std::string host, const std::string port)
 bool Client::sendRequest()
 {
     #ifdef __linux__
-    int sendResult = send(impl_->clientSocket, 
+    if(!impl_->createServerSocket())
+    {
+        return false;
+    }
+
+    int sendResult = send(impl_->serverSocket, 
         impl_->request->getGeneratedRequestString().c_str(), 
         impl_->request->getGeneratedRequestString().size(), 
         0
     );
     if(sendResult == -1)
     {
+        perror("send");
         return false;
     }
 

@@ -293,4 +293,14 @@ namespace Message
     {
         return impl_->rawRequest;
     }
+
+    std::string Message::Request::getHost()
+    {
+        return impl_->uri->getHost();
+    }
+
+    std::string Message::Request::getPort()
+    {
+        return std::to_string(impl_->uri->getPort());
+    }
 }

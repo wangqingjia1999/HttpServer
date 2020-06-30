@@ -123,6 +123,22 @@ namespace Message
 		 */
 		std::string getRawRequest();
 
+		/**
+		 * @brief 
+		 * 		Get host name.
+		 * @return
+		 * 		Host string.
+		 */
+		std::string getHost();
+
+		/**
+		 * @brief
+		 * 		Get port string.
+		 * @return
+		 * 		Port string.
+		 */
+		std::string getPort();
+
 	private:
 		struct Impl;
 		std::unique_ptr< Impl > impl_;

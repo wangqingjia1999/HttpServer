@@ -25,7 +25,7 @@ public:
 	 * @return
 	 * 		true/false.
 	 */
-	bool connectTo(const std::string host, const std::string port);
+	bool connectTo();
 	
 	/**
 	 * @brief

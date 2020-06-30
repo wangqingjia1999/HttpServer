@@ -226,9 +226,7 @@ namespace Uri
 		 *		the raw uri string is parsed successfully.
 		 */
 		bool parseFromString(const std::string& uriString);
-
-		bool generateString();
-
+		
 		bool hasPort();
 		bool hasFragment();
 		bool hasQuery();

@@ -24,7 +24,8 @@ TEST(ClientTests, generateRequestTest)
 TEST(ClientTests, connectToSpecificServer)
 {
     Client client;
-    ASSERT_TRUE(client.connectTo("localhost", "2333"));
-    ASSERT_TRUE(client.generateRequest());
+    ASSERT_TRUE(client.parseUri("http://localhost:2334"));
+    ASSERT_TRUE(client.connectTo());
+    ASSERT_TRUE(client.generateRequest()); 
     ASSERT_TRUE(client.sendRequest());
 }
