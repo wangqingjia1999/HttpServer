@@ -8,6 +8,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <error.h>
 #endif
 
 #include <memory>
@@ -48,45 +49,39 @@ Client::Client(Client&&) noexcept = default;
 Client& Client::operator=(Client&&) noexcept = default;
 
 // public methods
-bool Client::connectTo(const std::string host, int port)
+bool Client::connectTo(const std::string host, const std::string port)
 {
     #ifdef __linux__
-    impl_->clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    // set address that contains host and post
+    struct addrinfo hints;
+    struct addrinfo* result, *resultPtr;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = 0;
+    hints.ai_flags = 0;
+    int addrResult = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
+    if(addrResult != 0)
+    {
+        perror("getaddrinfo");
+        return false;
+    }
+
+    impl_->clientSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
     if(impl_->clientSocket == -1)
     {
         return false;
     }
 
-    // set address that contains host and post
-    // struct addrinfo hints;
-    // struct addrinfo* result;
-    // memset(&hints, 0, sizeof(struct addrinfo));
-    // hints.ai_family = AF_INET;
-    // hints.ai_socktype = SOCK_DGRAM;
-    // hints.ai_protocol = 0;
-    // hints.ai_flags = 0;
-    // int addrResult = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
-    // if(addrResult != 0)
-    // {
-    //     return false;
-    // }
-    // size_t addressLength = sizeof(struct addrinfo);
-    // int connectResult = connect(impl_->clientSocket, hints.ai_addr, addressLength);
-    // if(connectResult == -1)
-    // {
-    //     return false;
-    // }
-    
-    sockaddr_in addr = {0};
-    addr.sin_family = PF_INET;
-    addr.sin_port = htons(port);
-    inet_pton(AF_INET, host.c_str(), &addr.sin_addr);
-    if(connect(impl_->clientSocket, (sockaddr*)&addr, sizeof(addr)) == -1)
+    size_t addressLength = sizeof(struct addrinfo);
+    resultPtr = result;
+    int connectResult = connect(impl_->clientSocket, resultPtr->ai_addr, resultPtr->ai_addrlen);
+    if(connectResult == -1)
     {
+        perror("connect");
         return false;
     }
-
-
+    
     return true;
     #endif
 }
