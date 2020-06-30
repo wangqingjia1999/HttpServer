@@ -23,28 +23,6 @@ struct Client::Impl
 
     std::shared_ptr< Message::Request > request = std::make_shared< Message::Request >();
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-
-    bool createServerSocket()
-    {
-        #ifdef __linux__
-        struct addrinfo hints;
-        struct addrinfo *result, *resultPtr;
-        memset(&hints, 0, sizeof(struct addrinfo));
-        hints.ai_family = AF_INET;
-        hints.ai_socktype = SOCK_STREAM;
-        hints.ai_protocol = 0;
-
-        serverSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
-
-        if(serverSocket == -1)
-        {
-            perror("socket");
-            return false;
-        }
-
-        return true;
-        #endif
-    }
 };
 
 // lifecylce management
@@ -87,20 +65,21 @@ bool Client::connectTo()
         &hints, 
         &result
     );
+
     if(addrResult != 0)
     {
         perror("getaddrinfo");
         return false;
     }
 
-    impl_->clientSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
-    if(impl_->clientSocket == -1)
+    impl_->serverSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
+    if(impl_->serverSocket == -1)
     {
         return false;
     }
 
     resultPtr = result;
-    int connectResult = connect(impl_->clientSocket, resultPtr->ai_addr, resultPtr->ai_addrlen);
+    int connectResult = connect(impl_->serverSocket, resultPtr->ai_addr, resultPtr->ai_addrlen);
     if(connectResult == -1)
     {
         perror("connect");
@@ -114,10 +93,6 @@ bool Client::connectTo()
 bool Client::sendRequest()
 {
     #ifdef __linux__
-    if(!impl_->createServerSocket())
-    {
-        return false;
-    }
 
     int sendResult = send(impl_->serverSocket, 
         impl_->request->getGeneratedRequestString().c_str(), 

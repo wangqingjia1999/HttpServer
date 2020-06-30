@@ -82,8 +82,7 @@ namespace Message
 
     bool Message::Request::parseRawRequest()
     {
-        // TODO: check whether the rawRequest is valid
-
+        // BUG: 
         auto requestLineEndDelimiter = impl_->rawRequest.find("\r\n");
         if (requestLineEndDelimiter == std::string::npos)
         {

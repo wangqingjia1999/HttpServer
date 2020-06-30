@@ -208,13 +208,16 @@ bool Server::receiveRequest()
 
     #ifdef __linux__
     int receiveResult = recv(impl_->clientSocket, impl_->receiveBuffer, impl_->bufferLength, 0);
-    if(receiveResult == -1)
+    if(receiveResult == 0 || receiveResult == -1)
     {
         impl_->request->setRawRequest("");
         return false;
     }
     
-    impl_->request->setRawRequest(impl_->receiveBuffer);
+    if(!impl_->request->setRawRequest(impl_->receiveBuffer))
+    {
+        return false;
+    }
 
     memset(impl_->receiveBuffer, 0, impl_->bufferLength);
 
