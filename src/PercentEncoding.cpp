@@ -84,7 +84,7 @@ namespace Uri
 	Uri::PercentEncoding::PercentEncoding(PercentEncoding&&) noexcept = default;
 	PercentEncoding& Uri::PercentEncoding::operator=(PercentEncoding&&) noexcept = default;
 
-	std::string Uri::PercentEncoding::Encode(const std::string& s)
+	std::string Uri::PercentEncoding::encode(const std::string& s)
 	{
 		// Under normal circumstances, the only time to encode 
 
@@ -94,48 +94,48 @@ namespace Uri
 
 		// Implementations must not encode/decode the same string more than once
 
-		// Encode two steps:
+		// encode two steps:
 		// 1. Convert the character string into a sequence of bytes using the UTF-8 encoding
 		// 2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is the 
 		//	  hexadecimal value of the byte
 
-		std::string encodedString;
+		std::string encoded_string;
 
 		for (size_t i = 0; i < s.size(); ++i)
 		{
 			// only encode reserved characters
-			if (RESERVED.isContains(s[i]))
+			if (RESERVED.is_contains(s[i]))
 			{
 				int second = s[i] % 16;
 				int first = (s[i] - second) / 16;
 
-				encodedString.push_back('%');
-				encodedString.push_back(convertDecimalToHexoCharacter(first));
-				encodedString.push_back(convertDecimalToHexoCharacter(second));
+				encoded_string.push_back('%');
+				encoded_string.push_back(convertDecimalToHexoCharacter(first));
+				encoded_string.push_back(convertDecimalToHexoCharacter(second));
 			}
 			else
 			{
-				encodedString.push_back(s[i]);
+				encoded_string.push_back(s[i]);
 			}
 		}
-		return  encodedString;
+		return  encoded_string;
 	}
 
 	/**
-	 * Decode the given encodedString.
+	 * decode the given encoded_string.
 	 *
 	 * @note
 	 *		Only support ASCII characters.
 	*
 	* @param[in] s
-	*		is the given encodedString.
+	*		is the given encoded_string.
 	*
 	* @return
 	*		DecodedString.
 	*/
-	std::string Uri::PercentEncoding::Decode(const std::string& s)
+	std::string Uri::PercentEncoding::decode(const std::string& s)
 	{
-		// When a URI is dereferenced/Decode, the components and subcomponents
+		// When a URI is dereferenced/decode, the components and subcomponents
 		// must be parsed and separated before the decoding.
 		// Otherwise, the data may be mistaken from component delimiters.
 
@@ -146,7 +146,7 @@ namespace Uri
 			return s;
 		}
 
-		std::string decodedString;
+		std::string decoded_uri_string;
 
 		for (size_t i = 0; i < s.size(); ++i)
 		{
@@ -184,19 +184,19 @@ namespace Uri
 				char decodedChar = char(first * 16 + second);
 
 				// add to decoded string
-				decodedString.push_back(decodedChar);
+				decoded_uri_string.push_back(decodedChar);
 				decodedChar = '\0';
 			}
 			else
 			{
-				decodedString.push_back(s[i]);
+				decoded_uri_string.push_back(s[i]);
 			}
 		}
 
-		return decodedString;
+		return decoded_uri_string;
 	}
 
-	bool Uri::PercentEncoding::isFinished()
+	bool Uri::PercentEncoding::is_finished()
 	{
 		if (impl_->remainingCharacters == 0)
 		{
@@ -205,7 +205,7 @@ namespace Uri
 		return false;
 	}
 
-	char Uri::PercentEncoding::getDecodedeCharacter()
+	char Uri::PercentEncoding::get_decoded_character()
 	{
 		return char(impl_->decodedCharacter);
 	}

@@ -31,7 +31,7 @@ namespace Uri
 		 * @return
 		 *		A string of scheme.
 		 */
-		std::string getScheme();
+		std::string get_scheme();
 
 		/**
 		 * This function is used to get Host.
@@ -41,7 +41,7 @@ namespace Uri
 		 * @return
 		 *		A string of host.
 		 */
-		std::string getHost();
+		std::string get_host();
 
 		/**
 		 * @brief
@@ -49,7 +49,7 @@ namespace Uri
 		 * @return
 		 *		A vector of path elements
 		 */
-		std::vector< std::string > getPath();
+		std::vector< std::string > get_path();
 
 		/**
 		 * @brief
@@ -57,7 +57,7 @@ namespace Uri
 		 * @return 
 		 * 		A path string.
 		 */
-		std::string getPathString();
+		std::string get_path_string();
 
 		/**
 		 * @brief
@@ -65,7 +65,7 @@ namespace Uri
 		 * @return
 		 *		A int number of port.
 		 */
-		int getPort();
+		int get_port();
 
 		/**
 		 * This function is used to get query.
@@ -75,7 +75,7 @@ namespace Uri
 		 * return
 		 *		A query string.
 		 */
-		std::string getQuery();
+		std::string get_query();
 
 		/**
 		 * This function is used to get fragment.
@@ -85,7 +85,7 @@ namespace Uri
 		 * return
 		 *		A fragment string.
 		 */
-		std::string getFragment();
+		std::string get_fragment();
 
 		/**
 		 * This function is used to get user info.
@@ -95,7 +95,7 @@ namespace Uri
 		 * return
 		 *		A user info string.
 		 */
-		std::string getUserInfo();
+		std::string get_user_info();
 
 		
 		/**
@@ -108,7 +108,7 @@ namespace Uri
 		 *		An indication of whether or not the scheme is set
 		 *		is returned.
 		 */
-		bool setScheme(std::string& s);
+		bool set_scheme(std::string& s);
 
 		/**
 		 * This function is used to set scheme.
@@ -120,7 +120,7 @@ namespace Uri
 		 *		An indication of whether or not the host is set
 		 *		is returned.
 		 */
-		bool setHost(std::string& h);
+		bool set_host(std::string& h);
 
 		/**
 		 * This function is used to set scheme.
@@ -132,7 +132,7 @@ namespace Uri
 		 *		An indication of whether or not the port is set
 		 *		is returned.
 		 */
-		bool setPort(int& p);
+		bool set_port(int& p);
 
 		/**
 		 * This function is used to set scheme.
@@ -144,7 +144,7 @@ namespace Uri
 		 *		An indication of whether or not the query is set
 		 *		is returned.
 		 */
-		bool setQuery(std::string q);
+		bool set_query(std::string q);
 
 		/**
 		 * This function is used to set scheme.
@@ -156,7 +156,7 @@ namespace Uri
 		 *		An indication of whether or not the fragment is set
 		 *		is returned.
 		 */
-		bool setFragment(std::string& s);
+		bool set_fragment(std::string& s);
 
 		/**
 		 * This function is used to set user info.
@@ -168,7 +168,7 @@ namespace Uri
 		 *		An indication of whether or not the user info
 		 *		is set is returned.
 		 */
-		bool setUserInfo(std::string& u);
+		bool set_user_info(std::string& u);
 
 		
 		/**
@@ -178,7 +178,7 @@ namespace Uri
 		 *		An indication of whether or not the
 		 *		port is cleared successfully.
 		 */
-		bool clearPort();
+		bool clear_port();
 
 		/**
 		 * Clear query field
@@ -187,7 +187,7 @@ namespace Uri
 		 *		An indication of whether or not the
 		 *		query is cleared is returned.
 		 */
-		bool clearQuery();
+		bool clear_query();
 
 		/**
 		 * Clear fragment field.
@@ -196,7 +196,7 @@ namespace Uri
 		 *		An indication of whether or not the
 		 *		fragment is cleared is returned.
 		 */
-		bool clearFragment();
+		bool clear_fragment();
 
 		/**
 		 * Clear scheme field.
@@ -205,7 +205,7 @@ namespace Uri
 		 *		An indication of whether or not
 		 *		the scheme is cleared successfully.
 		 */
-		bool clearScheme();
+		bool clear_scheme();
 
 		/**
 		 * Clear path field.
@@ -214,7 +214,7 @@ namespace Uri
 		 *		An indication of whether or not
 		 *		the path is cleared successfully.
 		 */
-		bool clearPath();
+		bool clear_path();
 
 		/**
 		 * Main uri-string-parser to parse the raw uri string.
@@ -225,15 +225,15 @@ namespace Uri
 		 *		An indication of whether or not
 		 *		the raw uri string is parsed successfully.
 		 */
-		bool parseFromString(const std::string& uriString);
+		bool parse_from_string(const std::string& uri_string);
 		
-		bool hasPort();
-		bool hasFragment();
-		bool hasQuery();
+		bool has_port();
+		bool has_fragment();
+		bool has_query();
 
-		bool isRelativeReference();
+		bool is_relative_reference();
 
-		bool hasRelativePath();
+		bool has_relative_path();
 
 	private:
 		/**

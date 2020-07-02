@@ -25,7 +25,7 @@ namespace Message
 		 * @return 
 		 * 		true/false.
 		 */
-		bool generateRequest();
+		bool generate_request();
 
 		/**
 		 * @brief
@@ -52,11 +52,11 @@ namespace Message
 
 		/**
 		 * @brief
-		 * 		Parse raw request that has already set by setRawRequest()
+		 * 		Parse raw request that has already set by set_raw_request()
 		 * @return 
 		 *		true/false.
 		 */
-		bool parseRawRequest();
+		bool parse_raw_request();
 
 		/**
 		 * @brief
@@ -66,18 +66,18 @@ namespace Message
 		 * @return
 		 * 		true/false.
 		 */
-		bool parseUri(const std::string& Uri);
+		bool parse_uri(const std::string& Uri);
 		/**
 		 * @brief
 		 * 		Set received raw request message to request object's member variable.
 		 * @param[in]
 		 * 		Received raw request message string.
 		 * @param[out] 
-		 * 		Object request's member rawRequest is set.
+		 * 		Object request's member raw_request is set.
 		 * @return 
 		 * 		true/false
 		 */
-		bool setRawRequest(std::string rawRequestString);
+		bool set_raw_request(std::string rawRequestString);
 
 		/**
 		 * @brief
@@ -87,7 +87,7 @@ namespace Message
 		 * @return
 		 * 		true/false.
 		 */
-		bool setMethod(const std::string method = "GET");
+		bool set_method(const std::string method = "GET");
 
 		/**
 		 * @brief
@@ -97,7 +97,7 @@ namespace Message
 		 * @return
 		 * 		true/false.
 		 */
-		bool setHttpVersion(const std::string httpVersion = "HTTP/1.1");
+		bool set_http_version(const std::string http_version = "HTTP/1.1");
 
 		/**
 		 * @brief
@@ -107,21 +107,21 @@ namespace Message
 		 * @return 
 		 * 		true/false.
 		 */
-		bool setUserAgent(std::string UserAgent = "Bitate");
+		bool set_user_agent(std::string user_agent = "Bitate");
 
-		std::string getMethod();
-		std::string getRequestUri();
-		std::string getHttpVersion();
-		std::string getHeader(const std::string& headerName);
-		std::string getBody();
-		std::string getGeneratedRequestString();
+		std::string get_method();
+		std::string get_request_uri();
+		std::string get_http_version();
+		std::string get_header(const std::string& header_name);
+		std::string get_body();
+		std::string get_generated_request();
 		/**
 		 * @brief
 		 * 		Get raw request.
 		 * @return 
 		 * 		Raw request string.
 		 */
-		std::string getRawRequest();
+		std::string get_raw_request();
 
 		/**
 		 * @brief 
@@ -129,7 +129,7 @@ namespace Message
 		 * @return
 		 * 		Host string.
 		 */
-		std::string getHost();
+		std::string get_host();
 
 		/**
 		 * @brief
@@ -137,7 +137,7 @@ namespace Message
 		 * @return
 		 * 		Port string.
 		 */
-		std::string getPort();
+		std::string get_port();
 
 	private:
 		struct Impl;

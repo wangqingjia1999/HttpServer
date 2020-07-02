@@ -32,13 +32,13 @@ namespace Message
 		int getStatusCode();
 		std::string getProtocolVersion();
 		std::string getReasonPhrase();
-		std::string getBody();
-		std::string getHeader(const std::string& headerName);
+		std::string get_body();
+		std::string get_header(const std::string& header_name);
 		std::string getStatusCodeReasonString(const int statusCode);
 		std::string getBodyLength();
 		int getBodyLengthInteger();
-		std::string getResponseMessage();
-		size_t getResponseMessageLength();
+		std::string get_response_message();
+		size_t get_response_length();
 
 		/**
 		 * @brief
@@ -100,7 +100,7 @@ namespace Message
 		 * @return 
 		 *		true/false.
 		 */
-		bool generateResponse();
+		bool generate_response();
 
 		/**
 		 * map the input path string to local file system

@@ -8,13 +8,13 @@ namespace Message
     {
         std::shared_ptr< Uri::Uri > uri = std::make_shared< Uri::Uri > ();
         
-        std::string rawRequest;
+        std::string raw_request;
     
         std::string method;
-        std::string httpVersion;
+        std::string http_version;
         std::string headers;
         std::string requestUri;
-        std::map< std::string, std::string> headersMap;
+        std::map< std::string, std::string> headers_map;
         std::string body = "";
     };
 
@@ -40,34 +40,34 @@ namespace Message
     Request& Message::Request::operator=(Request&& ) noexcept = default;
 
     // public methods
-    bool Message::Request::setRawRequest(std::string rawRequestString)
+    bool Message::Request::set_raw_request(std::string rawRequestString)
     {
-        impl_->rawRequest = rawRequestString;
+        impl_->raw_request = rawRequestString;
         return true;
     }
 
-    bool Message::Request::generateRequest()
+    bool Message::Request::generate_request()
     {   
-        if(!setMethod())
+        if(!set_method())
         {
             return false;
         }
 
-        if(!setHttpVersion())
+        if(!set_http_version())
         {
             return false;
         }
 
-        if(!setUserAgent())
+        if(!set_user_agent())
         {
             return false;
         }
         
         std::stringstream rawRequestStream;
         // set status line
-        rawRequestStream << impl_->method << " " << impl_->uri->getPathString() << " " << impl_->httpVersion << "\r\n";
+        rawRequestStream << impl_->method << " " << impl_->uri->get_path_string() << " " << impl_->http_version << "\r\n";
         // set headers
-        for(auto position = impl_->headersMap.cbegin(); position != impl_->headersMap.cend(); ++position)
+        for(auto position = impl_->headers_map.cbegin(); position != impl_->headers_map.cend(); ++position)
         {
             rawRequestStream << position->first.c_str() << ": " << position->second.c_str() << "\r\n";    
         }
@@ -76,27 +76,27 @@ namespace Message
         // set body 
         rawRequestStream << impl_->body;
 
-        impl_->rawRequest = rawRequestStream.str();
+        impl_->raw_request = rawRequestStream.str();
         return true;
     }
 
-    bool Message::Request::parseRawRequest()
+    bool Message::Request::parse_raw_request()
     {
         // BUG: 
-        auto requestLineEndDelimiter = impl_->rawRequest.find("\r\n");
+        auto requestLineEndDelimiter = impl_->raw_request.find("\r\n");
         if (requestLineEndDelimiter == std::string::npos)
         {
             return false;
         }
 
-        std::string requestLine = impl_->rawRequest.substr(0, requestLineEndDelimiter);
+        std::string requestLine = impl_->raw_request.substr(0, requestLineEndDelimiter);
 
         if (!parserequestLine(requestLine))
         {
             return false;
         }
 
-        std::string rawRequestRemainder = impl_->rawRequest.substr(requestLineEndDelimiter + 2);
+        std::string rawRequestRemainder = impl_->raw_request.substr(requestLineEndDelimiter + 2);
 
         auto headersEndDelimiter = rawRequestRemainder.find("\r\n\r\n");
 
@@ -145,20 +145,20 @@ namespace Message
                 }
 
                 
-                std::string headerName = singleLine.substr(0, colonPosition);
+                std::string header_name = singleLine.substr(0, colonPosition);
                 std::string headerValue = singleLine.substr(colonPosition + 1);
 
                 // TODO: add new function to strip leading and trailing whitespace from string
                 // Any number of spaces or tabs may be between the ":" and the value. 
                 // Header lines beginning with space or tab are actually part of the previous header line,
                 // folded into multiple lines for easy reading.
-                if (headerName.find_last_of(' ') == headerName.size())
+                if (header_name.find_last_of(' ') == header_name.size())
                 {
-                    headerName = headerName.substr(0, headerName.find_last_of(' '));
+                    header_name = header_name.substr(0, header_name.find_last_of(' '));
                 }
-                else if(headerName.find_first_of(' ') == 0)
+                else if(header_name.find_first_of(' ') == 0)
                 {
-                    headerName = headerName.substr(1);
+                    header_name = header_name.substr(1);
                 }
 
                 if (headerValue.find_first_of(' ') == 0)
@@ -170,7 +170,7 @@ namespace Message
                     headerValue = headerValue.substr(0, headerValue.find_last_of(' '));
                 }
             
-                impl_->headersMap[headerName] = headerValue;
+                impl_->headers_map[header_name] = headerValue;
                 
                 headersBuffer = headersBuffer.substr(singleLineEndDelimiter + 2);
             }
@@ -196,110 +196,110 @@ namespace Message
 
         impl_->method = requestLine.substr(0, firstSpacePosition);
         impl_->requestUri = requestLine.substr(firstSpacePosition+1, (secondSpacePositon-firstSpacePosition-1 ));
-        impl_->httpVersion = requestLine.substr(secondSpacePositon+1);
+        impl_->http_version = requestLine.substr(secondSpacePositon+1);
         
         return true;
     }
 
-    bool Message::Request::parseUri(const std::string& Uri)
+    bool Message::Request::parse_uri(const std::string& Uri)
     {
         if(impl_->uri == nullptr)
         {
             return false;
         }
         
-        if(!impl_->uri->parseFromString(Uri))
+        if(!impl_->uri->parse_from_string(Uri))
         {
             return false;
         }
         
-        if(impl_->uri->getPathString() == "")
+        if(impl_->uri->get_path_string() == "")
         {
             impl_->requestUri = "/";
         }
         else
         {
-            impl_->requestUri = impl_->uri->getPathString();
+            impl_->requestUri = impl_->uri->get_path_string();
         }
     
         // parse request host header from uri if any
-        impl_->headersMap.insert({"Host", impl_->uri->getHost()});
+        impl_->headers_map.insert({"Host", impl_->uri->get_host()});
         return true;
     }
 
-    bool Message::Request::setMethod(const std::string method)
+    bool Message::Request::set_method(const std::string method)
     {
         impl_->method = method;
         return true;
     }
 
-    bool Message::Request::setHttpVersion(const std::string httpVersion)
+    bool Message::Request::set_http_version(const std::string http_version)
     {
-        if(httpVersion.empty())
+        if(http_version.empty())
         {
             return false;
         }
-        impl_->httpVersion = httpVersion;
+        impl_->http_version = http_version;
         return true;
     }
 
-    bool Message::Request::setUserAgent(const std::string UserAgent)
+    bool Message::Request::set_user_agent(const std::string user_agent)
     {
-        if(UserAgent.empty())
+        if(user_agent.empty())
         {
             return false;
         }
-        impl_->headersMap.insert({"User-Agent", UserAgent});
+        impl_->headers_map.insert({"User-Agent", user_agent});
         return true;
     }
 
-    std::string Message::Request::getMethod()
+    std::string Message::Request::get_method()
     {
         return impl_->method;
     }
 
-    std::string Message::Request::getRequestUri()
+    std::string Message::Request::get_request_uri()
     {
         return impl_->requestUri;
     }
 
-    std::string Message::Request::getHttpVersion()
+    std::string Message::Request::get_http_version()
     {
-        return impl_->httpVersion;
+        return impl_->http_version;
     }
 
-    std::string Message::Request::getHeader(const std::string& headerName)
+    std::string Message::Request::get_header(const std::string& header_name)
     {
-        auto iterator = impl_->headersMap.find(headerName);
-        if (iterator == impl_->headersMap.end())
+        auto iterator = impl_->headers_map.find(header_name);
+        if (iterator == impl_->headers_map.end())
         {
             return "";
         }
         return iterator->second.c_str();
     }
 
-    std::string Message::Request::getBody()
+    std::string Message::Request::get_body()
     {
         return impl_->body;
     }
 
-    std::string Message::Request::getGeneratedRequestString()
+    std::string Message::Request::get_generated_request()
     {
-        return impl_->rawRequest;
+        return impl_->raw_request;
     }
 
-    std::string Message::Request::getRawRequest()
+    std::string Message::Request::get_raw_request()
     {
-        return impl_->rawRequest;
+        return impl_->raw_request;
     }
 
-    std::string Message::Request::getHost()
+    std::string Message::Request::get_host()
     {
-        return impl_->uri->getHost();
+        return impl_->uri->get_host();
     }
 
-    std::string Message::Request::getPort()
+    std::string Message::Request::get_port()
     {
-        return std::to_string(impl_->uri->getPort());
+        return std::to_string(impl_->uri->get_port());
     }
 }

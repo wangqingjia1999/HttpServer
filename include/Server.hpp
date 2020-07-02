@@ -44,12 +44,12 @@ public:
 	 *		port is the port number. e.g. 1080.
 	 *
 	 * @param[out] 
-	 *		clientSocket is the established socket connection.
+	 *		client_socket is the established socket connection.
 	 *
 	 * @return 
 	 *		true/false.
 	 */
-	bool listenAt(const std::string& host, const int port);
+	bool listen_at(const std::string& host, const int port);
 
 	/**
 	 * @brief
@@ -57,7 +57,7 @@ public:
 	 * @return 
 	 *		true/false.
 	 */
-	bool sendResponse();
+	bool send_response();
 
 	/**
 	 * @brief
@@ -65,7 +65,7 @@ public:
 	 * @return 
 	 *		true/false.
 	 */
-	bool receiveRequest();
+	bool receive_request();
 	
 	/**
 	 * @brief
@@ -73,7 +73,7 @@ public:
 	 * @return
 	 * 		true/false.
 	 */
-	bool parseRequest();
+	bool parse_request();
 
 	/**
 	 * @brief
@@ -81,7 +81,7 @@ public:
 	 * @return 
 	 * 		true/false.
 	 */
-	bool generateResponse();
+	bool generate_response();
 
 	/**
 	 * @brief
@@ -89,8 +89,25 @@ public:
 	 * @return 
 	 * 		Raw request string.
 	 */
-	std::string getRawRequest();
+	std::string get_raw_request();
 
+	/**
+	 * @brief
+	 * 		Get client socket file descriptor.
+	 * @return 
+	 * 		Success: Client socket file descriptor
+	 * 		Error: -1
+	 */
+	int get_client_fd();
+
+	/**
+	 * @brief
+	 * 		Get server socket file descriptor.
+	 * @return 
+	 * 		Success: Server socket file descriptor
+	 * 		Error: -1
+	 */
+	int get_server_fd();
 	
 private:
 	struct Impl;

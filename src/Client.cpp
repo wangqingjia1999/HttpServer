@@ -49,7 +49,7 @@ Client::Client(Client&&) noexcept = default;
 Client& Client::operator=(Client&&) noexcept = default;
 
 // public methods
-bool Client::connectTo()
+bool Client::connect_to()
 {
     #ifdef __linux__
     // set address that contains host and post
@@ -60,8 +60,9 @@ bool Client::connectTo()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = 0;
     hints.ai_flags = 0;
-    int addrResult = getaddrinfo(impl_->request->getHost().c_str(), 
-        impl_->request->getPort().c_str(), 
+    
+    int addrResult = getaddrinfo(impl_->request->get_host().c_str(), 
+        impl_->request->get_port().c_str(), 
         &hints, 
         &result
     );
@@ -90,13 +91,13 @@ bool Client::connectTo()
     #endif
 }
 
-bool Client::sendRequest()
+bool Client::send_request()
 {
     #ifdef __linux__
 
     int sendResult = send(impl_->serverSocket, 
-        impl_->request->getGeneratedRequestString().c_str(), 
-        impl_->request->getGeneratedRequestString().size(), 
+        impl_->request->get_generated_request().c_str(), 
+        impl_->request->get_generated_request().size(), 
         0
     );
     if(sendResult == -1)
@@ -109,7 +110,7 @@ bool Client::sendRequest()
     #endif
 }
 
-bool Client::parseResponse()
+bool Client::parse_response()
 {
     // TODO: add impl_ to memebers of request
     #ifdef _WIN32
@@ -153,17 +154,17 @@ bool Client::parseResponse()
     return true;
 }
 
-bool Client::generateRequest()
+bool Client::generate_request()
 {
-    return impl_->request->generateRequest();
+    return impl_->request->generate_request();
 }
 
-bool Client::parseUri(const std::string uri)
+bool Client::parse_uri(const std::string uri)
 {
-    return impl_->request->parseUri(uri);
+    return impl_->request->parse_uri(uri);
 }
 
-std::string Client::getGeneratedRequest()
+std::string Client::get_generated_request()
 {
-    return impl_->request->getGeneratedRequestString();
+    return impl_->request->get_generated_request();
 }

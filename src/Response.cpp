@@ -130,14 +130,14 @@ namespace Message
 		return impl_->reasonPhrase;
 	}
 
-	std::string Message::Response::getBody()
+	std::string Message::Response::get_body()
 	{
 		return impl_->body;
 	}
 
-	std::string Message::Response::getHeader(const std::string& headerName)
+	std::string Message::Response::get_header(const std::string& header_name)
 	{
-		auto iterator = impl_->headers.find(headerName);
+		auto iterator = impl_->headers.find(header_name);
 		if (iterator != impl_->headers.end())
 		{
 			return iterator->second.c_str();
@@ -163,12 +163,12 @@ namespace Message
 		return impl_->bodyLength;
 	}
 
-	std::string Message::Response::getResponseMessage()
+	std::string Message::Response::get_response_message()
 	{
 		return impl_->responseMessage;
 	}
 
-	size_t Message::Response::getResponseMessageLength()
+	size_t Message::Response::get_response_length()
 	{
 		return impl_->responseMessage.size();
 	}
@@ -240,7 +240,7 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::generateResponse()
+	bool Message::Response::generate_response()
 	{
 		std::ostringstream response;
 		response << impl_->protocolVersion << " " << std::to_string(impl_->statusCode) << " " << impl_->reasonPhrase << "\r\n";

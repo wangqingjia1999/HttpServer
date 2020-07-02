@@ -3,17 +3,17 @@
 struct Server::Impl
 {
     #ifdef __WIN32
-    SOCKET clientSocket;
-    SOCKET serverSocket;
+    SOCKET client_socket;
+    SOCKET server_socket;
     #endif
 
     #ifdef __linux__
-    int clientSocket;
-    int serverSocket;
+    int client_socket;
+    int server_socket;
     #endif
 
-    static const int bufferLength = 1024;
-    char receiveBuffer[bufferLength] = { 0 };
+    static const int buffer_length = 1024;
+    char received_buffer[buffer_length] = { 0 };
 
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
     std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
@@ -41,7 +41,7 @@ Server& Server::operator=(const Server& other) noexcept
 Server::Server(Server&&) noexcept = default;
 Server& Server::operator=(Server&&) noexcept = default;
 
-bool Server::listenAt(const std::string& host, const int port)
+bool Server::listen_at(const std::string& host, const int port)
 {
     #ifdef _WIN32
     // address info holds host address information
@@ -49,8 +49,8 @@ bool Server::listenAt(const std::string& host, const int port)
 
     // Initialize Winsock
     WSADATA wsaData;
-    auto initializeResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (initializeResult != 0)
+    auto initialize_result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (initialize_result != 0)
     {
         return false;
     }
@@ -63,15 +63,15 @@ bool Server::listenAt(const std::string& host, const int port)
     hints.ai_flags = AI_PASSIVE;
 
     // Resolve the server address and port
-    initializeResult = getaddrinfo(host.c_str(), std::to_string(port).c_str(), &hints, &addressPtr);
-    if (initializeResult != 0)
+    initialize_result = getaddrinfo(host.c_str(), std::to_string(port).c_str(), &hints, &addressPtr);
+    if (initialize_result != 0)
     {
         WSACleanup();
         return false;
     }
 
-    impl_->serverSocket = socket(addressPtr->ai_family, addressPtr->ai_socktype, addressPtr->ai_protocol);
-    if (impl_->serverSocket == INVALID_SOCKET)
+    impl_->server_socket = socket(addressPtr->ai_family, addressPtr->ai_socktype, addressPtr->ai_protocol);
+    if (impl_->server_socket == INVALID_SOCKET)
     {
         WSACleanup();
         return false;
@@ -79,11 +79,11 @@ bool Server::listenAt(const std::string& host, const int port)
 
 
     // bind socket
-    auto bindResult = bind(impl_->serverSocket, addressPtr->ai_addr, (int)addressPtr->ai_addrlen);
-    if (bindResult == SOCKET_ERROR)
+    auto bind_result = bind(impl_->server_socket, addressPtr->ai_addr, (int)addressPtr->ai_addrlen);
+    if (bind_result == SOCKET_ERROR)
     {
         freeaddrinfo(addressPtr);
-        closesocket(impl_->serverSocket);
+        closesocket(impl_->server_socket);
         WSACleanup();
         return false;
     }
@@ -91,63 +91,55 @@ bool Server::listenAt(const std::string& host, const int port)
     // free address info 
     freeaddrinfo(addressPtr);
 
-    auto listenResult = listen(impl_->serverSocket, SOMAXCONN);
-    if (listenResult == SOCKET_ERROR)
+    auto listen_result = listen(impl_->server_socket, SOMAXCONN);
+    if (listen_result == SOCKET_ERROR)
     {
-        closesocket(impl_->serverSocket);
+        closesocket(impl_->server_socket);
         WSACleanup();
         return false;
     }
 
-    clientSocket = accept(impl_->serverSocket, NULL, NULL);
-    if (clientSocket == INVALID_SOCKET)
+    client_socket = accept(impl_->server_socket, NULL, NULL);
+    if (client_socket == INVALID_SOCKET)
     {
-        closesocket(impl_->serverSocket);
+        closesocket(impl_->server_socket);
         WSACleanup();
         return false;
     }
 
-    closesocket(impl_->serverSocket);
+    closesocket(impl_->server_socket);
 
     return true;
     #endif
 
     #ifdef __linux__
-    struct sockaddr_in internetAddress;
-    int addressLength;
+    // IPv4 socket address
+    struct sockaddr_in ipv4_address;
     
     // create socket
-    impl_->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if(impl_->serverSocket == -1)
+    impl_->server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if(impl_->server_socket == -1)
     {
         return false;
     }
 
-    memset(&internetAddress, 0 , sizeof(internetAddress));
-
     // set address info
-    internetAddress.sin_family = AF_INET;
-    internetAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    internetAddress.sin_port = htons(port);
-    int internetAddressLength = sizeof(internetAddress);
+    memset(&ipv4_address, 0 , sizeof(ipv4_address));
+    ipv4_address.sin_family = AF_INET;
+    ipv4_address.sin_addr.s_addr = inet_addr(host.c_str());
+    ipv4_address.sin_port = htons(port);
+    int ipv4_address_length = sizeof(ipv4_address);
 
     // bind address to socket
-    int bindResult = bind(impl_->serverSocket, (struct sockaddr*)&internetAddress, internetAddressLength);
-    if(bindResult == -1)
+    int bind_result = bind(impl_->server_socket, (struct sockaddr*)&ipv4_address, ipv4_address_length);
+    if(bind_result == -1)
     {
         return false;
     }
 
     // listen at given host and port
-    int listenResult = listen(impl_->serverSocket, 4096);
-    if(listenResult == -1)
-    {
-        return false;
-    }
-
-    // accept coming socket
-    impl_-> clientSocket = accept(impl_->serverSocket, NULL, NULL);
-    if(impl_->clientSocket == -1)
+    int listen_result = listen(impl_->server_socket, 4096);
+    if(listen_result == -1)
     {
         return false;
     }
@@ -156,13 +148,13 @@ bool Server::listenAt(const std::string& host, const int port)
     #endif
 }
 
-bool Server::sendResponse()
+bool Server::send_response()
 {
     #ifdef _WIN32
     int sendResult = send(
-        impl_->clientSocket, 
-        impl_->response->getResponseMessage().c_str(), 
-        impl_->response->getResponseMessageLength(), 
+        impl_->client_socket, 
+        impl_->response->get_response_message().c_str(), 
+        impl_->response->get_response_length(), 
         0
     );
     if (sendResult == SOCKET_ERROR)
@@ -174,9 +166,9 @@ bool Server::sendResponse()
 
     #ifdef __linux__
     int sendResult = send(
-        impl_->clientSocket, 
-        impl_->response->getResponseMessage().c_str(), 
-        impl_->response->getResponseMessageLength(), 
+        impl_->client_socket, 
+        impl_->response->get_response_message().c_str(), 
+        impl_->response->get_response_length(), 
         0
     );
 
@@ -188,54 +180,64 @@ bool Server::sendResponse()
     #endif
 }
 
-bool Server::receiveRequest()
+bool Server::receive_request()
 {
     #ifdef _WIN32
-    memset(impl_->receiveBuffer, 0, impl_->bufferLength);
-    auto receiveResult = recv(impl_->clientSocket, impl_->receiveBuffer, impl_->bufferLength, 0);
-    if (receiveResult == SOCKET_ERROR)
+    memset(impl_->received_buffer, 0, impl_->buffer_length);
+    auto receive_result = recv(impl_->client_socket, impl_->received_buffer, impl_->buffer_length, 0);
+    if (receive_result == SOCKET_ERROR)
     {
-        impl_->rawRequest = "";
+        impl_->raw_request = "";
         return false;
     }
 
-    impl_->rawRequest = impl_->receiveBuffer;
+    impl_->raw_request = impl_->received_buffer;
 
-    memset(impl_->receiveBuffer, 0, impl_->bufferLength);
+    memset(impl_->received_buffer, 0, impl_->buffer_length);
 
     return true;
     #endif
 
     #ifdef __linux__
-    int receiveResult = recv(impl_->clientSocket, impl_->receiveBuffer, impl_->bufferLength, 0);
-    if(receiveResult == 0 || receiveResult == -1)
+    int receive_result = recv(impl_->client_socket, impl_->received_buffer, impl_->buffer_length, 0);
+    if(receive_result == 0 || receive_result == -1)
     {
-        impl_->request->setRawRequest("");
+        impl_->request->set_raw_request("");
         return false;
     }
     
-    if(!impl_->request->setRawRequest(impl_->receiveBuffer))
+    if(!impl_->request->set_raw_request(impl_->received_buffer))
     {
         return false;
     }
 
-    memset(impl_->receiveBuffer, 0, impl_->bufferLength);
+    memset(impl_->received_buffer, 0, impl_->buffer_length);
 
     return true;
     #endif
 }
 
-bool Server::parseRequest()
+bool Server::parse_request()
 {
-    return impl_->request->parseRawRequest();
+    return impl_->request->parse_raw_request();
 }
 
-bool Server::generateResponse()
+bool Server::generate_response()
 {
-    return impl_->response->generateResponse();
+    return impl_->response->generate_response();
 }
 
-std::string Server::getRawRequest()
+std::string Server::get_raw_request()
 {
-    return impl_->request->getRawRequest();
+    return impl_->request->get_raw_request();
+}
+
+int Server::get_client_fd()
+{
+    return impl_->client_socket;
+}
+
+int Server::get_server_fd()
+{
+    return impl_->server_socket;
 }

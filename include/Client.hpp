@@ -25,7 +25,7 @@ public:
 	 * @return
 	 * 		true/false.
 	 */
-	bool connectTo();
+	bool connect_to();
 	
 	/**
 	 * @brief
@@ -33,7 +33,7 @@ public:
 	 * @return 
 	 * 		true/false.
 	 */
-	bool sendRequest();
+	bool send_request();
 
 	/** 
 	 * @brief
@@ -41,7 +41,7 @@ public:
 	 * @return
 	 *		true/false.
 	 */
-	bool parseResponse();
+	bool parse_response();
 
 	/**
 	 * @brief
@@ -49,7 +49,7 @@ public:
 	 * @return 
 	 * 		true/false
 	 */
-	bool generateRequest();
+	bool generate_request();
 
 	/**
 	 * @brief
@@ -59,7 +59,7 @@ public:
 	 * @return
 	 * 		true/false
 	 */
-	bool parseUri(const std::string uri);
+	bool parse_uri(const std::string uri);
 
 	/**
 	 * @brief
@@ -67,7 +67,7 @@ public:
 	 * @return
 	 * 		Generated Request String.
 	 */
-	std::string getGeneratedRequest();
+	std::string get_generated_request();
 
 private:
 	struct Impl;

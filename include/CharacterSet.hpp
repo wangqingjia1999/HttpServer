@@ -39,7 +39,7 @@ namespace Uri
 		/**
 		 * Is contain given character?
 		 */
-		bool isContains(char c) const;
+		bool is_contains(char c) const;
 
 		/**
 		 * Is the given string integers

@@ -10,15 +10,15 @@ int main()
 
     std::cout << "Start to listening" << std::endl;
     
-    while(server.listenAt("localhost", 2334))
+    while(server.listen_at("localhost", 2334))
     {
-        if(!server.receiveRequest()) 
+        if(!server.receive_request()) 
             std::cout << "Error receive request" << std::endl;
         if(!server.parseRequest())
             std::cout << "Error parse request" << std::endl;
-        if(!server.generateResponse())
+        if(!server.generate_response())
             std::cout << "Error generate response" << std::endl;
-        if(!server.sendResponse())
+        if(!server.send_response())
             std::cout << "Error send response" << std::endl;
     }
 }

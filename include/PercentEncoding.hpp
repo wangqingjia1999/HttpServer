@@ -18,13 +18,13 @@ namespace Uri
 		// Member methods
 	public:
 
-		std::string Encode(const std::string& s);
+		std::string encode(const std::string& s);
 
-		std::string Decode(const std::string& s);
+		std::string decode(const std::string& s);
 
-		bool isFinished();
+		bool is_finished();
 
-		char getDecodedeCharacter();
+		char get_decoded_character();
 
 	private:
 		struct Impl;

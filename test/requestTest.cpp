@@ -4,34 +4,34 @@
 TEST(RequestTests, defaultMethodGET)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.setMethod());
-	ASSERT_EQ(request.getMethod(), "GET");
+	ASSERT_TRUE(request.set_method());
+	ASSERT_EQ(request.get_method(), "GET");
 }
 
 TEST(RequestTests, defaultHttpVersion)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.setHttpVersion());
-	ASSERT_EQ(request.getHttpVersion(), "HTTP/1.1");
+	ASSERT_TRUE(request.set_http_version());
+	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 }
 
 TEST(RequestTests, defaultUserAgent)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.setUserAgent());
-	ASSERT_EQ(request.getHeader("User-Agent"), "Bitate");
+	ASSERT_TRUE(request.set_user_agent());
+	ASSERT_EQ(request.get_header("User-Agent"), "Bitate");
 }
 
 TEST(RequestTests, generateRequestFromUri)
 {
 	Message::Request request;
 	
-	ASSERT_TRUE(request.parseUri("http://localhost:2333/"));
-	ASSERT_TRUE(request.setMethod());
-	ASSERT_TRUE(request.setHttpVersion());
-	ASSERT_TRUE(request.setUserAgent());
+	ASSERT_TRUE(request.parse_uri("http://localhost:2333/"));
+	ASSERT_TRUE(request.set_method());
+	ASSERT_TRUE(request.set_http_version());
+	ASSERT_TRUE(request.set_user_agent());
 
-	std::string rawRequest = 
+	std::string raw_request = 
 	{
 		"GET / HTTP/1.1\r\n"
 		"Host: localhost\r\n"
@@ -39,15 +39,15 @@ TEST(RequestTests, generateRequestFromUri)
 		"\r\n"
 	};
 
-	ASSERT_TRUE(request.generateRequest());
-	ASSERT_EQ(request.getGeneratedRequestString(), rawRequest);
+	ASSERT_TRUE(request.generate_request());
+	ASSERT_EQ(request.get_generated_request(), raw_request);
 }
 
 TEST(RequestTests, parseRawGetRequest)
 {
 	Message::Request request;
 
-	std::string rawRequest = (
+	std::string raw_request = (
 		"GET / HTTP/1.1\r\n"
 		"Host: localhost\r\n"
 		"Connection: keep-alive\r\n"
@@ -63,29 +63,29 @@ TEST(RequestTests, parseRawGetRequest)
 		"Accept-Language: en,zh-CN;q=0.9,zh;q=0.8\r\n"
 		"\r\n"
 		);
-	ASSERT_TRUE(request.setRawRequest(rawRequest));
-	ASSERT_TRUE(request.parseRawRequest());
+	ASSERT_TRUE(request.set_raw_request(raw_request));
+	ASSERT_TRUE(request.parse_raw_request());
 
 	// test request line
-	ASSERT_EQ(request.getMethod(), "GET");
-	ASSERT_EQ(request.getRequestUri(), "/");
-	ASSERT_EQ(request.getHttpVersion(), "HTTP/1.1");
+	ASSERT_EQ(request.get_method(), "GET");
+	ASSERT_EQ(request.get_request_uri(), "/");
+	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 	
 	// test headers
-	ASSERT_EQ(request.getHeader("Host"), "localhost");
-	ASSERT_EQ(request.getHeader("Connection"), "keep-alive");
-	ASSERT_EQ(request.getHeader("Cache-Control"), "max-age=0");
-	ASSERT_EQ(request.getHeader("Upgrade-Insecure-Requests"), "1");
-	ASSERT_EQ(request.getHeader("User-Agent"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36");
-	ASSERT_EQ(request.getHeader("Accept"), "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-	ASSERT_EQ(request.getHeader("Sec-Fetch-Site"), "none");
-	ASSERT_EQ(request.getHeader("Sec-Fetch-Mode"), "navigate");
-	ASSERT_EQ(request.getHeader("Sec-Fetch-User"), "?1");
-	ASSERT_EQ(request.getHeader("Sec-Fetch-Dest"), "document");
-	ASSERT_EQ(request.getHeader("Accept-Encoding"), "gzip, deflate, br");
-	ASSERT_EQ(request.getHeader("Accept-Language"), "en,zh-CN;q=0.9,zh;q=0.8");
+	ASSERT_EQ(request.get_header("Host"), "localhost");
+	ASSERT_EQ(request.get_header("Connection"), "keep-alive");
+	ASSERT_EQ(request.get_header("Cache-Control"), "max-age=0");
+	ASSERT_EQ(request.get_header("Upgrade-Insecure-Requests"), "1");
+	ASSERT_EQ(request.get_header("User-Agent"), "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36");
+	ASSERT_EQ(request.get_header("Accept"), "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+	ASSERT_EQ(request.get_header("Sec-Fetch-Site"), "none");
+	ASSERT_EQ(request.get_header("Sec-Fetch-Mode"), "navigate");
+	ASSERT_EQ(request.get_header("Sec-Fetch-User"), "?1");
+	ASSERT_EQ(request.get_header("Sec-Fetch-Dest"), "document");
+	ASSERT_EQ(request.get_header("Accept-Encoding"), "gzip, deflate, br");
+	ASSERT_EQ(request.get_header("Accept-Language"), "en,zh-CN;q=0.9,zh;q=0.8");
 
 	// test body
-	ASSERT_EQ(request.getBody(), "");
+	ASSERT_EQ(request.get_body(), "");
 }
 

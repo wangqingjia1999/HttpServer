@@ -8,7 +8,7 @@ Uri::CharacterSet::CharacterSet()
 {
 }
 
-bool Uri::CharacterSet::isContains(char c) const
+bool Uri::CharacterSet::is_contains(char c) const
 {
 	if (characterSet.find(c) != characterSet.cend())
 	{

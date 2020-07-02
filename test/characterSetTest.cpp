@@ -4,27 +4,27 @@
 TEST(CharacterSetTests, ConstructorOneArgument)
 {
 	Uri::CharacterSet charset('a');
-	ASSERT_TRUE(charset.isContains('a'));
+	ASSERT_TRUE(charset.is_contains('a'));
 
 	Uri::CharacterSet charset1('$');
-	ASSERT_TRUE(charset1.isContains('$'));
+	ASSERT_TRUE(charset1.is_contains('$'));
 
 	Uri::CharacterSet charset2('*');
-	ASSERT_TRUE(charset2.isContains('*'));
+	ASSERT_TRUE(charset2.is_contains('*'));
 }
 
 TEST(CharacterSetTests, ConstructorTwoArgument)
 {
 	Uri::CharacterSet charset('a', 'z');
-	ASSERT_TRUE(charset.isContains('b'));
-	ASSERT_TRUE(charset.isContains('f'));
-	ASSERT_TRUE(charset.isContains('g'));
-	ASSERT_TRUE(charset.isContains('j'));
-	ASSERT_TRUE(charset.isContains('w'));
+	ASSERT_TRUE(charset.is_contains('b'));
+	ASSERT_TRUE(charset.is_contains('f'));
+	ASSERT_TRUE(charset.is_contains('g'));
+	ASSERT_TRUE(charset.is_contains('j'));
+	ASSERT_TRUE(charset.is_contains('w'));
 
-	ASSERT_FALSE(charset.isContains('A'));
-	ASSERT_FALSE(charset.isContains('F'));
-	ASSERT_FALSE(charset.isContains('G'));
+	ASSERT_FALSE(charset.is_contains('A'));
+	ASSERT_FALSE(charset.is_contains('F'));
+	ASSERT_FALSE(charset.is_contains('G'));
 }
 
 TEST(CharacterSetTests, ConstructorManyArguments)
@@ -34,13 +34,13 @@ TEST(CharacterSetTests, ConstructorManyArguments)
 	'a','b','d','e','@','$','%'
 	};
 
-	ASSERT_TRUE(charList.isContains('$'));
-	ASSERT_TRUE(charList.isContains('@'));
-	ASSERT_TRUE(charList.isContains('%'));
+	ASSERT_TRUE(charList.is_contains('$'));
+	ASSERT_TRUE(charList.is_contains('@'));
+	ASSERT_TRUE(charList.is_contains('%'));
 
-	ASSERT_FALSE(charList.isContains('!'));
-	ASSERT_FALSE(charList.isContains('('));
-	ASSERT_FALSE(charList.isContains(']'));
+	ASSERT_FALSE(charList.is_contains('!'));
+	ASSERT_FALSE(charList.is_contains('('));
+	ASSERT_FALSE(charList.is_contains(']'));
 }
 
 

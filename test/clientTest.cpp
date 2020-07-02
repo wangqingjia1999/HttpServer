@@ -6,10 +6,10 @@ TEST(ClientTests, generateRequestTest)
 {
     Client client;
 
-    ASSERT_TRUE(client.parseUri("http://localhost:2333/"));
-    ASSERT_TRUE(client.generateRequest());
+    ASSERT_TRUE(client.parse_uri("http://localhost:2333/"));
+    ASSERT_TRUE(client.generate_request());
 
-    std::string generatedRequest = 
+    std::string generated_request = 
     {
         "GET / HTTP/1.1\r\n"
         "Host: localhost\r\n"
@@ -17,15 +17,15 @@ TEST(ClientTests, generateRequestTest)
         "\r\n"
     };
 
-    ASSERT_EQ(client.getGeneratedRequest(), generatedRequest);
+    ASSERT_EQ(client.get_generated_request(), generated_request);
     
 }
 
-TEST(ClientTests, connectToSpecificServer)
-{
-    Client client;
-    ASSERT_TRUE(client.parseUri("http://localhost:2334"));
-    ASSERT_TRUE(client.connectTo());
-    ASSERT_TRUE(client.generateRequest()); 
-    ASSERT_TRUE(client.sendRequest());
-}
+// TEST(ClientTests, connectToSpecificServer)
+// {
+//     Client client;
+//     ASSERT_TRUE(client.parse_uri("http://localhost:2334"));
+//     ASSERT_TRUE(client.connect_to());
+//     ASSERT_TRUE(client.generate_request()); 
+//     ASSERT_TRUE(client.send_request());
+// }

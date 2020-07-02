@@ -7,9 +7,9 @@ TEST(ResponseTests, addHeaders) {
     ASSERT_EQ(response.addHeader("Date", "Mon, 27 Jul 2009 12:28:53 GMT"), true);
     ASSERT_EQ(response.addHeader("Accept-Ranges", "bytes"), true);
     ASSERT_EQ(response.addHeader("Content-Type", "text/plain"), true);
-    ASSERT_EQ(response.getHeader("Date"), "Mon, 27 Jul 2009 12:28:53 GMT");
-    ASSERT_EQ(response.getHeader("Accept-Ranges"), "bytes");
-    ASSERT_EQ(response.getHeader("Content-Type"), "text/plain");
+    ASSERT_EQ(response.get_header("Date"), "Mon, 27 Jul 2009 12:28:53 GMT");
+    ASSERT_EQ(response.get_header("Accept-Ranges"), "bytes");
+    ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
 }
 
 TEST(ResponseTests, generateGetResponse)
@@ -34,8 +34,8 @@ TEST(ResponseTests, generateGetResponse)
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
-    ASSERT_TRUE(response.generateResponse());
-    ASSERT_EQ(response.getResponseMessage(), responseResult);
+    ASSERT_TRUE(response.generate_response());
+    ASSERT_EQ(response.get_response_message(), responseResult);
 }
 
 TEST(ResponseTests, mapStatusCodeToReasonString)
@@ -57,49 +57,49 @@ TEST(ResponseTests, ResponseContentTypeTest)
     Message::Response response;
 
     ASSERT_TRUE(response.setContentType("/demo.txt"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "text/plain");
+    ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
 
     ASSERT_TRUE(response.setContentType("/demo.html"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "text/html");
+    ASSERT_EQ(response.get_header("Content-Type"), "text/html");
 
     ASSERT_TRUE(response.setContentType("/demo.css"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "text/css");
+    ASSERT_EQ(response.get_header("Content-Type"), "text/css");
 
     ASSERT_TRUE(response.setContentType("/demo.jpeg"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/jpg");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
 
     ASSERT_TRUE(response.setContentType("/demo.jpg"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/jpg");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
 
     ASSERT_TRUE(response.setContentType("/demo.png"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/png");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/png");
 
     ASSERT_TRUE(response.setContentType("/demo.gif"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/gif");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/gif");
 
     ASSERT_TRUE(response.setContentType("/demo.svg"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/svg+xml");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/svg+xml");
 
     ASSERT_TRUE(response.setContentType("/demo.ico"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "image/x-icon");
+    ASSERT_EQ(response.get_header("Content-Type"), "image/x-icon");
 
     ASSERT_TRUE(response.setContentType("/demo.json"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/json");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/json");
 
     ASSERT_TRUE(response.setContentType("/demo.pdf"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/pdf");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/pdf");
 
     ASSERT_TRUE(response.setContentType("/demo.js"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/javascript");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/javascript");
 
     ASSERT_TRUE(response.setContentType("/demo.xml"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/xml");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/xml");
 
     ASSERT_TRUE(response.setContentType("/demo.wasm"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/wasm");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/wasm");
 
     ASSERT_TRUE(response.setContentType("/demo.xhtml"));
-    ASSERT_EQ(response.getHeader("Content-Type"), "application/xhtml+xml");
+    ASSERT_EQ(response.get_header("Content-Type"), "application/xhtml+xml");
 
     // unsupported types
     ASSERT_FALSE(response.setContentType("/demo.abc"));
