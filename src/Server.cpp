@@ -1,16 +1,11 @@
 #include "Server.hpp"
+#include <sys/epoll.h>
+#include <iostream>
 
 struct Server::Impl
 {
-    #ifdef __WIN32
-    SOCKET client_socket;
-    SOCKET server_socket;
-    #endif
-
-    #ifdef __linux__
     int client_socket;
     int server_socket;
-    #endif
 
     static const int buffer_length = 1024;
     char received_buffer[buffer_length] = { 0 };
@@ -43,76 +38,6 @@ Server& Server::operator=(Server&&) noexcept = default;
 
 bool Server::listen_at(const std::string& host, const int port)
 {
-    #ifdef _WIN32
-    // address info holds host address information
-    struct addrinfo* addressPtr = nullptr;
-
-    // Initialize Winsock
-    WSADATA wsaData;
-    auto initialize_result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (initialize_result != 0)
-    {
-        return false;
-    }
-
-    struct addrinfo hints;
-    ZeroMemory(&hints, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-    hints.ai_flags = AI_PASSIVE;
-
-    // Resolve the server address and port
-    initialize_result = getaddrinfo(host.c_str(), std::to_string(port).c_str(), &hints, &addressPtr);
-    if (initialize_result != 0)
-    {
-        WSACleanup();
-        return false;
-    }
-
-    impl_->server_socket = socket(addressPtr->ai_family, addressPtr->ai_socktype, addressPtr->ai_protocol);
-    if (impl_->server_socket == INVALID_SOCKET)
-    {
-        WSACleanup();
-        return false;
-    }
-
-
-    // bind socket
-    auto bind_result = bind(impl_->server_socket, addressPtr->ai_addr, (int)addressPtr->ai_addrlen);
-    if (bind_result == SOCKET_ERROR)
-    {
-        freeaddrinfo(addressPtr);
-        closesocket(impl_->server_socket);
-        WSACleanup();
-        return false;
-    }
-
-    // free address info 
-    freeaddrinfo(addressPtr);
-
-    auto listen_result = listen(impl_->server_socket, SOMAXCONN);
-    if (listen_result == SOCKET_ERROR)
-    {
-        closesocket(impl_->server_socket);
-        WSACleanup();
-        return false;
-    }
-
-    client_socket = accept(impl_->server_socket, NULL, NULL);
-    if (client_socket == INVALID_SOCKET)
-    {
-        closesocket(impl_->server_socket);
-        WSACleanup();
-        return false;
-    }
-
-    closesocket(impl_->server_socket);
-
-    return true;
-    #endif
-
-    #ifdef __linux__
     // IPv4 socket address
     struct sockaddr_in ipv4_address;
     
@@ -138,33 +63,111 @@ bool Server::listen_at(const std::string& host, const int port)
     }
 
     // listen at given host and port
+    // Note that the listen socket file descriptor remains unchanged
     int listen_result = listen(impl_->server_socket, 4096);
     if(listen_result == -1)
     {
         return false;
     }
 
+    // create epoll fd
+    int epfd = epoll_create(1024);
+    if(epfd < 0)
+    {
+        return false;
+    }
+
+    // create epoll event
+    struct epoll_event ev;
+    ev.data.fd = impl_->server_socket;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->server_socket, &ev);
+
+    struct epoll_event epoll_result[1024];
+
+    // server core loop
+    for (;;)
+    {
+        int nums = epoll_wait(epfd, epoll_result, 1024, -1);
+        switch (nums)
+        {
+        case 0:
+            std::cout << "Time out" << std::endl;
+            break;
+        case -1:
+            std::cout << "Epoll wait error" << std::endl;
+            break;
+        default:
+            {
+                int i;
+                for(i=0; i < nums; ++i)
+                {
+                    int arrived_socket_fd = epoll_result[i].data.fd;
+                    uint32_t arrived_socket_event = epoll_result[i].events;
+                    
+                    // If listen socket has new client in the listening queue.
+                    if(arrived_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
+                    {
+                        struct sockaddr_in client_socket_address;
+                        socklen_t client_socket_length = sizeof(client_socket_address);
+
+                        // accept new client socket
+                        impl_->client_socket = accept(
+                            impl_->server_socket, 
+                            (struct sockaddr*)&client_socket_address, 
+                            &client_socket_length 
+                        );
+                        if(impl_->client_socket < 0)
+                        {
+                            std::cout << "Accept Error" << std::endl;
+                            continue;
+                        }
+
+                        std::cout << "Accept Client from : " << inet_ntoa(client_socket_address.sin_addr) << ":" << htons(client_socket_address.sin_port) << std::endl;
+                        
+                        // and add new client socket into epoll events list
+                        ev.data.fd = impl_->client_socket;
+                        ev.events = EPOLLIN;
+                        epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
+
+                    }
+                    else if (epoll_result[i].events & EPOLLIN) // receive request from client
+                    {
+                        int read_n_bytes = read(arrived_socket_fd, impl_->received_buffer, impl_->buffer_length);
+                        if(read_n_bytes < 0)
+                        {
+                            std::cout << "Error: read from client" << std::endl;
+                            continue;
+                        }
+                        
+                        // ev.data.ptr = cumtom_data_type;
+                        ev.data.fd = arrived_socket_fd;
+                        ev.events = EPOLLOUT | EPOLLET;
+                        epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
+                    }
+                    else if (epoll_result[i].events & EPOLLOUT) // send response to client
+                    {
+                        
+                        
+                    }
+                    else if (arrived_socket_fd != impl_->server_socket)
+                    {
+
+
+                    }
+                }
+                
+
+            }
+            break;
+        }
+    }
+    
+
     return true;
-    #endif
 }
 
 bool Server::send_response()
 {
-    #ifdef _WIN32
-    int sendResult = send(
-        impl_->client_socket, 
-        impl_->response->get_response_message().c_str(), 
-        impl_->response->get_response_length(), 
-        0
-    );
-    if (sendResult == SOCKET_ERROR)
-    {
-        return false;
-    }
-    return true;
-    #endif
-
-    #ifdef __linux__
     int sendResult = send(
         impl_->client_socket, 
         impl_->response->get_response_message().c_str(), 
@@ -177,28 +180,10 @@ bool Server::send_response()
         return false;
     }
     return true;
-    #endif
 }
 
 bool Server::receive_request()
 {
-    #ifdef _WIN32
-    memset(impl_->received_buffer, 0, impl_->buffer_length);
-    auto receive_result = recv(impl_->client_socket, impl_->received_buffer, impl_->buffer_length, 0);
-    if (receive_result == SOCKET_ERROR)
-    {
-        impl_->raw_request = "";
-        return false;
-    }
-
-    impl_->raw_request = impl_->received_buffer;
-
-    memset(impl_->received_buffer, 0, impl_->buffer_length);
-
-    return true;
-    #endif
-
-    #ifdef __linux__
     int receive_result = recv(impl_->client_socket, impl_->received_buffer, impl_->buffer_length, 0);
     if(receive_result == 0 || receive_result == -1)
     {
@@ -214,7 +199,6 @@ bool Server::receive_request()
     memset(impl_->received_buffer, 0, impl_->buffer_length);
 
     return true;
-    #endif
 }
 
 bool Server::parse_request()

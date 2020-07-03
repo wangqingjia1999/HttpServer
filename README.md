@@ -7,7 +7,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 
 ## Enviroment & Dependence
-* Linux and Windows10
+* Ubuntu Server 20.04
 * CMake Build System
 * Google Test Framework
 

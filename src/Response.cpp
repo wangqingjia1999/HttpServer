@@ -320,33 +320,6 @@ namespace Message
 
 	bool Message::Response::convertPathToAbsolutePath(const std::string& path,  std::string& absolutePath)
 	{ 
-	#ifdef __WIN32
-		char buff[1000];
-		_getcwd(buff, 1000);
-		std::string currentWorkingDirectory = buff;
-
-		auto projectPathEndPosition = currentWorkingDirectory.find("HttpServer");
-
-		std::string pathWithForwardSlashes;
-
-		for (char c : path)
-		{
-			if (c == '/')
-			{
-				pathWithForwardSlashes.push_back('\\');
-			}
-			else
-			{
-				pathWithForwardSlashes.push_back(c);
-			}
-		}
-
-		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\public_html" + pathWithForwardSlashes;
-
-		return true;
-	#endif // win32
-
-	#ifdef __linux__
 		char buffer[1024];
 		if(getcwd(buffer, 1024) == nullptr)
 		{
@@ -373,7 +346,6 @@ namespace Message
 
 		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\public_html" + pathWithForwardSlashes;
 		return true;
-	#endif // __LINUX__
 	}
 
 	bool Message::Response::setContentType(const std::string& path)

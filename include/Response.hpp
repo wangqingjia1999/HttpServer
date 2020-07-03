@@ -7,13 +7,8 @@
 #include <sstream>
 #include <fstream>
 
-#ifdef _WIN32
-#include <direct.h>	// directory manipulate
-#endif
-
-#ifdef __linux__
 #include <unistd.h>
-#endif
+
 
 namespace Message
 {

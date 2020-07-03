@@ -3,23 +3,19 @@
 #include "Response.hpp"
 #include "Uri.hpp"
 
-#ifdef __linux__
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <error.h>
-#endif
 
 #include <memory>
 #include <string>
 
 struct Client::Impl
 {
-    #ifdef __linux__
     int clientSocket;
     int serverSocket;
-    #endif
 
     std::shared_ptr< Message::Request > request = std::make_shared< Message::Request >();
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
@@ -51,7 +47,6 @@ Client& Client::operator=(Client&&) noexcept = default;
 // public methods
 bool Client::connect_to()
 {
-    #ifdef __linux__
     // set address that contains host and post
     struct addrinfo hints;
     struct addrinfo* result, *resultPtr;
@@ -88,13 +83,10 @@ bool Client::connect_to()
     }
     
     return true;
-    #endif
 }
 
 bool Client::send_request()
 {
-    #ifdef __linux__
-
     int sendResult = send(impl_->serverSocket, 
         impl_->request->get_generated_request().c_str(), 
         impl_->request->get_generated_request().size(), 
@@ -107,49 +99,11 @@ bool Client::send_request()
     }
 
     return true;
-    #endif
 }
 
 bool Client::parse_response()
 {
-    // TODO: add impl_ to memebers of request
-    #ifdef _WIN32
-
-    auto statusLineEndDelimiter = rawResponse.find("\r\n");
-
-    std::string statusLine = rawResponse.substr(0, statusLineEndDelimiter);
-
-    auto firstSpace = statusLine.find(" ");
-    auto secondSpace = statusLine.find_last_of(" ");
-
-    responsePtr->setProtocolVersion(statusLine.substr(0, firstSpace));
-    responsePtr->setStatus(std::stoi(statusLine.substr(firstSpace, secondSpace)));
-
-    auto headersEndDelimiter = rawResponse.find("\r\n\r\n");
-    std::string headers = rawResponse.substr(statusLineEndDelimiter+2, headersEndDelimiter);
-
-    // TODO: change this while loop to parseHeaders() function
-    while (headers.find("\r\n") != std::string::npos)
-    {
-        std::string singleLineHeader = headers.substr(0, headers.find("\r\n"));
-
-        auto nameEndDelimiter = singleLineHeader.find(":");
-        std::string name = singleLineHeader.substr(0, nameEndDelimiter);
-        std::string value = singleLineHeader.substr(nameEndDelimiter+1, singleLineHeader.find("\r\n"));
-
-        if (value[0] == ' ') { value = value.substr(1); }
-        
-        responsePtr->addHeader(name, value);
-
-        headers = headers.substr(headers.find("\r\n") + 2);
-    }
-    responsePtr->setBody(rawResponse.substr(headersEndDelimiter + 4));
     
-    return responsePtr;
-    #endif
-    #ifdef __linux__
-
-    #endif
 
     return true;
 }
