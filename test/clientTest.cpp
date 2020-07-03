@@ -6,7 +6,7 @@ TEST(ClientTests, generateRequestTest)
 {
     Client client;
 
-    ASSERT_TRUE(client.parse_uri("http://localhost:2333/"));
+    ASSERT_TRUE(client.parse_uri("http://localhost:2334/"));
     ASSERT_TRUE(client.generate_request());
 
     std::string generated_request = 
@@ -21,11 +21,11 @@ TEST(ClientTests, generateRequestTest)
     
 }
 
-// TEST(ClientTests, connectToSpecificServer)
-// {
-//     Client client;
-//     ASSERT_TRUE(client.parse_uri("http://localhost:2334"));
-//     ASSERT_TRUE(client.connect_to());
-//     ASSERT_TRUE(client.generate_request()); 
-//     ASSERT_TRUE(client.send_request());
-// }
+TEST(ClientTests, connectToSpecificServer)
+{
+    Client client;
+    ASSERT_TRUE(client.parse_uri("http://localhost:2333"));
+    ASSERT_TRUE(client.connect_to());
+    ASSERT_TRUE(client.generate_request()); 
+    ASSERT_TRUE(client.send_request());
+}

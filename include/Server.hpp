@@ -43,15 +43,17 @@ public:
 	 * @return 
 	 *		true/false.
 	 */
-	bool send_response();
+	bool send_response(const int clietn_socket_fd);
 
 	/**
 	 * @brief
 	 * 		Receive request from client.
+	 * @param[in]
+	 * 		client_socket_fd is the accepted socket fd.
 	 * @return 
 	 *		true/false.
 	 */
-	bool receive_request();
+	bool receive_request(const int client_socket_fd);
 	
 	/**
 	 * @brief

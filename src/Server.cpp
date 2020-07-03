@@ -80,6 +80,7 @@ bool Server::listen_at(const std::string& host, const int port)
     // create epoll event
     struct epoll_event ev;
     ev.data.fd = impl_->server_socket;
+    ev.events = EPOLLIN;
     epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->server_socket, &ev);
 
     struct epoll_event epoll_result[1024];
@@ -87,6 +88,7 @@ bool Server::listen_at(const std::string& host, const int port)
     // server core loop
     for (;;)
     {
+        std::cout << "Wait for events" << std::endl;
         int nums = epoll_wait(epfd, epoll_result, 1024, -1);
         switch (nums)
         {
@@ -128,48 +130,48 @@ bool Server::listen_at(const std::string& host, const int port)
                         ev.data.fd = impl_->client_socket;
                         ev.events = EPOLLIN;
                         epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
-
                     }
-                    else if (epoll_result[i].events & EPOLLIN) // receive request from client
+                    else if ( arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
                     {
-                        int read_n_bytes = read(arrived_socket_fd, impl_->received_buffer, impl_->buffer_length);
-                        if(read_n_bytes < 0)
+                        if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
-                            std::cout << "Error: read from client" << std::endl;
-                            continue;
+                            if(!receive_request(arrived_socket_fd))
+                            {
+                                std::cout << "Error: can't receive request from socket fd: " << arrived_socket_fd << std::endl;
+                                continue;
+                            }
+
+                            std::cout << "Success: receive request from socket fd: " << arrived_socket_fd << std::endl;
+                            ev.data.fd = arrived_socket_fd;
+                            ev.events = EPOLLOUT | EPOLLET;
+                            epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
                         }
-                        
-                        // ev.data.ptr = cumtom_data_type;
-                        ev.data.fd = arrived_socket_fd;
-                        ev.events = EPOLLOUT | EPOLLET;
-                        epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
-                    }
-                    else if (epoll_result[i].events & EPOLLOUT) // send response to client
-                    {
-                        
-                        
-                    }
-                    else if (arrived_socket_fd != impl_->server_socket)
-                    {
+                        else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
+                        {
+                            if(!send_response(arrived_socket_fd))
+                            {
+                                std::cout << "Error: can't send response to socket fd: " << arrived_socket_fd << std::endl;
+                                continue;
+                            }
 
-
+                            std::cout << "Success: send response to socket fd: " << arrived_socket_fd << std::endl;
+                            ev.data.fd = arrived_socket_fd;
+                            ev.events = EPOLLIN | EPOLLET;
+                            epoll_ctl(epfd, EPOLL_CTL_ADD, arrived_socket_fd, &ev);
+                        }
                     }
-                }
-                
-
+                }            
             }
             break;
         }
     }
-    
-
     return true;
 }
 
-bool Server::send_response()
+bool Server::send_response(const int clietn_socket_fd)
 {
     int sendResult = send(
-        impl_->client_socket, 
+        clietn_socket_fd, 
         impl_->response->get_response_message().c_str(), 
         impl_->response->get_response_length(), 
         0
@@ -182,9 +184,9 @@ bool Server::send_response()
     return true;
 }
 
-bool Server::receive_request()
+bool Server::receive_request(const int client_socket_fd)
 {
-    int receive_result = recv(impl_->client_socket, impl_->received_buffer, impl_->buffer_length, 0);
+    int receive_result = recv(client_socket_fd, impl_->received_buffer, impl_->buffer_length, 0);
     if(receive_result == 0 || receive_result == -1)
     {
         impl_->request->set_raw_request("");

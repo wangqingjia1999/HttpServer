@@ -14,8 +14,6 @@ set(HeaderFiles
     ../include/Response.hpp
     ../include/Server.hpp
     ../include/Uri.hpp
-    ../include/ThreadPool.hpp
-    ../include/epoll_reactor.hpp
 )
 
 set(SourceFiles
@@ -26,8 +24,6 @@ set(SourceFiles
     Response.cpp
     Server.cpp
     Uri.cpp
-    ThreadPool.cpp
-    epoll_reactor.cpp
 )
 
 add_library(${this} STATIC
