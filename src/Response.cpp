@@ -510,19 +510,50 @@ namespace Message
 	{
 		switch(status_code)
 		{
+			case 200:
+			{
+				set_status(200);
+				set_reason_phrase(200);
+				add_header("Content-Type", "text/html");
+			}
+
 			case 400:	// bad request
 			{
 				set_status(400);
 				set_reason_phrase(400);
 				add_header("Content-Type", "text/html");
-				set_body("<html><h1> 400 Bad Request :) </h1></html>");
+				set_body("<html><h1> 400 Bad Request :( </h1></html>");
 				break;
 			}
 
-			case 401:
+			case 404:
 			{
-				
+				set_status(404);
+				set_reason_phrase(404);
+				add_header("Content-Type", "text/html");
+				set_body("<html><h1> 404 Not Found :( </h1></html>");
+				break;
 			}
+			
+			case 405:	// Method Not Allowed
+			{
+				set_status(405);
+				set_reason_phrase(405);
+				add_header("Content-Type", "text/html");
+				add_header("Allow", "GET, HEAD, PUT");
+				set_body("<html><h1> 405 Method Not Allowed :( </h1></html>");
+				break;
+			}
+
+			case 500:	// Internal Server Error
+			{
+				set_status(500);
+				set_reason_phrase(500);
+				add_header("Content-Type", "text/html");
+				set_body("<html><h1> 500 Internal Server Error :( </h1></html>\r\n");
+				break;
+			}
+
 		}
 
 	}

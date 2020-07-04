@@ -122,7 +122,63 @@ TEST(response_tests, status_code_400_test)
         "HTTP/1.1 400 Bad Request\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
-        "<html><h1> 400 Bad Request :) </h1></html>\r\n"
+        "<html><h1> 400 Bad Request :( </h1></html>\r\n"
+    };
+    ASSERT_EQ(response.get_response_message(), generated_response);
+}
+
+TEST(response_tests, status_code_404_test)
+{
+    Message::Response response;
+
+    response.handle_status_code(404);
+
+    ASSERT_TRUE(response.generate_response());
+    
+    std::string generated_response = 
+    {
+        "HTTP/1.1 404 Not Found\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n"
+        "<html><h1> 404 Not Found :( </h1></html>\r\n"
+    };
+    ASSERT_EQ(response.get_response_message(), generated_response);
+}
+
+
+TEST(response_tests, status_code_405_test)
+{
+    Message::Response response;
+
+    response.handle_status_code(405);
+
+    ASSERT_TRUE(response.generate_response());
+    
+    std::string generated_response = 
+    {
+        "HTTP/1.1 405 Method Not Allowed\r\n"
+        "Allow: GET, HEAD, PUT\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n"
+        "<html><h1> 405 Method Not Allowed :( </h1></html>\r\n"
+    };
+    ASSERT_EQ(response.get_response_message(), generated_response);
+}
+
+TEST(response_tests, status_code_500_test)
+{
+    Message::Response response;
+
+    response.handle_status_code(500);
+
+    ASSERT_TRUE(response.generate_response());
+    
+    std::string generated_response = 
+    {
+        "HTTP/1.1 500 Internal Server Error\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n"
+        "<html><h1> 500 Internal Server Error :( </h1></html>\r\n"
     };
     ASSERT_EQ(response.get_response_message(), generated_response);
 }
