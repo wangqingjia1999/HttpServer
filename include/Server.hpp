@@ -66,12 +66,10 @@ public:
 	/**
 	 * @brief
 	 * 		Generate response message.
-	 * @brief
-	 * 		A smart pointer to the request object.
 	 * @return 
 	 * 		true/false.
 	 */
-	bool generate_response(const std::shared_ptr< Message::Request > &request);
+	bool generate_response();
 
 	/**
 	 * @brief
@@ -80,6 +78,14 @@ public:
 	 * 		Raw request string.
 	 */
 	std::string get_raw_request();
+
+	/**
+	 * @brief
+	 * 		Get raw response string.
+	 * @return 
+	 * 		Raw response string.
+	 */
+	std::string get_raw_response();
 
 	/**
 	 * @brief
@@ -99,6 +105,15 @@ public:
 	 */
 	int get_server_fd();
 	
+	/**
+	 * @brief
+	 * 		Set raw request string.
+	 * @return 
+	 * 		bool.
+	 */
+	void set_raw_request(const std::string& raw_request);
+
+
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

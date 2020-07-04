@@ -6,11 +6,15 @@ namespace Message
 	struct Message::Response::Impl
 	{	
 		int status_code;
+
+		// default protocol version
 		std::string protocol_version = "HTTP/1.1";
 		std::string reason_phrase;
 		std::map < std::string, std::string > headers;
 		std::string body;
 		std::streamoff body_length;
+
+		// Generated response message
 		std::string response_message;
 
 		// only response has status code.
@@ -147,7 +151,7 @@ namespace Message
 		}
 	}
 
-	std::string Message::Response::get_status_codeReasonString(const int status_code)
+	std::string Message::Response::get_status_code_reason_string(const int status_code)
 	{
 		return impl_->status_code_map[status_code];
 	}
@@ -155,11 +159,6 @@ namespace Message
 	std::string Message::Response::get_body_length()
 	{
 		return std::to_string(impl_->body_length);
-	}
-
-	int Message::Response::get_body_lengthInteger()
-	{
-		return impl_->body_length;
 	}
 
 	std::string Message::Response::get_response_message()
@@ -333,9 +332,9 @@ namespace Message
 
 		file.seekg(0);
 
-		std::string resultOfRead((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		std::string read_result((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-		if (!set_body(resultOfRead.c_str()))
+		if (!set_body(read_result.c_str()))
 		{
 			set_body_length(0);
 			set_body("");
@@ -476,7 +475,7 @@ namespace Message
 			}
 		}
 
-		// set body and body length if successful
+		// set body and body length
 		if (!read_file(path))
 		{
 			return false;
@@ -514,7 +513,11 @@ namespace Message
 			{
 				set_status(200);
 				set_reason_phrase(200);
+				add_header("Accept-Ranges", "bytes");
+				add_header("Content-Length", get_body_length());
 				add_header("Content-Type", "text/html");
+				// add_header("Date", "Mon, 3 Jul 2020 12:28:53 GMT");
+				break;
 			}
 
 			case 400:	// bad request

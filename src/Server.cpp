@@ -10,6 +10,7 @@ struct Server::Impl
     static const int buffer_length = 1024;
     char received_buffer[buffer_length] = { 0 };
 
+    // Response object for generating response
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
 
     // Server side request object that is responsible for parseing coming request.
@@ -159,7 +160,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
                             // generate response
-                            if(!generate_response(impl_->request))
+                            if(!generate_response())
                             {
                                 std::cout << "Error: can't generate response for socket fd: " << arrived_socket_fd << std::endl;
                             }
@@ -223,25 +224,48 @@ bool Server::receive_request(const int client_socket_fd)
 
 bool Server::parse_request()
 {
-    // 400 Bad Request
     if(!impl_->request->parse_raw_request())
     {
+        // 400 Bad Reques
         impl_->response->handle_status_code(400);
+        return true;
+    }
+
+    // read requested resources
+    if(!impl_->response->set_content(impl_->request->get_request_uri()))
+    {
+        // 404 Not Found
+        impl_->response->handle_status_code(404);
         return true;
     }
 
     return true;
 }
 
-bool Server::generate_response(const std::shared_ptr< Message::Request > &request)
+bool Server::generate_response()
 {
-    
+    // If successfully parse request, try to add requested resouces to response
+    if(impl_->response->get_status_code() == 200)
+    {
+        if(!impl_->response->set_content(impl_->request->get_request_uri()))
+        {
+            // if we cann't set content, response 404 not found
+            impl_->response->set_status(404);
+            impl_->response->handle_status_code(404);
+        }
+    }
+
     return impl_->response->generate_response();
 }
 
 std::string Server::get_raw_request()
 {
     return impl_->request->get_raw_request();
+}
+
+std::string Server::get_raw_response()
+{
+    return impl_->response->get_response_message();
 }
 
 int Server::get_client_fd()
@@ -252,4 +276,9 @@ int Server::get_client_fd()
 int Server::get_server_fd()
 {
     return impl_->server_socket;
+}
+
+void Server::set_raw_request(const std::string& raw_request)
+{
+    impl_->request->set_raw_request(raw_request);
 }

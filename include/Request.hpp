@@ -32,12 +32,12 @@ namespace Message
 		 * 		Parse given request line(first line of request message).
 		 *
 		 * @param[in] 
-		 *		requestLine is the given request line.
+		 *		request_line is the given request line.
 		 *
 		 * @return
 		 *		true/false.
 		 */
-		bool parse_request_line(const std::string& requestLine);
+		bool parse_request_line(const std::string& request_line);
 
 		/** 
 		 * @brief

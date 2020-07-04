@@ -8,13 +8,25 @@ namespace Message
     {
         std::shared_ptr< Uri::Uri > uri = std::make_shared< Uri::Uri > ();
         
+        // Generated/Received raw request string
         std::string raw_request;
-    
+
+        // Request method. e.g. GET, POST
         std::string method;
-        std::string http_version;
+        
+        // default http_version
+        std::string http_version = "HTTP/1.1";
+
+        // Store the generated/received raw headers
         std::string headers;
-        std::string requestUri;
+
+        // For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
+        std::string request_uri;
+
+        // Contain the header {key: value} pairs
         std::map< std::string, std::string> headers_map;
+
+        // request body string
         std::string body = "";
     };
 
@@ -82,39 +94,41 @@ namespace Message
 
     bool Message::Request::parse_raw_request()
     {
-        // BUG: 
-        auto requestLineEndDelimiter = impl_->raw_request.find("\r\n");
-        if (requestLineEndDelimiter == std::string::npos)
+        auto request_line_end_delimiter = impl_->raw_request.find("\r\n");
+        if (request_line_end_delimiter == std::string::npos)
         {
             return false;
         }
 
-        std::string requestLine = impl_->raw_request.substr(0, requestLineEndDelimiter);
-
-        if (!parse_request_line(requestLine))
+        std::string request_line = impl_->raw_request.substr(0, request_line_end_delimiter);
+        if (!parse_request_line(request_line))
         {
             return false;
         }
 
-        std::string rawRequestRemainder = impl_->raw_request.substr(requestLineEndDelimiter + 2);
-
-        auto headersEndDelimiter = rawRequestRemainder.find("\r\n\r\n");
-
-        if (headersEndDelimiter == std::string::npos)
+        std::string request_without_request_line = impl_->raw_request.substr(request_line_end_delimiter + 2);
+        
+        auto headers_end_delimiter = impl_->raw_request.find("\r\n\r\n");
+        if (headers_end_delimiter == std::string::npos)
         {
             return false;
         }
 
         // +2 is to include the \r\n at the end of the last header
-        impl_->headers = rawRequestRemainder.substr(0, headersEndDelimiter + 2);
+        impl_->headers = request_without_request_line.substr(0, headers_end_delimiter + 2);
 
         if (!parse_headers(impl_->headers))
         {
             return false;
         }
 
-        impl_->body = rawRequestRemainder.substr(headersEndDelimiter + 4);
+        if(request_without_request_line == "\r\n")
+        {
+            request_without_request_line.clear();
+            return true;
+        }
 
+        impl_->body = request_without_request_line.substr(headers_end_delimiter + 4);
 
         return true;
     }
@@ -123,30 +137,39 @@ namespace Message
     {
         if (headers.find("\r\n") == std::string::npos)
         {
-            return false;
+            impl_->headers.clear();
+            return true;
         }
 
-        std::string headersBuffer = headers;
+        std::string headers_buffer = headers;
 
         
         for(;;)
         {
-            auto singleLineEndDelimiter = headersBuffer.find("\r\n");
-
-            if (singleLineEndDelimiter != std::string::npos)
+            auto single_header_line_end_delimiter = headers_buffer.find("\r\n");
+            
+            // special case, only pass in "\r\n"
+            if(headers_buffer == "\r\n")
             {
-                std::string singleLine = headersBuffer.substr(0, singleLineEndDelimiter);
+                impl_->headers.clear();
+                return true;
+            }
+            
+            if (single_header_line_end_delimiter != std::string::npos)
+            {
+                std::string single_header_line = headers_buffer.substr(0, single_header_line_end_delimiter);
 
-                auto colonPosition = singleLine.find(':');
+                auto colonPosition = single_header_line.find(':');
 
                 if (colonPosition == std::string::npos)
                 {
+                    impl_->headers.clear();
                     return false;
                 }
 
                 
-                std::string header_name = singleLine.substr(0, colonPosition);
-                std::string headerValue = singleLine.substr(colonPosition + 1);
+                std::string header_name = single_header_line.substr(0, colonPosition);
+                std::string headerValue = single_header_line.substr(colonPosition + 1);
 
                 // TODO: add new function to strip leading and trailing whitespace from string
                 // Any number of spaces or tabs may be between the ":" and the value. 
@@ -172,7 +195,7 @@ namespace Message
             
                 impl_->headers_map[header_name] = headerValue;
                 
-                headersBuffer = headersBuffer.substr(singleLineEndDelimiter + 2);
+                headers_buffer = headers_buffer.substr(single_header_line_end_delimiter + 2);
             }
             else
             {
@@ -184,19 +207,19 @@ namespace Message
         return true;
     }
 
-    bool Message::Request::parse_request_line(const std::string& requestLine)
+    bool Message::Request::parse_request_line(const std::string& request_line)
     {
-        if (requestLine.find(' ') == std::string::npos)
+        if (request_line.find(' ') == std::string::npos)
         {
             return false;
         }
 
-        auto firstSpacePosition = requestLine.find_first_of(' ');
-        auto secondSpacePositon = requestLine.find_last_of(' ');
+        auto first_space_position = request_line.find_first_of(' ');
+        auto second_space_position = request_line.find_last_of(' ');
 
-        impl_->method = requestLine.substr(0, firstSpacePosition);
-        impl_->requestUri = requestLine.substr(firstSpacePosition+1, (secondSpacePositon-firstSpacePosition-1 ));
-        impl_->http_version = requestLine.substr(secondSpacePositon+1);
+        impl_->method = request_line.substr(0, first_space_position);
+        impl_->request_uri = request_line.substr(first_space_position+1, (second_space_position-first_space_position-1 ));
+        impl_->http_version = request_line.substr(second_space_position+1);
         
         return true;
     }
@@ -215,11 +238,11 @@ namespace Message
         
         if(impl_->uri->get_path_string() == "")
         {
-            impl_->requestUri = "/";
+            impl_->request_uri = "/";
         }
         else
         {
-            impl_->requestUri = impl_->uri->get_path_string();
+            impl_->request_uri = impl_->uri->get_path_string();
         }
     
         // parse request host header from uri if any
@@ -260,7 +283,7 @@ namespace Message
 
     std::string Message::Request::get_request_uri()
     {
-        return impl_->requestUri;
+        return impl_->request_uri;
     }
 
     std::string Message::Request::get_http_version()

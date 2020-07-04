@@ -15,21 +15,16 @@ TEST(response_tests, add_headers) {
 TEST(response_tests, generate_200_response)
 {
     Message::Response response;
-    response.set_status(200);
+    
+    response.handle_status_code(200);
     response.set_body("Hello World! My payload includes a trailing CRLF.\r\n");
-
-    ASSERT_EQ(response.add_header("Accept-Ranges", "bytes"), true);
-    ASSERT_EQ(response.add_header("Content-Length", "%zu"), true);
-    ASSERT_EQ(response.add_header("Content-Type", "text/plain"), true);
-    ASSERT_EQ(response.add_header("Date", "Mon, 27 Jul 2009 12:28:53 GMT"), true);
 
     std::string responseResult =
     {
         "HTTP/1.1 200 OK\r\n"
         "Accept-Ranges: bytes\r\n"
-        "Content-Length: %zu\r\n"
-        "Content-Type: text/plain\r\n"
-        "Date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
+        "Content-Length: 0\r\n"
+        "Content-Type: text/html\r\n"
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
@@ -41,14 +36,14 @@ TEST(response_tests, map_status_code_to_reaseon_phrase)
 {
     Message::Response response;
 
-    ASSERT_EQ(response.get_status_codeReasonString(100), "Continue");
-    ASSERT_EQ(response.get_status_codeReasonString(200), "OK");
-    ASSERT_EQ(response.get_status_codeReasonString(307), "Temporary Redirect");
-    ASSERT_EQ(response.get_status_codeReasonString(400), "Bad Request");
-    ASSERT_EQ(response.get_status_codeReasonString(404), "Not Found");
-    ASSERT_EQ(response.get_status_codeReasonString(500), "Internal Server Error");
-    ASSERT_EQ(response.get_status_codeReasonString(502), "Bad Gateway");
-    ASSERT_EQ(response.get_status_codeReasonString(505), "HTTP Version Not Supported");
+    ASSERT_EQ(response.get_status_code_reason_string(100), "Continue");
+    ASSERT_EQ(response.get_status_code_reason_string(200), "OK");
+    ASSERT_EQ(response.get_status_code_reason_string(307), "Temporary Redirect");
+    ASSERT_EQ(response.get_status_code_reason_string(400), "Bad Request");
+    ASSERT_EQ(response.get_status_code_reason_string(404), "Not Found");
+    ASSERT_EQ(response.get_status_code_reason_string(500), "Internal Server Error");
+    ASSERT_EQ(response.get_status_code_reason_string(502), "Bad Gateway");
+    ASSERT_EQ(response.get_status_code_reason_string(505), "HTTP Version Not Supported");
 }
 
 TEST(response_tests, content_types)

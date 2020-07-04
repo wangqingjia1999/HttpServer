@@ -29,9 +29,8 @@ namespace Message
 		std::string get_reason_phrase();
 		std::string get_body();
 		std::string get_header(const std::string& header_name);
-		std::string get_status_codeReasonString(const int status_code);
+		std::string get_status_code_reason_string(const int status_code);
 		std::string get_body_length();
-		int get_body_lengthInteger();
 		std::string get_response_message();
 		size_t get_response_length();
 
@@ -107,30 +106,27 @@ namespace Message
 		bool generate_response();
 
 		/**
-		 * map the input path string to local file system
-		 * as the payloal of response. It will set the body 
-		 * and body_length private member variables.
-		 *
+		 * @brief
+		 * 		map the input path string to local file system
+		 * 		as the payloal of response. It will set the body 
+		 * 		and body length as well.
 		 * @param[in] 
 		 *		path is the given path string extracted/parsed 
 		 *		from request.
-		 *
 		 * @return 
-		 *		ture/false to indicate success/error.
+		 *		bool.
 		 */
 		bool read_file(const std::string& path);
 
 		/**
-		 * Convert given relative path to absolute path.
-		 *
+		 * @brief
+		 * 		Convert given relative path to absolute path.
 		 * @param[in] 
 		 *		path is the given relative path.
-		 *
 		 * @param[out] 
 		 *		absolutePath is the absolute path.
-		 *
 		 * @return
-		 *		true/false
+		 *		bool.
 		 */
 		bool convert_path_to_absolute(const std::string& path, std::string& absolutePath);
 
