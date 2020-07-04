@@ -31,6 +31,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   * https://developer.twitter.com/en/docs/basics/authentication/oauth-1-0a/percent-encoding-parameters
 
 * Http Status Code
+  * https://httpstatuses.com/
   * https://evertpot.com/http/
 * Message Content
   * https://stackoverflow.com/questions/18180539/how-to-determine-the-content-type-in-an-http-response

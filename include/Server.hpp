@@ -66,10 +66,12 @@ public:
 	/**
 	 * @brief
 	 * 		Generate response message.
+	 * @brief
+	 * 		A smart pointer to the request object.
 	 * @return 
 	 * 		true/false.
 	 */
-	bool generate_response();
+	bool generate_response(const std::shared_ptr< Message::Request > &request);
 
 	/**
 	 * @brief

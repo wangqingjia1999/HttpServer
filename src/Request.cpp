@@ -91,7 +91,7 @@ namespace Message
 
         std::string requestLine = impl_->raw_request.substr(0, requestLineEndDelimiter);
 
-        if (!parserequestLine(requestLine))
+        if (!parse_request_line(requestLine))
         {
             return false;
         }
@@ -108,7 +108,7 @@ namespace Message
         // +2 is to include the \r\n at the end of the last header
         impl_->headers = rawRequestRemainder.substr(0, headersEndDelimiter + 2);
 
-        if (!parseHeaders(impl_->headers))
+        if (!parse_headers(impl_->headers))
         {
             return false;
         }
@@ -119,7 +119,7 @@ namespace Message
         return true;
     }
 
-    bool Message::Request::parseHeaders(const std::string& headers)
+    bool Message::Request::parse_headers(const std::string& headers)
     {
         if (headers.find("\r\n") == std::string::npos)
         {
@@ -184,7 +184,7 @@ namespace Message
         return true;
     }
 
-    bool Message::Request::parserequestLine(const std::string& requestLine)
+    bool Message::Request::parse_request_line(const std::string& requestLine)
     {
         if (requestLine.find(' ') == std::string::npos)
         {

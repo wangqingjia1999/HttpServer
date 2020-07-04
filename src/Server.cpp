@@ -11,6 +11,8 @@ struct Server::Impl
     char received_buffer[buffer_length] = { 0 };
 
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
+
+    // Server side request object that is responsible for parseing coming request.
     std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
 };
 
@@ -131,7 +133,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         ev.events = EPOLLIN;
                         epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
                     }
-                    else if ( arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
+                     else if ( arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
@@ -157,7 +159,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
                             // generate response
-                            if(!generate_response())
+                            if(!generate_response(impl_->request))
                             {
                                 std::cout << "Error: can't generate response for socket fd: " << arrived_socket_fd << std::endl;
                             }
@@ -221,11 +223,19 @@ bool Server::receive_request(const int client_socket_fd)
 
 bool Server::parse_request()
 {
-    return impl_->request->parse_raw_request();
+    // 400 Bad Request
+    if(!impl_->request->parse_raw_request())
+    {
+        impl_->response->handle_status_code(400);
+        return true;
+    }
+
+    return true;
 }
 
-bool Server::generate_response()
+bool Server::generate_response(const std::shared_ptr< Message::Request > &request)
 {
+    
     return impl_->response->generate_response();
 }
 

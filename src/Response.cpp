@@ -1,20 +1,20 @@
 #include "Response.hpp"
-
+#include <memory>
 
 namespace Message
 {
 	struct Message::Response::Impl
-	{
-		int statusCode;
-		std::string protocolVersion = "HTTP/1.1";
-		std::string reasonPhrase;
+	{	
+		int status_code;
+		std::string protocol_version = "HTTP/1.1";
+		std::string reason_phrase;
 		std::map < std::string, std::string > headers;
 		std::string body;
-		std::streamoff bodyLength;
-		std::string responseMessage;
+		std::streamoff body_length;
+		std::string response_message;
 
 		// only response has status code.
-		std::map< int, std::string > statusCodeMap =
+		std::map< int, std::string > status_code_map =
 		{
 			// 100-199: Informational status codes 
 			{100,"Continue"},
@@ -89,7 +89,6 @@ namespace Message
 			{510,"Not Extended"},
 			{511,"Network Authentication Required"},
 		};
-
 	};
 	
 	Message::Response::~Response() noexcept = default;
@@ -115,19 +114,19 @@ namespace Message
 	Message::Response::Response(Response&& other) noexcept = default;
 	Response& Message::Response::operator=(Response&& ) noexcept = default;
 
-	int Message::Response::getStatusCode()
+	int Message::Response::get_status_code()
 	{
-		return impl_->statusCode;
+		return impl_->status_code;
 	}
 
-	std::string Message::Response::getProtocolVersion()
+	std::string Message::Response::get_protocol_version()
 	{
-		return impl_->protocolVersion;
+		return impl_->protocol_version;
 	}
 
-	std::string Message::Response::getReasonPhrase()
+	std::string Message::Response::get_reason_phrase()
 	{
-		return impl_->reasonPhrase;
+		return impl_->reason_phrase;
 	}
 
 	std::string Message::Response::get_body()
@@ -148,45 +147,45 @@ namespace Message
 		}
 	}
 
-	std::string Message::Response::getStatusCodeReasonString(const int statusCode)
+	std::string Message::Response::get_status_codeReasonString(const int status_code)
 	{
-		return impl_->statusCodeMap[statusCode];
+		return impl_->status_code_map[status_code];
 	}
 
-	std::string Message::Response::getBodyLength()
+	std::string Message::Response::get_body_length()
 	{
-		return std::to_string(impl_->bodyLength);
+		return std::to_string(impl_->body_length);
 	}
 
-	int Message::Response::getBodyLengthInteger()
+	int Message::Response::get_body_lengthInteger()
 	{
-		return impl_->bodyLength;
+		return impl_->body_length;
 	}
 
 	std::string Message::Response::get_response_message()
 	{
-		return impl_->responseMessage;
+		return impl_->response_message;
 	}
 
 	size_t Message::Response::get_response_length()
 	{
-		return impl_->responseMessage.size();
+		return impl_->response_message.size();
 	}
 
-	bool Message::Response::setStatus(int statusCodeInput)
+	bool Message::Response::set_status(int status_codeInput)
 	{
-		impl_->statusCode = statusCodeInput;
-		impl_->reasonPhrase = impl_->statusCodeMap[statusCodeInput];
+		impl_->status_code = status_codeInput;
+		impl_->reason_phrase = impl_->status_code_map[status_codeInput];
 		return true;
 	}
 
-	bool Message::Response::setProtocolVersion(const std::string versionProtocolInput)
+	bool Message::Response::set_protocol_version(const std::string versionProtocolInput)
 	{
-		impl_->protocolVersion = versionProtocolInput;
+		impl_->protocol_version = versionProtocolInput;
 		return true;
 	}
 	
-	bool Message::Response::setBody(const std::string& bodyInput)
+	bool Message::Response::set_body(const std::string& bodyInput)
 	{
 		if (!impl_->body.empty())
 		{
@@ -196,11 +195,11 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::setBodyLength(const std::streamoff bodyLengthInput)
+	bool Message::Response::set_body_length(const std::streamoff body_lengthInput)
 	{
-		if (impl_->bodyLength != -1)
+		if (impl_->body_length != -1)
 		{
-			impl_->bodyLength = bodyLengthInput;
+			impl_->body_length = body_lengthInput;
 			return true;
 		}
 		else
@@ -209,18 +208,19 @@ namespace Message
 		}
 	}
 
-	bool Message::Response::addHeader(const std::string& name, const std::string& value)
+	bool Message::Response::add_header(const std::string& name, const std::string& value)
 	{
 		if (name.empty())
 		{
 			return false;
 		}
 
+		// insert new or update existing header
 		impl_->headers[name] = value;
 		return true;
 	}
 
-	bool Message::Response::setContentLength(const std::streamoff& contentLengthInput)
+	bool Message::Response::set_content_length(const std::streamoff& contentLengthInput)
 	{
 		if (contentLengthInput < 0)
 		{
@@ -228,23 +228,37 @@ namespace Message
 		}
 		else
 		{
-			addHeader("Content-Length", std::to_string(contentLengthInput));
+			add_header("Content-Length", std::to_string(contentLengthInput));
 			return true;
 		}
 	}
 
-	bool Message::Response::setResponseMessage(const std::string& response)
+	bool Message::Response::set_response_message(const std::string& response)
 	{
-		impl_->responseMessage.clear();
-		impl_->responseMessage = response;
+		impl_->response_message.clear();
+		impl_->response_message = response;
 		return true;
 	}
 
+	bool Message::Response::set_reason_phrase(const int status_code)
+	{
+		auto header_position = impl_->status_code_map.find(status_code);
+		if(header_position == impl_->status_code_map.cend())
+		{
+			return false;
+		}
+
+		impl_->reason_phrase = header_position->second;
+		return true;
+	}
+	
 	bool Message::Response::generate_response()
 	{
+		// assemble the response message
 		std::ostringstream response;
-		response << impl_->protocolVersion << " " << std::to_string(impl_->statusCode) << " " << impl_->reasonPhrase << "\r\n";
+		response << impl_->protocol_version << " " << std::to_string(impl_->status_code) << " " << impl_->reason_phrase << "\r\n";
 
+		// iterate headers
 		for (auto position = impl_->headers.cbegin(); position != impl_->headers.cend(); ++position)
 		{
 			std::string name = position->first.c_str();
@@ -253,26 +267,39 @@ namespace Message
 			response << name << ": " << value << "\r\n";
 		}
 
-		if (!impl_->body.empty())
+		// set body
+		if (impl_->body.empty())
+		{
+			response << "\r\n\r\n";
+		}
+		else
 		{
 			response << "\r\n" << impl_->body;
-		}
 
-		if (!setResponseMessage(response.str()))
+			auto body_end_delimiter_position = impl_->body.find("\r\n");
+			if(body_end_delimiter_position == std::string::npos)
+			{
+				response << "\r\n";
+			}
+		}
+		
+		// store generated message to member variable
+		if (!set_response_message(response.str()))
 		{
 			return false;
 		}
+
 		return true;
 	}
 
-	bool Message::Response::readFile(const std::string& path)
+	bool Message::Response::read_file(const std::string& path)
 	{
 		// first, convert given relative path to absolute path
 		std::string absolutePath;
-		if (!convertPathToAbsolutePath(path, absolutePath))
+		if (!convert_path_to_absolute(path, absolutePath))
 		{
-			setBodyLength(0);
-			setBody("");
+			set_body_length(0);
+			set_body("");
 			return false;
 		}
 
@@ -280,8 +307,8 @@ namespace Message
 
 		if (!file.is_open())
 		{
-			setBodyLength(0);
-			setBody("");
+			set_body_length(0);
+			set_body("");
 			return false;
 		}
 
@@ -290,17 +317,17 @@ namespace Message
 
 		auto size = file.tellg();
 
-		if (!setContentLength(size))
+		if (!set_content_length(size))
 		{
-			setBodyLength(0);
-			setBody("");
+			set_body_length(0);
+			set_body("");
 			return false;
 		}
 
-		if (!setBodyLength(size))
+		if (!set_body_length(size))
 		{
-			setBodyLength(0);
-			setBody("");
+			set_body_length(0);
+			set_body("");
 			return false;
 		}
 
@@ -308,17 +335,17 @@ namespace Message
 
 		std::string resultOfRead((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-		if (!setBody(resultOfRead.c_str()))
+		if (!set_body(resultOfRead.c_str()))
 		{
-			setBodyLength(0);
-			setBody("");
+			set_body_length(0);
+			set_body("");
 			return false;
 		}
 		
 		return true;
 	}
 
-	bool Message::Response::convertPathToAbsolutePath(const std::string& path,  std::string& absolutePath)
+	bool Message::Response::convert_path_to_absolute(const std::string& path,  std::string& absolutePath)
 	{ 
 		char buffer[1024];
 		if(getcwd(buffer, 1024) == nullptr)
@@ -348,7 +375,7 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::setContentType(const std::string& path)
+	bool Message::Response::set_content_type(const std::string& path)
 	{
 		std::smatch matchResult;
 
@@ -367,90 +394,90 @@ namespace Message
 
 		if ( fileExtention == "txt")
 		{
-			addHeader("Content-Type", "text/plain");
+			add_header("Content-Type", "text/plain");
 			return true;
 		}
 		else if (fileExtention == "html" || fileExtention == "htm")
 		{
-			addHeader("Content-Type", "text/html");
+			add_header("Content-Type", "text/html");
 			return true;
 		}
 		else if (fileExtention == "css")
 		{
-			addHeader("Content-Type", "text/css");
+			add_header("Content-Type", "text/css");
 			return true;
 		}
 		else if (fileExtention == "jpeg" || fileExtention == "jpg")
 		{
-			addHeader("Content-Type", "image/jpg");
+			add_header("Content-Type", "image/jpg");
 			return true;
 		}
 		else if (fileExtention == "png")
 		{
-			addHeader("Content-Type", "image/png");
+			add_header("Content-Type", "image/png");
 			return true;
 		}
 		else if (fileExtention == "gif")
 		{
-			addHeader("Content-Type", "image/gif");
+			add_header("Content-Type", "image/gif");
 			return true;
 		}
 		else if (fileExtention == "svg")
 		{
-			addHeader("Content-Type", "image/svg+xml");
+			add_header("Content-Type", "image/svg+xml");
 			return true;
 		}
 		else if (fileExtention == "ico")
 		{
-			addHeader("Content-Type", "image/x-icon");
+			add_header("Content-Type", "image/x-icon");
 			return true;
 		}
 		else if (fileExtention == "json")
 		{
-			addHeader("Content-Type", "application/json");
+			add_header("Content-Type", "application/json");
 			return true;
 		}
 		else if (fileExtention == "pdf")
 		{
-			addHeader("Content-Type", "application/pdf");
+			add_header("Content-Type", "application/pdf");
 			return true;
 		}
 		else if (fileExtention == "js")
 		{
-			addHeader("Content-Type", "application/javascript");
+			add_header("Content-Type", "application/javascript");
 			return true;
 		}
 		else if (fileExtention == "wasm")
 		{
-			addHeader("Content-Type", "application/wasm");
+			add_header("Content-Type", "application/wasm");
 			return true;
 		}
 		else if (fileExtention == "xml")
 		{
-			addHeader("Content-Type", "application/xml");
+			add_header("Content-Type", "application/xml");
 			return true;
 		}
 		else if (fileExtention == "xhtml")
 		{
-			addHeader("Content-Type", "application/xhtml+xml");
+			add_header("Content-Type", "application/xhtml+xml");
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Message::Response::setContent(const std::string& path)
+	bool Message::Response::set_content(const std::string& path)
 	{
 		if (path.size() == 1 && path[0] == '/')
 		{
-			if(readFile("/index.html") && setContentType("/index.html"))
+			if(read_file("/index.html") && set_content_type("/index.html"))
 			{
 				return true;
 			}
 		}
 
 		// set body and body length if successful
-		if (!readFile(path))
+		if (!read_file(path))
 		{
 			return false;
 		}
@@ -460,7 +487,7 @@ namespace Message
 		impl_->headers.insert({ "Content-Language", "en-US" });
 
 		// set content-type
-		if (!setContentType(path))
+		if (!set_content_type(path))
 		{
 			return false;
 		}
@@ -468,7 +495,7 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::hasHeader(const std::string& name)
+	bool Message::Response::has_header(const std::string& name)
 	{
 		auto iterator = impl_->headers.find(name);
 		if (iterator == impl_->headers.end())
@@ -478,6 +505,28 @@ namespace Message
 
 		return true;
 	}
+
+	void Message::Response::handle_status_code(const int status_code)
+	{
+		switch(status_code)
+		{
+			case 400:	// bad request
+			{
+				set_status(400);
+				set_reason_phrase(400);
+				add_header("Content-Type", "text/html");
+				set_body("<html><h1> 400 Bad Request :) </h1></html>");
+				break;
+			}
+
+			case 401:
+			{
+				
+			}
+		}
+
+	}
+
 }
 
 

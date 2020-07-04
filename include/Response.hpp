@@ -6,9 +6,9 @@
 #include <set>
 #include <sstream>
 #include <fstream>
-
 #include <unistd.h>
 
+#include "Request.hpp"
 
 namespace Message
 {
@@ -23,15 +23,15 @@ namespace Message
 		Response& operator=(Response&&) noexcept;
 
 	public:
-		bool hasHeader(const std::string& name);
-		int getStatusCode();
-		std::string getProtocolVersion();
-		std::string getReasonPhrase();
+		bool has_header(const std::string& name);
+		int get_status_code();
+		std::string get_protocol_version();
+		std::string get_reason_phrase();
 		std::string get_body();
 		std::string get_header(const std::string& header_name);
-		std::string getStatusCodeReasonString(const int statusCode);
-		std::string getBodyLength();
-		int getBodyLengthInteger();
+		std::string get_status_codeReasonString(const int status_code);
+		std::string get_body_length();
+		int get_body_lengthInteger();
 		std::string get_response_message();
 		size_t get_response_length();
 
@@ -43,32 +43,31 @@ namespace Message
 		 * @return 
 		 * 		bool
 		 */
-		bool setStatus(const int statusCodeInput);
-		bool setProtocolVersion(const std::string versionProtocolInput);
-		bool setBody(const std::string& bodyInput);
-		bool setBodyLength(const std::streamoff bodyLengthInput);
-		bool addHeader(const std::string& name, const std::string& value);
+		bool set_status(const int status_codeInput);
+		bool set_protocol_version(const std::string versionProtocolInput);
+		bool set_body(const std::string& bodyInput);
+		bool set_body_length(const std::streamoff body_lengthInput);
+		bool add_header(const std::string& name, const std::string& value);
 
 		/**
-		 * set content-length to headers if length >= 0.
-		 *
+		 * @brief
+		 * 		Set content-length to headers if length >= 0.
 		 * @param[in] 
 		 *		contentLengthInput is the size of given file in bytes;
-		 *
 		 * @return 
 		 *		true, OK; false, Error.
 		 */
-		bool setContentLength(const std::streamoff& contentLengthInput);
+		bool set_content_length(const std::streamoff& contentLengthInput);
+		
 		/**
-		 * Maps the given Uri path onto the specified content type.
-		 * according to file extention.
-		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
-		 *
+		 * @brief
+	     *		Maps the given Uri path onto the specified content type according to file extention.
+		 *		https://www.iana.org/assignments/media-types/media-types.xhtml#application
 		 * @return 
 		 *		true, if find the correspoinding content type.
 		 *		false, if without type or not supported types.
 		 */
-		bool setContentType(const std::string& path);
+		bool set_content_type(const std::string& path);
 
 		/** 
 		 * Set the HTTP body and the corresponding headers.
@@ -76,7 +75,7 @@ namespace Message
 		 * @return
 		 *		true/false
 		 */
-		bool setContent(const std::string& path);
+		bool set_content(const std::string& path);
 
 		/**
 		 * Set the generated complete response message.
@@ -87,11 +86,21 @@ namespace Message
 		 * @return 
 		 *		true/false.
 		 */
-		bool setResponseMessage(const std::string& response);
+		bool set_response_message(const std::string& response);
 		
 		/**
-		 * Generate complete response message.
-		 *
+		 * @brief
+		 * 		Set reason phrase.
+		 * @param[in]
+		 * 		Status code integer.
+		 * @return 
+		 * 		bool.
+		 */
+		bool set_reason_phrase(const int stauts_code);
+
+		/**
+		 * @brief
+		 * 		Generate complete response message.
 		 * @return 
 		 *		true/false.
 		 */
@@ -100,7 +109,7 @@ namespace Message
 		/**
 		 * map the input path string to local file system
 		 * as the payloal of response. It will set the body 
-		 * and bodyLength private member variables.
+		 * and body_length private member variables.
 		 *
 		 * @param[in] 
 		 *		path is the given path string extracted/parsed 
@@ -109,7 +118,7 @@ namespace Message
 		 * @return 
 		 *		ture/false to indicate success/error.
 		 */
-		bool readFile(const std::string& path);
+		bool read_file(const std::string& path);
 
 		/**
 		 * Convert given relative path to absolute path.
@@ -123,8 +132,15 @@ namespace Message
 		 * @return
 		 *		true/false
 		 */
-		bool convertPathToAbsolutePath(const std::string& path, std::string& absolutePath);
+		bool convert_path_to_absolute(const std::string& path, std::string& absolutePath);
 
+		/**
+		 * @brief
+		 * 		Status Code Handler.
+		 * @param[in]
+		 * 		status code integer.
+		 */
+		void handle_status_code(const int status_code);
 
 	private:
 		struct Impl;

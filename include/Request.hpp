@@ -37,7 +37,7 @@ namespace Message
 		 * @return
 		 *		true/false.
 		 */
-		bool parserequestLine(const std::string& requestLine);
+		bool parse_request_line(const std::string& requestLine);
 
 		/** 
 		 * @brief
@@ -48,7 +48,7 @@ namespace Message
 		 * @return 
 		 *		true/false.
 		 */
-		bool parseHeaders(const std::string& headers);
+		bool parse_headers(const std::string& headers);
 
 		/**
 		 * @brief
