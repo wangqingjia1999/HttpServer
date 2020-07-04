@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.0.0)
-
+cmake_minimum_required(VERSION 3.8)
+set(CMAKE_C_COMPILER "/usr/bin/gcc-9")
+set(CMAKE_CXX_COMPILER "/usr/bin/g++-9")
 set(this HttpServerExe)
 project(${this})
 
