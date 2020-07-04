@@ -135,19 +135,35 @@ bool Server::listen_at(const std::string& host, const int port)
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
+                            // receive request
                             if(!receive_request(arrived_socket_fd))
                             {
                                 std::cout << "Error: can't receive request from socket fd: " << arrived_socket_fd << std::endl;
                                 continue;
                             }
-
                             std::cout << "Success: receive request from socket fd: " << arrived_socket_fd << std::endl;
+                            
+                            // parse and generate request
+                            if(!parse_request())
+                            {
+                                std::cout << "Error: can't parse request from socket fd: " << arrived_socket_fd << std::endl;
+                            }
+                            std::cout << "Success: parse request from socket fd: " << arrived_socket_fd << std::endl;
+
                             ev.data.fd = arrived_socket_fd;
                             ev.events = EPOLLOUT | EPOLLET;
                             epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
+                            // generate response
+                            if(!generate_response())
+                            {
+                                std::cout << "Error: can't generate response for socket fd: " << arrived_socket_fd << std::endl;
+                            }
+                            std::cout << "Success: generate response for socket fd: " << arrived_socket_fd << std::endl;
+
+                            // send response
                             if(!send_response(arrived_socket_fd))
                             {
                                 std::cout << "Error: can't send response to socket fd: " << arrived_socket_fd << std::endl;

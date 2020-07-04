@@ -17,7 +17,6 @@ TEST(server_tests, listen_at_test)
 {
     Server server;
     ASSERT_TRUE(server.listen_at("127.0.0.1", 2333));
-    //ASSERT_EQ(server.get_server_fd(), 3);
 } 
 
 TEST(server_tests, generate_response)
