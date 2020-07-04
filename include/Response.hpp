@@ -124,11 +124,11 @@ namespace Message
 		 * @param[in] 
 		 *		path is the given relative path.
 		 * @param[out] 
-		 *		absolutePath is the absolute path.
+		 *		absolute_path is the absolute path.
 		 * @return
 		 *		bool.
 		 */
-		bool convert_path_to_absolute(const std::string& path, std::string& absolutePath);
+		bool convert_path_to_absolute(const std::string& path, std::string& absolute_path);
 
 		/**
 		 * @brief

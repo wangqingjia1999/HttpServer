@@ -94,42 +94,33 @@ namespace Message
 
     bool Message::Request::parse_raw_request()
     {
+        // parse request line (first line of request)
         auto request_line_end_delimiter = impl_->raw_request.find("\r\n");
         if (request_line_end_delimiter == std::string::npos)
         {
             return false;
         }
-
         std::string request_line = impl_->raw_request.substr(0, request_line_end_delimiter);
         if (!parse_request_line(request_line))
         {
             return false;
         }
 
-        std::string request_without_request_line = impl_->raw_request.substr(request_line_end_delimiter + 2);
-        
+        // parse headers
         auto headers_end_delimiter = impl_->raw_request.find("\r\n\r\n");
         if (headers_end_delimiter == std::string::npos)
         {
             return false;
         }
-
-        // +2 is to include the \r\n at the end of the last header
-        impl_->headers = request_without_request_line.substr(0, headers_end_delimiter + 2);
-
+        // +2 is to make sure the last header also has the trailing "\r\n";
+        impl_->headers = impl_->raw_request.substr(request_line_end_delimiter + 2, headers_end_delimiter + 2);
         if (!parse_headers(impl_->headers))
         {
             return false;
         }
-
-        if(request_without_request_line == "\r\n")
-        {
-            request_without_request_line.clear();
-            return true;
-        }
-
-        impl_->body = request_without_request_line.substr(headers_end_delimiter + 4);
-
+        
+        // set body
+        impl_->body = impl_->raw_request.substr(headers_end_delimiter + 4);
         return true;
     }
 

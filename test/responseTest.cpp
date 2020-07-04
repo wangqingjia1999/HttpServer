@@ -177,3 +177,9 @@ TEST(response_tests, status_code_500_test)
     };
     ASSERT_EQ(response.get_response_message(), generated_response);
 }
+
+TEST(response_teset, read_local_file)
+{
+    Message::Response response;
+    ASSERT_TRUE(response.read_file("/"));
+}

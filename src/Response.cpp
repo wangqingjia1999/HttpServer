@@ -294,15 +294,15 @@ namespace Message
 	bool Message::Response::read_file(const std::string& path)
 	{
 		// first, convert given relative path to absolute path
-		std::string absolutePath;
-		if (!convert_path_to_absolute(path, absolutePath))
+		std::string absolute_path;
+		if (!convert_path_to_absolute(path, absolute_path))
 		{
 			set_body_length(0);
 			set_body("");
 			return false;
 		}
 
-		std::ifstream file(absolutePath, std::ios_base::binary);
+		std::ifstream file(absolute_path, std::ios_base::binary);
 
 		if (!file.is_open())
 		{
@@ -344,33 +344,25 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::convert_path_to_absolute(const std::string& path,  std::string& absolutePath)
+	bool Message::Response::convert_path_to_absolute(const std::string& path,  std::string& absolute_path)
 	{ 
-		char buffer[1024];
-		if(getcwd(buffer, 1024) == nullptr)
+		char path_buffer[1024];
+		if(getcwd(path_buffer, 1024) == nullptr)
 		{
 			return false;
 		}
 
-		std::string currentWorkingDirectory = buffer;
+		std::string current_working_directory = path_buffer;
 
-		auto projectPathEndPosition = currentWorkingDirectory.find("HttpServer");
-
-		std::string pathWithForwardSlashes;
-
-		for (char c : path)
+		// if path only has '/', redirect it to index.html
+		if( (path[0] == '/')  &&  (path.size() == 1) )
 		{
-			if (c == '/')
-			{
-				pathWithForwardSlashes.push_back('\\');
-			}
-			else
-			{
-				pathWithForwardSlashes.push_back(c);
-			}
+			absolute_path = current_working_directory + "/public_html/index.html"; 
+			return true;
 		}
 
-		absolutePath = currentWorkingDirectory.substr(0, projectPathEndPosition + 10) + "\\public_html" + pathWithForwardSlashes;
+		absolute_path = current_working_directory + "/public_html" + path;
+		
 		return true;
 	}
 
