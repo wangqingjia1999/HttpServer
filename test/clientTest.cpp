@@ -6,9 +6,9 @@ TEST(ClientTests, generateRequestTest)
 {
     Client client;
 
-    ASSERT_TRUE(client.parse_uri("http://localhost:2334/"));
+    ASSERT_TRUE(client.parse_uri("http://localhost:2333/"));
     ASSERT_TRUE(client.generate_request());
-
+    ASSERT_TRUE(client.connect_to());
     std::string generated_request = 
     {
         "GET / HTTP/1.1\r\n"
@@ -20,4 +20,3 @@ TEST(ClientTests, generateRequestTest)
     ASSERT_EQ(client.get_generated_request(), generated_request);
     
 }
-

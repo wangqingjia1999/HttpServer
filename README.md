@@ -9,6 +9,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 ## Enviroment & Dependence
 * Ubuntu Server 20.04
 * CMake Build System
+* Mysql Connector for C++
 * Google Test Framework
 
 ## Build 
@@ -16,8 +17,9 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 1. git clone https://github.com/Bitate/HttpServer
 2. cd HttpServer
 3. git clone https://github.com/google/googletest
-4. mkdir build && cd build
-5. cmake ..
+4. sudo apt-get install libmysqlcppconn-dev
+5. mkdir build && cd build
+6. cmake .
 ```
 
 

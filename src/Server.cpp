@@ -26,7 +26,6 @@ Server::Server(const Server& other) noexcept
 {
     *this = other;
 }
-
 Server& Server::operator=(const Server& other) noexcept
 {
     if(this!=&other)

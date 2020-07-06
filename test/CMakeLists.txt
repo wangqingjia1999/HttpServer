@@ -70,3 +70,12 @@ target_link_libraries(ClientTest PUBLIC
     gtest_main 
     HTTP
 )
+
+
+# mysql_handler test 
+add_executable(mysql_handler_test mysql_handler_test.cpp)
+target_link_libraries(mysql_handler_test PUBLIC
+    gtest_main 
+    HTTP
+    mysqlcppconn
+)
