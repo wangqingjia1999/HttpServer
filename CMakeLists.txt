@@ -1,18 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
-set(CMAKE_C_COMPILER "/usr/bin/gcc-9")
-set(CMAKE_CXX_COMPILER "/usr/bin/g++-9")
+
 set(this HttpServerExe)
+
 project(${this})
 
-# By default, new Visual Studio projects link the C runtimes dynamically 
-# but Google Test links them statically. This will generate an error 
-# that looks something like the following: gtest.lib(gtest-all.obj) : 
-# error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MTd_StaticDebug' 
-# doesn't match value 'MDd_DynamicDebug' in main.obj
-# Use tis command to force google test to link dynamically
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-include(CTest)
 enable_testing()
 
 add_subdirectory(src)

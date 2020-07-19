@@ -19,7 +19,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 3. git clone https://github.com/google/googletest
 4. sudo apt-get install libmysqlcppconn-dev
 5. mkdir build && cd build
-6. cmake .
+6. cmake ..
 ```
 
 
