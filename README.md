@@ -7,7 +7,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 
 ## Enviroment & Dependence
-* Ubuntu Server 20.04
+* Ubuntu Server 20.04 x86_64
 * CMake Build System
 * Mysql Connector for C++
 * Google Test Framework
