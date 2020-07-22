@@ -20,6 +20,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 4. sudo apt-get install libmysqlcppconn-dev
 5. mkdir build && cd build
 6. cmake ..
+7. make
 ```
 
 

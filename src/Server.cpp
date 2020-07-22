@@ -82,6 +82,7 @@ bool Server::listen_at(const std::string& host, const int port)
     // create epoll event
     struct epoll_event ev;
     ev.data.fd = impl_->server_socket;
+    // monitor inputs
     ev.events = EPOLLIN;
     epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->server_socket, &ev);
 
@@ -108,7 +109,7 @@ bool Server::listen_at(const std::string& host, const int port)
                     int arrived_socket_fd = epoll_result[i].data.fd;
                     uint32_t arrived_socket_event = epoll_result[i].events;
                     
-                    // If listen socket has new client in the listening queue.
+                    // If new client socket comes into the listening queue of server listening socket.
                     if(arrived_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
                     {
                         struct sockaddr_in client_socket_address;
@@ -122,7 +123,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         );
                         if(impl_->client_socket < 0)
                         {
-                            std::cout << "Accept Error" << std::endl;
+                            std::cout << "Failed to accept client socket" << std::endl;
                             continue;
                         }
 
@@ -132,8 +133,9 @@ bool Server::listen_at(const std::string& host, const int port)
                         ev.data.fd = impl_->client_socket;
                         ev.events = EPOLLIN;
                         epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
+                        continue;
                     }
-                     else if ( arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
+                    else if (arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
@@ -149,12 +151,15 @@ bool Server::listen_at(const std::string& host, const int port)
                             if(!parse_request())
                             {
                                 std::cout << "Error: can't parse request from socket fd: " << arrived_socket_fd << std::endl;
+                                continue;
                             }
                             std::cout << "Success: parse request from socket fd: " << arrived_socket_fd << std::endl;
 
                             ev.data.fd = arrived_socket_fd;
+                            // Edge-triggered 
                             ev.events = EPOLLOUT | EPOLLET;
                             epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
+                            continue;
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
@@ -173,9 +178,10 @@ bool Server::listen_at(const std::string& host, const int port)
                             }
 
                             std::cout << "Success: send response to socket fd: " << arrived_socket_fd << std::endl;
-                            ev.data.fd = arrived_socket_fd;
-                            ev.events = EPOLLIN | EPOLLET;
-                            epoll_ctl(epfd, EPOLL_CTL_ADD, arrived_socket_fd, &ev);
+
+                            // after send response, we remove client socket from event interest list.
+                            epoll_ctl(epfd, EPOLL_CTL_DEL, arrived_socket_fd, &ev);
+                            continue;
                         }
                     }
                 }            
@@ -183,7 +189,6 @@ bool Server::listen_at(const std::string& host, const int port)
             break;
         }
     }
-    return true;
 }
 
 bool Server::send_response(const int clietn_socket_fd)

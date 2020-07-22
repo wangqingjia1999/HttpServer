@@ -25,15 +25,13 @@ public:
 	 *
 	 * @param[in] 
 	 *		host is the host name. e.g. "localhost"
-	 *
 	 * @param[in] 
 	 *		port is the port number. e.g. 1080.
-	 *
 	 * @param[out] 
 	 *		client_socket is the established socket connection.
-	 *
-	 * @return 
-	 *		true/false.
+	 * @return
+	 * 		true if succeeds in listening given host:port.
+	 * 		false if any error happens.
 	 */
 	bool listen_at(const std::string& host, const int port);
 
