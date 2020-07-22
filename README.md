@@ -42,6 +42,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 * Tools
   * [Online Uri decode/encode tool](https://meyerweb.com/eric/tools/dencoder/)
   * [RawCap - windows command line tool to capture localhost/loopback IP packets](https://www.netresec.com/?page=RawCap)
+  * [Database design website](https://dbdiagram.io)
   * [Wireshark - cross platform free software to capture IP packets](https://www.wireshark.org/)
 * Books
   * [Http: The Definitive Guide (Definitive Guides) 1st Edition by David Gourley](https://www.amazon.com/HTTP-Definitive-Guide-Guides/dp/1565925092/ref=sr_1_1?dchild=1&keywords=http&qid=1591779734&sr=8-1)

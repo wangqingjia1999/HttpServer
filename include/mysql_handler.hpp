@@ -2,6 +2,7 @@
 #define MYSQL_HANDLER_HPP
 
 #include <memory>
+#include <vector>
 
 // Including directly from cppconn/*.h 
 // will speed up your build time
@@ -9,6 +10,7 @@
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/resultset.h>
+#include <cppconn/prepared_statement.h>
 
 // tmp header
 #include <iostream>
@@ -26,6 +28,13 @@ public:
     mysql_handler& operator=(mysql_handler&& ) noexcept;
 
 public:
+
+    /**
+     * @brief
+     *      Initialize database layout.
+     */
+    void initialize_mysql_layout();
+
     /**
      * @brief
      *      Connect to mysql based on given port, username and password.
@@ -73,8 +82,17 @@ public:
      */
     void drop_table(const std::string table_name);
 
-    bool insert_value();
-    bool delete_value();
+    /**
+     * @brief
+     *      Add new user into database.
+     * @param[in]
+     *      name of uer.
+     * @param[in]
+     *      age of user.
+     * @param[in]
+     *      email of user.
+     */
+    bool add_user(const std::string name, const int age, const std::string email);
 
 
 private:
