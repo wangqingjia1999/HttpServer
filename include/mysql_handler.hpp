@@ -33,7 +33,7 @@ public:
      * @brief
      *      Initialize database layout.
      */
-    void initialize_mysql_layout();
+    bool initialize_mysql_layout();
 
     /**
      * @brief
@@ -94,7 +94,7 @@ public:
      */
     bool add_user(const std::string name, const int age, const std::string email);
 
-
+    std::vector<std::string> fetch_user_by_name(const std::string& query);
 private:
     struct Impl;
     std::unique_ptr< Impl > impl_;

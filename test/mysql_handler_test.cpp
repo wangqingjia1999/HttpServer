@@ -15,11 +15,17 @@ TEST(mysql_handler_tests, connect_to_mysql_test)
     ASSERT_TRUE(mysql.connect_to_mysql(3306, "bitate", "qwer"));
 }
 
+TEST(mysql_handler_tests, initialize_mysql_layout_test)
+{
+    mysql_handler mysql;
+    ASSERT_TRUE(mysql.connect_to_mysql(3306, "bitate", "qwer"));
+    ASSERT_TRUE(mysql.initialize_mysql_layout());
+}
+
 TEST(mysql_handler_tests, add_new_user_test)
 {
     mysql_handler mysql;
     ASSERT_TRUE(mysql.connect_to_mysql(3306, "bitate", "qwer"));
-    mysql.initialize_mysql_layout();
     
     struct single_user_record
     {
@@ -30,8 +36,8 @@ TEST(mysql_handler_tests, add_new_user_test)
 
     const std::vector<single_user_record> user_info_records = 
     {
-        { "Tom",  20, "tom@gmail.com" },
-        { "Jane", 23, "Jane@gmail.com"},
+        { "Tom",     20, "tom@gmail.com" },
+        { "Jane",    23, "Jane@gmail.com"},
         { "Michael", 25, "Happy@gmail.com"}
     };
 
@@ -43,5 +49,33 @@ TEST(mysql_handler_tests, add_new_user_test)
     }
 }
 
+TEST(mysql_handler_tests, fetch_user_by_name_test)
+{
+    mysql_handler mysql;
+    ASSERT_TRUE(mysql.connect_to_mysql(3306, "bitate", "qwer"));
 
+    struct single_user_record
+    {
+        std::string name;
+        int age;
+        std::string email;
+    };
+    const std::vector<single_user_record> user_info_records = 
+    {
+        { "Tom",     20, "tom@gmail.com" },
+        { "Jane",    23, "Jane@gmail.com"},
+        { "Michael", 25, "Happy@gmail.com"}
+    };
+    
+    size_t index = 0;
+    for( const single_user_record& user_record : user_info_records)
+    {
+        ASSERT_TRUE(mysql.add_user(user_record.name, user_record.age, user_record.email)) << index;
+        ++index;
+    }
+
+    std::string query = "tom";
+    std::vector<std::string> query_result = { "Tom", "20", "tom@gmail.com" };
+    ASSERT_EQ(mysql.fetch_user_by_name(query), query_result);
+}
 
