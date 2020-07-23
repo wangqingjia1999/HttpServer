@@ -13,11 +13,13 @@
 class Server
 {
 public:
-	~Server();
+	~Server() noexcept;
 	Server();
-	Server(const Server&) noexcept;
+
+	Server(const Server&);
+	Server& operator=(const Server&);
+	
 	Server(Server&&) noexcept;
-	Server& operator=(const Server&) noexcept;
 	Server& operator=(Server&&) noexcept;
 
 	/**
@@ -39,7 +41,8 @@ public:
 	 * @brief
 	 * 		Send generated response to client.
 	 * @return 
-	 *		true/false.
+	 *		true if succeeds,
+	 *		false if failed.
 	 */
 	bool send_response(const int clietn_socket_fd);
 
@@ -49,7 +52,8 @@ public:
 	 * @param[in]
 	 * 		client_socket_fd is the accepted socket fd.
 	 * @return 
-	 *		true/false.
+	 *		true if succeeds;
+	 *		false if failed.
 	 */
 	bool receive_request(const int client_socket_fd);
 	
@@ -57,7 +61,8 @@ public:
 	 * @brief
 	 * 		Parse raw request.
 	 * @return
-	 * 		true/false.
+	 * 		true if succeeds;
+	 * 		false if failed.
 	 */
 	bool parse_request();
 
@@ -65,7 +70,8 @@ public:
 	 * @brief
 	 * 		Generate response message.
 	 * @return 
-	 * 		true/false.
+	 * 		true if succeeds;
+	 * 		false if failed.
 	 */
 	bool generate_response();
 
@@ -89,8 +95,8 @@ public:
 	 * @brief
 	 * 		Get client socket file descriptor.
 	 * @return 
-	 * 		Success: Client socket file descriptor
-	 * 		Error: -1
+	 * 		Client socket file descriptor if succeeds.
+	 * 		-1 if failed.
 	 */
 	int get_client_fd();
 
@@ -98,16 +104,14 @@ public:
 	 * @brief
 	 * 		Get server socket file descriptor.
 	 * @return 
-	 * 		Success: Server socket file descriptor
-	 * 		Error: -1
+	 * 		Server socket file descriptor if succeeds.
+	 * 		-1 if failed.
 	 */
 	int get_server_fd();
 	
 	/**
 	 * @brief
 	 * 		Set raw request string.
-	 * @return 
-	 * 		bool.
 	 */
 	void set_raw_request(const std::string& raw_request);
 

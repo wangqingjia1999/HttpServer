@@ -22,11 +22,11 @@ Server::Server() : impl_(new Impl)
 {
 }
 
-Server::Server(const Server& other) noexcept
+Server::Server(const Server& other) 
 {
     *this = other;
 }
-Server& Server::operator=(const Server& other) noexcept
+Server& Server::operator=(const Server& other)
 {
     if(this!=&other)
     {
@@ -91,7 +91,8 @@ bool Server::listen_at(const std::string& host, const int port)
     // server core loop
     for (;;)
     {
-        std::cout << "Wait for events" << std::endl;
+        std::cout << "Server starts successfully!" << std::endl;
+        std::cout << "Now I'm waiting for events to happen :)" << std::endl;
         int nums = epoll_wait(epfd, epoll_result, 1024, -1);
         switch (nums)
         {
