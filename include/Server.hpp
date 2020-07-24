@@ -115,9 +115,9 @@ public:
 	 */
 	void set_raw_request(const std::string& raw_request);
 
-
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;
 };
+
 

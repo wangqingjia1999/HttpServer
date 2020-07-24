@@ -4,6 +4,7 @@ set(this HttpServerTest)
 
 enable_testing()
 
+# Test all classes
 set(SouceFiles
     uriTest.cpp
     serverTest.cpp
@@ -75,6 +76,14 @@ target_link_libraries(ClientTest PUBLIC
 # mysql_handler test 
 add_executable(mysql_handler_test mysql_handler_test.cpp)
 target_link_libraries(mysql_handler_test PUBLIC
+    gtest_main 
+    HTTP
+    mysqlcppconn
+)
+
+# logger test 
+add_executable(logger_test logger_test.cpp)
+target_link_libraries(logger_test PUBLIC
     gtest_main 
     HTTP
     mysqlcppconn

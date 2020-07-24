@@ -1,5 +1,7 @@
-#include "Server.hpp"
 #include <sys/epoll.h>
+
+#include "Server.hpp"
+#include "logger.hpp"
 #include <iostream>
 
 struct Server::Impl
@@ -17,7 +19,9 @@ struct Server::Impl
     std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
 };
 
-Server::~Server() = default;
+Server::~Server()
+{
+}
 Server::Server() : impl_(new Impl)
 {
 }
@@ -91,16 +95,17 @@ bool Server::listen_at(const std::string& host, const int port)
     // server core loop
     for (;;)
     {
-        std::cout << "Server starts successfully!" << std::endl;
-        std::cout << "Now I'm waiting for events to happen :)" << std::endl;
+        logger::record("Server starts successfully!");
+        logger::record("Now I'm waiting for events to happen :)");
         int nums = epoll_wait(epfd, epoll_result, 1024, -1);
         switch (nums)
         {
         case 0:
-            std::cout << "Time out" << std::endl;
+            logger::record("Wait: time out");
+            
             break;
         case -1:
-            std::cout << "Epoll wait error" << std::endl;
+            logger::record("Wait: error occurs");
             break;
         default:
             {
@@ -124,12 +129,14 @@ bool Server::listen_at(const std::string& host, const int port)
                         );
                         if(impl_->client_socket < 0)
                         {
-                            std::cout << "Failed to accept client socket" << std::endl;
+                            logger::record("Failed to accept client socket");
                             continue;
                         }
-
-                        std::cout << "Accept Client from : " << inet_ntoa(client_socket_address.sin_addr) << ":" << htons(client_socket_address.sin_port) << std::endl;
                         
+                        std::string ip_string = inet_ntoa(client_socket_address.sin_addr);
+                        std::string port_string = std::to_string((client_socket_address.sin_port));
+                        logger::record("Accept request from: " + ip_string + ":" + port_string);
+                    
                         // and add new client socket into epoll events list
                         ev.data.fd = impl_->client_socket;
                         ev.events = EPOLLIN;
@@ -143,18 +150,18 @@ bool Server::listen_at(const std::string& host, const int port)
                             // receive request
                             if(!receive_request(arrived_socket_fd))
                             {
-                                std::cout << "Error: can't receive request from socket fd: " << arrived_socket_fd << std::endl;
+                                logger::record("Error: can't receive request from socket fd: " + std::to_string(arrived_socket_fd));
                                 continue;
                             }
-                            std::cout << "Success: receive request from socket fd: " << arrived_socket_fd << std::endl;
+                            logger::record("Successfully: receive response of socket fd: " + std::to_string(arrived_socket_fd));
                             
                             // parse and generate request
                             if(!parse_request())
                             {
-                                std::cout << "Error: can't parse request from socket fd: " << arrived_socket_fd << std::endl;
+                                logger::record("Error: cant's parse request from socket fd: " + std::to_string(arrived_socket_fd));
                                 continue;
                             }
-                            std::cout << "Success: parse request from socket fd: " << arrived_socket_fd << std::endl;
+                            logger::record("Successfully: parse response of socket fd: " + std::to_string(arrived_socket_fd));
 
                             ev.data.fd = arrived_socket_fd;
                             // Edge-triggered 
@@ -167,18 +174,18 @@ bool Server::listen_at(const std::string& host, const int port)
                             // generate response
                             if(!generate_response())
                             {
-                                std::cout << "Error: can't generate response for socket fd: " << arrived_socket_fd << std::endl;
+                                logger::record("Error: can't generate response for socket fd: " + arrived_socket_fd);
+                                continue;
                             }
-                            std::cout << "Success: generate response for socket fd: " << arrived_socket_fd << std::endl;
+                            logger::record("Successfully: generate response for socket fd: " + std::to_string(arrived_socket_fd));
 
                             // send response
                             if(!send_response(arrived_socket_fd))
                             {
-                                std::cout << "Error: can't send response to socket fd: " << arrived_socket_fd << std::endl;
+                                logger::record("Error: can't send response to socket fd: " + std::to_string(arrived_socket_fd));
                                 continue;
                             }
-
-                            std::cout << "Success: send response to socket fd: " << arrived_socket_fd << std::endl;
+                            logger::record("Successfully: send response to socket fd: " + std::to_string(arrived_socket_fd));
 
                             // after send response, we remove client socket from event interest list.
                             epoll_ctl(epfd, EPOLL_CTL_DEL, arrived_socket_fd, &ev);

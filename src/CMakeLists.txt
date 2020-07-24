@@ -15,6 +15,7 @@ set(HeaderFiles
     ../include/Server.hpp
     ../include/Uri.hpp
     ../include/mysql_handler.hpp
+    ../include/logger.hpp
 )
 
 set(SourceFiles
@@ -26,6 +27,7 @@ set(SourceFiles
     Server.cpp
     Uri.cpp
     mysql_handler.cpp
+    logger.cpp
 )
 
 add_library(${this} STATIC
