@@ -482,7 +482,6 @@ namespace Message
 		{
 			return false;
 		}
-
 		return true;
 	}
 

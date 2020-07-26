@@ -67,12 +67,13 @@ namespace Message
 		 * 		true/false.
 		 */
 		bool parse_uri(const std::string& Uri);
+		
 		/**
 		 * @brief
 		 * 		Set received raw request message to request object's member variable.
-		 * @param[in]
+		 * @param rawRequestString
 		 * 		Received raw request message string.
-		 * @param[out] 
+		 * @param raw_request
 		 * 		Object request's member raw_request is set.
 		 * @return 
 		 * 		true/false
@@ -115,6 +116,11 @@ namespace Message
 		std::string get_header(const std::string& header_name);
 		std::string get_body();
 		std::string get_generated_request();
+
+		bool has_header(const std::string& header_name) const;
+		bool has_http_version() const;
+		bool has_method(const std::string& method) const;
+		
 		/**
 		 * @brief
 		 * 		Get raw request.

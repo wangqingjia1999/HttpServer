@@ -316,4 +316,20 @@ namespace Message
     {
         return std::to_string(impl_->uri->get_port());
     }
+
+    bool Message::Request::has_header(const std::string& header_name) const
+    {
+        return impl_->headers_map.find(header_name) != impl_->headers_map.end();
+    }
+
+    bool Message::Request::has_http_version() const
+    {
+        return impl_->http_version != "";
+    }
+
+    bool Message::Request::has_method(const std::string& method) const
+    {
+        return impl_->method == method;
+    }
 }
+

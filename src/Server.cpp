@@ -1,6 +1,7 @@
 #include <sys/epoll.h>
 
 #include "Server.hpp"
+#include "websocket.hpp"
 #include "logger.hpp"
 #include <iostream>
 
@@ -94,9 +95,7 @@ bool Server::listen_at(const std::string& host, const int port)
 
     // server core loop
     for (;;)
-    {
-        logger::record("Server starts successfully!");
-        logger::record("Now I'm waiting for events to happen :)");
+    {       
         int nums = epoll_wait(epfd, epoll_result, 1024, -1);
         switch (nums)
         {
@@ -154,6 +153,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 continue;
                             }
                             logger::record("Successfully: receive response of socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record(impl_->request->get_raw_request());
                             
                             // parse and generate request
                             if(!parse_request())
@@ -178,6 +178,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 continue;
                             }
                             logger::record("Successfully: generate response for socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record(impl_->response->get_response_message());
 
                             // send response
                             if(!send_response(arrived_socket_fd))
@@ -236,6 +237,16 @@ bool Server::receive_request(const int client_socket_fd)
 
 bool Server::parse_request()
 {
+    // If request contains WebSocket header field, try upgrade to WebSocket protocol
+    if(impl_->request->get_raw_request().find("WebSocket") != std::string::npos)
+    {
+        logger::record("Accept WebSocket request");
+        websocket websocket(impl_->request, impl_->response);
+        websocket.parse_websocket_request();
+        websocket.generate_websocket_request();
+        return true;
+    }
+
     if(!impl_->request->parse_raw_request())
     {
         // 400 Bad Reques
@@ -250,6 +261,7 @@ bool Server::parse_request()
         impl_->response->handle_status_code(404);
         return true;
     }
+    impl_->response->handle_status_code(200);
 
     return true;
 }

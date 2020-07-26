@@ -28,5 +28,6 @@ void logger::record(const std::string& message_string)
     std::string log_file_absolute_path = current_working_directory_string + "/log.txt";
     
     std::ofstream log_file_object(log_file_absolute_path, std::ios::app);
-    log_file_object << '[' << current_time_string << "]  " << message_string << '\n';
+    // log_file_object << '[' << current_time_string << "]  " << message_string << '\n';
+    log_file_object << message_string << '\n';
 }

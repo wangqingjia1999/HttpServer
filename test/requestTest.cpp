@@ -89,3 +89,30 @@ TEST(RequestTests, parseRawGetRequest)
 	ASSERT_EQ(request.get_body(), "");
 }
 
+TEST(request_tests, whether_has_elements_test)
+{
+	std::string raw_request = (
+		"GET / HTTP/1.1\r\n"
+			"Host: localhost\r\n"
+			"Connection: keep-alive\r\n"
+			"Cache-Control: max-age=0\r\n"
+			"Upgrade-Insecure-Requests: 1\r\n"
+			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36\r\n"
+			"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n"
+			"Sec-Fetch-Site: none\r\n"
+			"Sec-Fetch-Mode: navigate\r\n"
+			"Sec-Fetch-User: ?1\r\n"
+			"Sec-Fetch-Dest: document\r\n"
+			"Accept-Encoding: gzip, deflate, br\r\n"
+			"Accept-Language: en,zh-CN;q=0.9,zh;q=0.8\r\n"
+			"\r\n"
+	);
+
+	Message::Request request;
+	ASSERT_TRUE(request.set_raw_request(raw_request));
+	request.parse_raw_request();
+
+	ASSERT_TRUE(request.has_header("Connection"));
+	ASSERT_TRUE(request.has_http_version());
+	ASSERT_TRUE(request.has_method("GET"));
+}

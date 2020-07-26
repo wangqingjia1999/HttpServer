@@ -13,6 +13,8 @@ set(SouceFiles
     responseTest.cpp
     characterSetTest.cpp
     percentEncodingTest.cpp
+    mysql_handler_test.cpp
+    websocket_test.cpp
 )
 
 include_directories(${this} PUBLIC ../include)
@@ -84,6 +86,14 @@ target_link_libraries(mysql_handler_test PUBLIC
 # logger test 
 add_executable(logger_test logger_test.cpp)
 target_link_libraries(logger_test PUBLIC
+    gtest_main 
+    HTTP
+    mysqlcppconn
+)
+
+# websocket test 
+add_executable(websocket_test websocket_test.cpp)
+target_link_libraries(websocket_test PUBLIC
     gtest_main 
     HTTP
     mysqlcppconn
