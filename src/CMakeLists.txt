@@ -17,6 +17,7 @@ set(HeaderFiles
     ../include/mysql_handler.hpp
     ../include/logger.hpp
     ../include/websocket.hpp
+    ../include/base64.hpp
 )
 
 set(SourceFiles
@@ -30,6 +31,7 @@ set(SourceFiles
     mysql_handler.cpp
     logger.cpp
     websocket.cpp
+    base64.cpp
 )
 
 add_library(${this} STATIC

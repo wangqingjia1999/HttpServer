@@ -98,3 +98,10 @@ target_link_libraries(websocket_test PUBLIC
     HTTP
     mysqlcppconn
 )
+
+# base64 test
+add_executable(base64_test base64_test.cpp)
+target_link_libraries(base64_test PUBLIC
+    gtest_main
+    HTTP    
+)
