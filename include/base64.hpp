@@ -17,40 +17,44 @@ public:
      * 
      * @param[in] unencoded_string
      *      Raw ASCII string.
+     * @param[in] has_padding
+     *      Default is false.
      * @return std::string
      *      The encoded Base64 string.
      */
-    std::string encode(const std::string& unencoded_string) const;
+    std::string encode(const std::string& unencoded_string, bool has_padding=false) const;
 
     /**
      * Decode the given Base64 string.
      * 
      * @param[in] encoded_string
      *      Base64 string.
+     * @param[in] has_padding
+     *      Default is false.
      * @return std::string
      *      The unencoded/decoded string.
      */
-    std::string decode(const std::string& encoded_string) const; 
+    std::string decode(const std::string& encoded_string, bool has_padding=false) const; 
     
     /**
-     * Encode the given URI string into Base64 URI string.
+     * Encode the given URL string into Base64 URL string.
      * 
      * @param[in] unencoded_uri_string
-     *      The unencoded URI string.
+     *      The unencoded URL string.
      * @return std::string
-     *      The encoded URI string.
+     *      The encoded URL string.
      */
-    std::string encode_uri(const std::string& unencoded_uri_string) const;
+    std::string encode_url(const std::string& unencoded_uri_string) const;
     
     /**
      * Decode the given Base64 encoded string.
      * 
      * @param[in] encoded_uri_string
-     *      The encoded URI string.
+     *      The encoded URL string.
      * @return std::string
-     *      The decoded URI string.
+     *      The decoded URL string.
      */
-    std::string decode_uri(const std::string& encoded_uri_string) const;
+    std::string decode_url(const std::string& encoded_uri_string) const;
 };
 
 #endif
