@@ -222,25 +222,26 @@ namespace
     }
 }
 
-base64::~base64() = default;
-base64::base64() = default;
-
-std::string base64::encode(const std::string& unencoded_string, bool has_padding) const
+namespace base64
 {
-    return encode_implementation(unencoded_string, false, has_padding);
+    std::string encode(const std::string& unencoded_string, bool has_padding)
+    {
+        return encode_implementation(unencoded_string, false, has_padding);
+    }
+
+    std::string decode(const std::string& encoded_string, bool has_padding)
+    {
+        return decode_implementation(encoded_string, false, has_padding);
+    }
+
+    std::string encode_url(const std::string& unencoded_string)
+    {
+        return encode_implementation(unencoded_string, true, false);
+    }
+
+    std::string decode_url(const std::string& encoded_string)
+    {
+        return decode_implementation(encoded_string, true, false);
+    }
 }
 
-std::string base64::decode(const std::string& encoded_string, bool has_padding) const
-{
-    return decode_implementation(encoded_string, false, has_padding);
-}
-
-std::string base64::encode_url(const std::string& unencoded_string) const
-{
-    return encode_implementation(unencoded_string, true, false);
-}
-
-std::string base64::decode_url(const std::string& encoded_string) const
-{
-    return decode_implementation(encoded_string, true, false);
-}

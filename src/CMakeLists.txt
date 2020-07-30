@@ -18,6 +18,7 @@ set(HeaderFiles
     ../include/logger.hpp
     ../include/websocket.hpp
     ../include/base64.hpp
+    ../include/sha1.hpp
 )
 
 set(SourceFiles
@@ -32,6 +33,7 @@ set(SourceFiles
     logger.cpp
     websocket.cpp
     base64.cpp
+    sha1.cpp
 )
 
 add_library(${this} STATIC

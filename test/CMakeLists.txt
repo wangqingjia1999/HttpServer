@@ -105,3 +105,10 @@ target_link_libraries(base64_test PUBLIC
     gtest_main
     HTTP    
 )
+
+# base64 test
+add_executable(sha1_test sha1_test.cpp)
+target_link_libraries(sha1_test PUBLIC
+    gtest_main
+    HTTP    
+)

@@ -2,17 +2,10 @@
 #define BASE64_HPP
 #include <memory>
 
-class base64
+
+namespace base64
 {
-public:
-    ~base64() noexcept;
-    base64();
-    base64(const base64&) = delete;
-    base64& operator=(const base64&) = delete;
-    base64(base64&&) noexcept = delete;
-    base64& operator=(base64&&) noexcept = delete;
-public:
-    /**
+/**
      * Encode the given string into Base64 string.
      * 
      * @param[in] unencoded_string
@@ -22,7 +15,7 @@ public:
      * @return std::string
      *      The encoded Base64 string.
      */
-    std::string encode(const std::string& unencoded_string, bool has_padding=false) const;
+    std::string encode(const std::string& unencoded_string, bool has_padding=false);
 
     /**
      * Decode the given Base64 string.
@@ -34,7 +27,7 @@ public:
      * @return std::string
      *      The unencoded/decoded string.
      */
-    std::string decode(const std::string& encoded_string, bool has_padding=false) const; 
+    std::string decode(const std::string& encoded_string, bool has_padding=false); 
     
     /**
      * Encode the given URL string into Base64 URL string.
@@ -44,7 +37,7 @@ public:
      * @return std::string
      *      The encoded URL string.
      */
-    std::string encode_url(const std::string& unencoded_uri_string) const;
+    std::string encode_url(const std::string& unencoded_uri_string);
     
     /**
      * Decode the given Base64 encoded string.
@@ -54,7 +47,7 @@ public:
      * @return std::string
      *      The decoded URL string.
      */
-    std::string decode_url(const std::string& encoded_uri_string) const;
-};
-
+    std::string decode_url(const std::string& encoded_uri_string);
+}
+    
 #endif

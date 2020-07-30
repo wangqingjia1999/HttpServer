@@ -3,28 +3,15 @@
 
 #include <memory>
 
-class logger
+namespace logger
 {
-public:
-    logger();
-    ~logger() noexcept;
-
-    logger(const logger&);
-    logger& operator=(const logger&);
-
-    logger(logger&&) noexcept;
-    logger& operator=(logger&&) noexcept;
-public:
     /**
-     * @brief
-     *      Record the message.
-     * @param[in]
-     *      Message string.
+     * Store log into ".../HttpServer/log.txt" in the project root directory.
+     * 
+     * @param[in] message_string.
+     *      Log information to be stored into log.txt.
      */
-    static void record(const std::string& message_string);
-private:
-    struct Impl;
-    std::unique_ptr<Impl> impl_;
-};
+    void record(const std::string& message_string);
+}
 
 #endif
