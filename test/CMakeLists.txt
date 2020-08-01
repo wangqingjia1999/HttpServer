@@ -106,9 +106,16 @@ target_link_libraries(base64_test PUBLIC
     HTTP    
 )
 
-# base64 test
+# SHA-1 test
 add_executable(sha1_test sha1_test.cpp)
 target_link_libraries(sha1_test PUBLIC
+    gtest_main
+    HTTP    
+)
+
+# UTF-8 test
+add_executable(utf8_test Utf8Tests.cpp)
+target_link_libraries(utf8_test PUBLIC
     gtest_main
     HTTP    
 )
