@@ -1,9 +1,11 @@
 #include "base64.hpp"
+#include "logger.hpp"
+
 #include <vector>
 #include <sstream>
 #include <map>
 #include <bitset>
-#include <logger.hpp>
+#include <iostream>
 
 namespace
 {
@@ -52,30 +54,84 @@ namespace
     };
 
     /**
+     * Convert Hexadecimal string to byte sequence.
+     * Based on https://stackoverflow.com/a/30606613/13018017
+     * 
+     * @param[in] hex_string
+     *      Hexadecimal string.
+     * @return std::vector< uint8_t >
+     *      Byte sequence in the form of std::vector< uint8_t >.
+     */
+    std::vector< uint8_t > hex_string_to_byte_array(const std::string& hex_string)
+    {
+        std::vector< uint8_t > byte_sequence;
+
+        // If length of string is odd, add one 0 to the end.
+        std::string new_hex_string;
+        if(byte_sequence.size() % 2 != 0)
+        {
+            new_hex_string = hex_string;
+            char last_character = hex_string[hex_string.size() - 1];
+            new_hex_string.pop_back();
+            new_hex_string += '0';
+            new_hex_string += last_character;
+        }
+        else // The length of string is even, we do not need to modify it.
+        {
+            new_hex_string = hex_string;    
+        }
+    
+        for(int i = 0; i < new_hex_string.size(); i += 2)
+        {
+            std::string buffer = new_hex_string.substr(i, 2);
+            uint8_t byte = (uint8_t)std::stol(buffer.c_str(), nullptr, 16);
+            byte_sequence.push_back(byte);
+        }
+        return byte_sequence;
+    }
+
+    /**
      * Encode the given unencoded ASCII string.
      * 
      * @param[in] unencoded_string
      *      The unencoded ASCII string.
      * @param[in] is_url_encoding
-     *      Default is false.
+     *      Whether is url encoding. Default is false.
+     * @param[in] is_hex_string
+     *      Whether is hexadecimal string. Default is false. 
      * @param[in] has_padding
-     *      Default is ture.
+     *      Whether has padding. Default is ture.
      */
     std::string encode_implementation(
         const std::string& unencoded_string, 
         bool is_url_encoding = false,
+        bool is_hex_string = false,
         bool has_padding = true
     )
     {
+        size_t number_of_bytes = unencoded_string.size();
         std::vector< uint8_t > bytes_sequence;
-        for(auto character : unencoded_string)
+        if(!is_hex_string)
         {
-            bytes_sequence.push_back(character);
+            for(auto character : unencoded_string)
+            {
+                bytes_sequence.push_back(character);
+            }
+        }
+        else // is hexadecimal string
+        {
+            /**
+             * If is hexadecimal string, each char is 4-bit,
+             * So the string's length should be string.size() / 2.
+             */
+            number_of_bytes = unencoded_string.size() / 2;
+            bytes_sequence = hex_string_to_byte_array(unencoded_string);
         }   
-
+           
         size_t bits = 0;
         uint16_t buffer = 0;
         std::stringstream output;
+        // main loop
         for(auto byte : bytes_sequence)
         {
             buffer <<= 8;
@@ -106,11 +162,11 @@ namespace
         }
 
         /**
-         * If after loop, there are still (1 byte - 6 bits = 2 bit)
+         * If after main loop, there are still (1 byte - 6 bits = 2 bit)
          * Shift left 4 bits to form a new 6-bit character
          * and add padding(=) if needed.
          */
-        if((unencoded_string.size() % 3) == 1)
+        if(number_of_bytes % 3 == 1)
         {
             buffer <<= 4;
             if(is_url_encoding)
@@ -130,14 +186,13 @@ namespace
                 }
             }
         }
-
-        /**
-         * If after loop, there are still (2 bytes - 12 bits = 4 bit)
-         * Shift left 2 bits to form a new 6-bit character.
-         * and add padding if needed.
-         */
-        if((unencoded_string.size() % 3) == 2)
+        else if (number_of_bytes % 3 == 2)
         {
+             /**
+             * If after main loop, there are still (2 bytes - 12 bits = 4 bit)
+             * Shift left 2 bits to form a new 6-bit character.
+             * and add padding if needed.
+             */
             buffer <<= 2;
             if(is_url_encoding)
             {
@@ -226,7 +281,12 @@ namespace base64
 {
     std::string encode(const std::string& unencoded_string, bool has_padding)
     {
-        return encode_implementation(unencoded_string, false, has_padding);
+        return encode_implementation(unencoded_string, false, false, has_padding);
+    }
+
+    std::string encode_hex_string(const std::string& hex_string, bool has_padding)
+    {
+        return encode_implementation(hex_string, false, true, has_padding);
     }
 
     std::string decode(const std::string& encoded_string, bool has_padding)
@@ -234,14 +294,14 @@ namespace base64
         return decode_implementation(encoded_string, false, has_padding);
     }
 
-    std::string encode_url(const std::string& unencoded_string)
+    std::string encode_url(const std::string& unencoded_string, bool has_padding)
     {
-        return encode_implementation(unencoded_string, true, false);
+        return encode_implementation(unencoded_string, true, false, has_padding);
     }
 
-    std::string decode_url(const std::string& encoded_string)
+    std::string decode_url(const std::string& encoded_string, bool has_padding)
     {
-        return decode_implementation(encoded_string, true, false);
+        return decode_implementation(encoded_string, true, has_padding);
     }
 }
 

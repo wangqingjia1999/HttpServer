@@ -57,9 +57,7 @@ bool mysql_handler::initialize_mysql_layout()
 
 bool mysql_handler::connect_to_mysql(const int port, const std::string username, const std::string password )
 {
-    sql::Driver *driver;
-    // create a connection
-    driver = get_driver_instance();
+    sql::Driver *driver = get_driver_instance();
     if(port < 0)
     {
         return false;

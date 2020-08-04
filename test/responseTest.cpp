@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <memory>
 #include "Response.hpp"
+#include "status_handler.hpp"
 
 TEST(response_tests, add_headers) {
     Message::Response response;
@@ -14,12 +16,11 @@ TEST(response_tests, add_headers) {
 
 TEST(response_tests, generate_200_response)
 {
-    Message::Response response;
-    
-    response.handle_status_code(200);
-    response.set_body("Hello World! My payload includes a trailing CRLF.\r\n");
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
+    status_handler::handle_status_code(response, 200);
+    response->set_body("Hello World! My payload includes a trailing CRLF.\r\n");
 
-    std::string responseResult =
+    std::string expected_result =
     {
         "HTTP/1.1 200 OK\r\n"
         "Accept-Ranges: bytes\r\n"
@@ -28,8 +29,8 @@ TEST(response_tests, generate_200_response)
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
-    ASSERT_TRUE(response.generate_response());
-    ASSERT_EQ(response.get_response_message(), responseResult);
+    ASSERT_TRUE(response->generate_response());
+    ASSERT_EQ(response->get_response_message(), expected_result);
 }
 
 TEST(response_tests, map_status_code_to_reaseon_phrase)
@@ -106,50 +107,50 @@ TEST(response_tests, content_types)
 
 TEST(response_tests, status_code_400_test)
 {
-    Message::Response response;
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 
-    response.handle_status_code(400);
+    status_handler::handle_status_code(response, 400);
 
-    ASSERT_TRUE(response.generate_response());
+    ASSERT_TRUE(response->generate_response());
     
-    std::string generated_response = 
+    std::string expected_response = 
     {
         "HTTP/1.1 400 Bad Request\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "<html><h1> 400 Bad Request :( </h1></html>\r\n"
     };
-    ASSERT_EQ(response.get_response_message(), generated_response);
+    ASSERT_EQ(response->get_response_message(), expected_response);
 }
 
 TEST(response_tests, status_code_404_test)
 {
-    Message::Response response;
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 
-    response.handle_status_code(404);
+    status_handler::handle_status_code(response, 404);
 
-    ASSERT_TRUE(response.generate_response());
+    ASSERT_TRUE(response->generate_response());
     
-    std::string generated_response = 
+    std::string expected_response = 
     {
         "HTTP/1.1 404 Not Found\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "<html><h1> 404 Not Found :( </h1></html>\r\n"
     };
-    ASSERT_EQ(response.get_response_message(), generated_response);
+    ASSERT_EQ(response->get_response_message(), expected_response);
 }
 
 
 TEST(response_tests, status_code_405_test)
 {
-    Message::Response response;
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 
-    response.handle_status_code(405);
+    status_handler::handle_status_code(response, 405);
 
-    ASSERT_TRUE(response.generate_response());
+    ASSERT_TRUE(response->generate_response());
     
-    std::string generated_response = 
+    std::string expected_response = 
     {
         "HTTP/1.1 405 Method Not Allowed\r\n"
         "Allow: GET, HEAD, PUT\r\n"
@@ -157,25 +158,25 @@ TEST(response_tests, status_code_405_test)
         "\r\n"
         "<html><h1> 405 Method Not Allowed :( </h1></html>\r\n"
     };
-    ASSERT_EQ(response.get_response_message(), generated_response);
+    ASSERT_EQ(response->get_response_message(), expected_response);
 }
 
 TEST(response_tests, status_code_500_test)
 {
-    Message::Response response;
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
 
-    response.handle_status_code(500);
+    status_handler::handle_status_code(response, 500);
 
-    ASSERT_TRUE(response.generate_response());
+    ASSERT_TRUE(response->generate_response());
     
-    std::string generated_response = 
+    std::string expected_response = 
     {
         "HTTP/1.1 500 Internal Server Error\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "<html><h1> 500 Internal Server Error :( </h1></html>\r\n"
     };
-    ASSERT_EQ(response.get_response_message(), generated_response);
+    ASSERT_EQ(response->get_response_message(), expected_response);
 }
 
 TEST(response_teset, read_local_file)

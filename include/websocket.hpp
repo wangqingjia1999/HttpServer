@@ -80,6 +80,8 @@ public:
         const std::string& reason = ""
     );
 
+    std::string generate_sec_websocket_key();
+
 private:
     struct Impl;
     std::unique_ptr< Impl > impl_;

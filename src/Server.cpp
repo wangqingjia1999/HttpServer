@@ -3,7 +3,29 @@
 #include "Server.hpp"
 #include "websocket.hpp"
 #include "logger.hpp"
-#include <iostream>
+#include "status_handler.hpp"
+
+namespace
+{
+    /**
+     * If request is a websocket opening handshake request.
+     * This function is experimental. I'm not sure this is an appropriate way.
+     * 
+     * @param[in] request
+     *      Request object that has been parsed successfully.
+     * @return
+     *      true if it's websocket opening handshake;
+     *      false if it's not.
+     */
+    bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request)
+    {
+        if(request->get_header("Upgrade") == "websocket")
+        {
+            return true;
+        }
+        return false;
+    }
+}
 
 struct Server::Impl
 {
@@ -152,16 +174,16 @@ bool Server::listen_at(const std::string& host, const int port)
                                 logger::record("Error: can't receive request from socket fd: " + std::to_string(arrived_socket_fd));
                                 continue;
                             }
-                            logger::record("Successfully: receive response of socket fd: " + std::to_string(arrived_socket_fd));
                             logger::record(impl_->request->get_raw_request());
+                            logger::record("Successfully: receive response of socket fd: " + std::to_string(arrived_socket_fd));
                             
                             // parse and generate request
-                            if(!parse_request())
+                            if(!request_core_handler())
                             {
-                                logger::record("Error: cant's parse request from socket fd: " + std::to_string(arrived_socket_fd));
+                                logger::record("Error: cant's handle request from socket fd: " + std::to_string(arrived_socket_fd));
                                 continue;
                             }
-                            logger::record("Successfully: parse response of socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record("Successfully: handle request of socket fd: " + std::to_string(arrived_socket_fd));
 
                             ev.data.fd = arrived_socket_fd;
                             // Edge-triggered 
@@ -178,8 +200,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 continue;
                             }
                             logger::record("Successfully: generate response for socket fd: " + std::to_string(arrived_socket_fd));
-                            logger::record(impl_->response->get_response_message());
-
+                            
                             // send response
                             if(!send_response(arrived_socket_fd))
                             {
@@ -187,7 +208,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 continue;
                             }
                             logger::record("Successfully: send response to socket fd: " + std::to_string(arrived_socket_fd));
-
+                            logger::record(impl_->response->get_response_message());
                             // after send response, we remove client socket from event interest list.
                             epoll_ctl(epfd, EPOLL_CTL_DEL, arrived_socket_fd, &ev);
                             continue;
@@ -237,48 +258,17 @@ bool Server::receive_request(const int client_socket_fd)
 
 bool Server::parse_request()
 {
-    // If request contains WebSocket header field, try upgrade to WebSocket protocol
-    if(impl_->request->get_raw_request().find("WebSocket") != std::string::npos)
-    {
-        logger::record("Accept WebSocket request");
-        websocket websocket(impl_->request, impl_->response);
-        websocket.parse_websocket_request();
-        websocket.generate_websocket_request();
-        return true;
-    }
-
     if(!impl_->request->parse_raw_request())
     {
-        // 400 Bad Reques
-        impl_->response->handle_status_code(400);
-        return true;
+        // 400 Bad Request
+        status_handler::handle_status_code(impl_->response, 400);
+        return false;
     }
-
-    // read requested resources
-    if(!impl_->response->set_content(impl_->request->get_request_uri()))
-    {
-        // 404 Not Found
-        impl_->response->handle_status_code(404);
-        return true;
-    }
-    impl_->response->handle_status_code(200);
-
     return true;
 }
 
 bool Server::generate_response()
 {
-    // If successfully parse request, try to add requested resouces to response
-    if(impl_->response->get_status_code() == 200)
-    {
-        if(!impl_->response->set_content(impl_->request->get_request_uri()))
-        {
-            // if we cann't set content, response 404 not found
-            impl_->response->set_status(404);
-            impl_->response->handle_status_code(404);
-        }
-    }
-
     return impl_->response->generate_response();
 }
 
@@ -305,4 +295,42 @@ int Server::get_server_fd()
 void Server::set_raw_request(const std::string& raw_request)
 {
     impl_->request->set_raw_request(raw_request);
+}
+
+bool Server::request_core_handler()
+{
+    // Parse request
+    if(!parse_request())
+    {
+        return false;
+    }
+
+    // Is websocket opening handshake?
+    if(
+        impl_->request->has_header("Upgrade")
+        && impl_->request->get_header("Upgrade") == "websocket"
+    )
+    {
+        websocket websocket(impl_->request, impl_->response);
+        if(!websocket.parse_websocket_request())
+        {
+            return false;
+        }
+        impl_->response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
+        status_handler::handle_status_code(impl_->response, 101);
+        return true;
+    }
+
+    // Resources handler
+    if(
+        !impl_->response->set_content(impl_->request->get_request_uri())
+    )
+    {
+        return false;
+    }
+
+    // Status handler
+    status_handler::handle_status_code(impl_->response, 200);
+
+    return true; 
 }

@@ -1,98 +1,110 @@
 #include "Response.hpp"
 #include <memory>
 
+namespace
+{
+	// only response has status code.
+	std::map< int, std::string > status_code_map = {
+		// 100-199: Informational status codes 
+		{100,"Continue"},
+		{101,"Switching Protocol"},
+		{102,"Processing"},
+		{103,"Early Hints"},
+
+		// 200-299: Success status codes
+		{200,"OK"},
+		{201,"Created"},
+		{202,"Accepted"},
+		{203,"Non-Authoritative Information"},
+		{204,"No Content"},
+		{205,"Reset Content"},
+		{206,"Partial Content"},
+		{207,"Multi-Status"},
+		{208,"Already Reported"},
+		{226,"IM Used"},
+		
+		// 300-399: Redirection status codes
+		{300,"Multiple Choice"},
+		{301,"Moved Permanently"},
+		{302,"Found"},
+		{303,"See Other"},
+		{304,"Not Modified"},
+		{305,"Use Proxy"},
+		{306,"unused"},
+		{307,"Temporary Redirect"},
+		{308,"Permanent Redirect"},
+
+		// 400-499: Client error status codes
+		{400,"Bad Request"},
+		{401,"Unauthorized"},
+		{402,"Payment Required"},
+		{403,"Forbidden"},
+		{404,"Not Found"},
+		{405,"Method Not Allowed"},
+		{406,"Not Acceptable"},
+		{407,"Proxy Authentication Required"},
+		{408,"Request Timeout"},
+		{409,"Conflict"},
+		{410,"Gone"},
+		{411,"Length Required"},
+		{412,"Precondition Failed"},
+		{413,"Payload Too Large"},
+		{414,"URI Too Long"},
+		{415,"Unsupported Media Type"},
+		{416,"Range Not Satisfiable"},
+		{417,"Expectation Failed"},
+		{418,"I'm a teapot"},
+		{421,"Misdirected Request"},
+		{422,"Unprocessable Entity"},
+		{423,"Locked"},
+		{424,"Failed Dependency"},
+		{425,"Too Early"},
+		{426,"Upgrade Required"},
+		{428,"Precondition Required"},
+		{429,"Too Many Requests"},
+		{431,"Request Header Fields Too Large"},
+		{451,"Unavailable For Legal Reasons"},
+		
+		// 500-599: Server error status codes
+		{500,"Internal Server Error"},
+		{501,"Not Implemented"},
+		{502,"Bad Gateway"},
+		{503,"Service Unavailable"},
+		{504,"Gateway Timeout"},
+		{505,"HTTP Version Not Supported"},
+		{506,"Variant Also Negotiates"},
+		{507,"Insufficient Storage"},
+		{508,"Loop Detected"},
+		{510,"Not Extended"},
+		{511,"Network Authentication Required"},
+	};
+} 
+
+
 namespace Message
 {
 	struct Message::Response::Impl
 	{	
-		int status_code;
+		// Status code of response
+		int status_code = 0;
 
-		// default protocol version
+		// Default protocol version
 		std::string protocol_version = "HTTP/1.1";
+		
+		// Reason phrase for specific status code.
 		std::string reason_phrase;
+		
+		// Header fields
 		std::map < std::string, std::string > headers;
+		
+		// Body of response message
 		std::string body;
+		
+		// Length of body of response message
 		std::streamoff body_length;
 
-		// Generated response message
+		// Generated response message in the form of string
 		std::string response_message;
-
-		// only response has status code.
-		std::map< int, std::string > status_code_map =
-		{
-			// 100-199: Informational status codes 
-			{100,"Continue"},
-			{101,"Switching Protocol"},
-			{102,"Processing"},
-			{103,"Early Hints"},
-
-			// 200-299: Success status codes
-			{200,"OK"},
-			{201,"Created"},
-			{202,"Accepted"},
-			{203,"Non-Authoritative Information"},
-			{204,"No Content"},
-			{205,"Reset Content"},
-			{206,"Partial Content"},
-			{207,"Multi-Status"},
-			{208,"Already Reported"},
-			{226,"IM Used"},
-			
-			// 300-399: Redirection status codes
-			{300,"Multiple Choice"},
-			{301,"Moved Permanently"},
-			{302,"Found"},
-			{303,"See Other"},
-			{304,"Not Modified"},
-			{305,"Use Proxy"},
-			{306,"unused"},
-			{307,"Temporary Redirect"},
-			{308,"Permanent Redirect"},
-
-			// 400-499: Client error status codes
-			{400,"Bad Request"},
-			{401,"Unauthorized"},
-			{402,"Payment Required"},
-			{403,"Forbidden"},
-			{404,"Not Found"},
-			{405,"Method Not Allowed"},
-			{406,"Not Acceptable"},
-			{407,"Proxy Authentication Required"},
-			{408,"Request Timeout"},
-			{409,"Conflict"},
-			{410,"Gone"},
-			{411,"Length Required"},
-			{412,"Precondition Failed"},
-			{413,"Payload Too Large"},
-			{414,"URI Too Long"},
-			{415,"Unsupported Media Type"},
-			{416,"Range Not Satisfiable"},
-			{417,"Expectation Failed"},
-			{418,"I'm a teapot"},
-			{421,"Misdirected Request"},
-			{422,"Unprocessable Entity"},
-			{423,"Locked"},
-			{424,"Failed Dependency"},
-			{425,"Too Early"},
-			{426,"Upgrade Required"},
-			{428,"Precondition Required"},
-			{429,"Too Many Requests"},
-			{431,"Request Header Fields Too Large"},
-			{451,"Unavailable For Legal Reasons"},
-			
-			// 500-599: Server error status codes
-			{500,"Internal Server Error"},
-			{501,"Not Implemented"},
-			{502,"Bad Gateway"},
-			{503,"Service Unavailable"},
-			{504,"Gateway Timeout"},
-			{505,"HTTP Version Not Supported"},
-			{506,"Variant Also Negotiates"},
-			{507,"Insufficient Storage"},
-			{508,"Loop Detected"},
-			{510,"Not Extended"},
-			{511,"Network Authentication Required"},
-		};
 	};
 	
 	Message::Response::~Response() noexcept = default;
@@ -153,7 +165,7 @@ namespace Message
 
 	std::string Message::Response::get_status_code_reason_string(const int status_code)
 	{
-		return impl_->status_code_map[status_code];
+		return status_code_map[status_code];
 	}
 
 	std::string Message::Response::get_body_length()
@@ -174,7 +186,7 @@ namespace Message
 	bool Message::Response::set_status(int status_codeInput)
 	{
 		impl_->status_code = status_codeInput;
-		impl_->reason_phrase = impl_->status_code_map[status_codeInput];
+		impl_->reason_phrase = status_code_map[status_codeInput];
 		return true;
 	}
 
@@ -241,8 +253,8 @@ namespace Message
 
 	bool Message::Response::set_reason_phrase(const int status_code)
 	{
-		auto header_position = impl_->status_code_map.find(status_code);
-		if(header_position == impl_->status_code_map.cend())
+		auto header_position = status_code_map.find(status_code);
+		if(header_position == status_code_map.cend())
 		{
 			return false;
 		}
@@ -253,11 +265,11 @@ namespace Message
 	
 	bool Message::Response::generate_response()
 	{
-		// assemble the response message
 		std::ostringstream response;
+		// Set first line of response string.
 		response << impl_->protocol_version << " " << std::to_string(impl_->status_code) << " " << impl_->reason_phrase << "\r\n";
 
-		// iterate headers
+		// Iterate headers map and add to respoinse string.
 		for (auto position = impl_->headers.cbegin(); position != impl_->headers.cend(); ++position)
 		{
 			std::string name = position->first.c_str();
@@ -266,7 +278,7 @@ namespace Message
 			response << name << ": " << value << "\r\n";
 		}
 
-		// set body
+		// Set body content.
 		if (impl_->body.empty())
 		{
 			response << "\r\n\r\n";
@@ -496,62 +508,11 @@ namespace Message
 		return true;
 	}
 
-	void Message::Response::handle_status_code(const int status_code)
+	void Message::Response::clear_up_header_fields()
 	{
-		switch(status_code)
-		{
-			case 200:
-			{
-				set_status(200);
-				set_reason_phrase(200);
-				add_header("Accept-Ranges", "bytes");
-				add_header("Content-Length", get_body_length());
-				add_header("Content-Type", "text/html");
-				// add_header("Date", "Mon, 3 Jul 2020 12:28:53 GMT");
-				break;
-			}
-
-			case 400:	// bad request
-			{
-				set_status(400);
-				set_reason_phrase(400);
-				add_header("Content-Type", "text/html");
-				set_body("<html><h1> 400 Bad Request :( </h1></html>");
-				break;
-			}
-
-			case 404:
-			{
-				set_status(404);
-				set_reason_phrase(404);
-				add_header("Content-Type", "text/html");
-				set_body("<html><h1> 404 Not Found :( </h1></html>");
-				break;
-			}
-			
-			case 405:	// Method Not Allowed
-			{
-				set_status(405);
-				set_reason_phrase(405);
-				add_header("Content-Type", "text/html");
-				add_header("Allow", "GET, HEAD, PUT");
-				set_body("<html><h1> 405 Method Not Allowed :( </h1></html>");
-				break;
-			}
-
-			case 500:	// Internal Server Error
-			{
-				set_status(500);
-				set_reason_phrase(500);
-				add_header("Content-Type", "text/html");
-				set_body("<html><h1> 500 Internal Server Error :( </h1></html>\r\n");
-				break;
-			}
-
-		}
-
+		impl_->headers.clear();
 	}
-
+	
 }
 
 

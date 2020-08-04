@@ -1,5 +1,8 @@
 #include "websocket.hpp"
 #include "logger.hpp"
+#include "status_handler.hpp"
+#include "base64.hpp"
+#include "sha1.hpp"
 
 // helpers 
 namespace
@@ -142,8 +145,8 @@ namespace
 
 struct websocket::Impl
 {
-    std::shared_ptr< Message::Request > request_ptr;
-    std::shared_ptr< Message::Response > response_ptr;
+    std::shared_ptr< Message::Request > request;
+    std::shared_ptr< Message::Response > response;
 };
 
 websocket::~websocket() noexcept
@@ -154,8 +157,8 @@ websocket::websocket(
     std::shared_ptr< Message::Response > response
 ) : impl_(new Impl)
 {
-    impl_->request_ptr = request;
-    impl_->response_ptr = response;
+    impl_->request = request;
+    impl_->response = response;
 }
 
 
@@ -166,37 +169,33 @@ websocket& websocket::operator=(websocket&&) noexcept = default;
 // public methods
 bool websocket::generate_websocket_request()
 {
-    impl_->response_ptr->set_protocol_version("HTTP/1.1");
-    impl_->response_ptr->set_status(101);
+    impl_->response->set_protocol_version("HTTP/1.1");
+    impl_->response->set_status(101);
     return true;
 }
 
 bool websocket::parse_websocket_request()
-{
-    logger::record("Logger starts!");
-    if(!impl_->request_ptr->parse_raw_request())
-    {
-        // bad request
-        impl_->response_ptr->handle_status_code(400);
-        return false;
-    }
-
-    logger::record(impl_->request_ptr->get_method());
-    if(!impl_->request_ptr->has_method("GET")) 
-    {
-        impl_->response_ptr->handle_status_code(400);
-        return false;
-    }
-
-    if(!impl_->request_ptr->has_header("Connection")
-        || impl_->request_ptr->has_header("Upgrade")
-        || impl_->request_ptr->has_header("Sec-WebSocket-Key")
-        || impl_->request_ptr->has_header("Sec-WebSocket-Version")
+{    
+    if(
+        impl_->request->get_method() != "GET"
+        || !impl_->request->has_header("Connection")
+        || !impl_->request->has_header("Upgrade")
+        || !impl_->request->has_header("Sec-WebSocket-Key")
+        || !impl_->request->has_header("Sec-WebSocket-Version")
     )
     {
-        impl_->response_ptr->handle_status_code(400);
+        status_handler::handle_status_code(impl_->response, 400);
         return false;
     }
 
     return true;
+}
+
+std::string websocket::generate_sec_websocket_key()
+{
+    return base64::encode_hex_string(
+        sha1::sha1_encrypt(
+            impl_->request->get_header("Sec-WebSocket-Key") + WEBSOCKET_KEY
+        )
+    );
 }

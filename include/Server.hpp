@@ -115,6 +115,16 @@ public:
 	 */
 	void set_raw_request(const std::string& raw_request);
 
+	/**
+	 * Handler given request to fetch requested resources either static or dynamic.
+	 * 
+	 * @return
+	 * 		true if succeeds;
+	 * 		false if fails.
+	 */
+	bool request_core_handler();
+
+
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RESPONSE_HPP
+#define RESPONSE_HPP
+
 #include <string>
 #include <regex>
 #include <vector>
@@ -7,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
+#include <memory>
 
 #include "Request.hpp"
 
@@ -35,12 +38,12 @@ namespace Message
 		size_t get_response_length();
 
 		/**
-		 * @brief
 		 * 		Set status code and corresponding reason phrase.
 		 * @param[in]
 		 * 		status code
-		 * @return 
-		 * 		bool
+		 * @return
+		 * 		true if succeeds;
+		 * 		false if fails.
 		 */
 		bool set_status(const int status_codeInput);
 		bool set_protocol_version(const std::string versionProtocolInput);
@@ -49,30 +52,32 @@ namespace Message
 		bool add_header(const std::string& name, const std::string& value);
 
 		/**
-		 * @brief
-		 * 		Set content-length to headers if length >= 0.
+	     * Set content-length to headers if length >= 0.
+		 * 
 		 * @param[in] 
 		 *		contentLengthInput is the size of given file in bytes;
 		 * @return 
-		 *		true, OK; false, Error.
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool set_content_length(const std::streamoff& contentLengthInput);
 		
 		/**
-		 * @brief
-	     *		Maps the given Uri path onto the specified content type according to file extention.
-		 *		https://www.iana.org/assignments/media-types/media-types.xhtml#application
+	     * Maps the given Uri path onto the specified content type according to file extention.
+		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
+		 * 
 		 * @return 
-		 *		true, if find the correspoinding content type.
-		 *		false, if without type or not supported types.
+		 *		true if find the correspoinding content type.
+		 *		false if doesn't have type or currently not supported.
 		 */
 		bool set_content_type(const std::string& path);
 
 		/** 
-		 * Set the HTTP body and the corresponding headers.
+		 * Set the Response's entity body and the corresponding entity header fields.
 		 *
 		 * @return
-		 *		true/false
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool set_content(const std::string& path);
 
@@ -81,62 +86,60 @@ namespace Message
 		 *
 		 * @param[in] 
 		 *		response is the generated complete response message.
-		 *
 		 * @return 
-		 *		true/false.
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool set_response_message(const std::string& response);
 		
 		/**
-		 * @brief
 		 * 		Set reason phrase.
 		 * @param[in]
 		 * 		Status code integer.
 		 * @return 
-		 * 		bool.
+		 * 		true if succeeds;
+		 * 		false if fails.
 		 */
 		bool set_reason_phrase(const int stauts_code);
 
 		/**
-		 * @brief
-		 * 		Generate complete response message.
+		 * Generate/Assemble response string and store the string into member variable.
+		 *
 		 * @return 
-		 *		true/false.
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool generate_response();
 
 		/**
-		 * @brief
-		 * 		map the input path string to local file system
-		 * 		as the payloal of response. It will set the body 
-		 * 		and body length as well.
-		 * @param[in] 
-		 *		path is the given path string extracted/parsed 
-		 *		from request.
-		 * @return 
-		 *		bool.
+		 * Map the input path string to local file system as the payloal of response. 
+		 * It will set the body and body length as well.
+		 * 
+		 * @param[in] path
+		 *		Path string parsed from request string.
+		 * @return
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool read_file(const std::string& path);
 
 		/**
-		 * @brief
-		 * 		Convert given relative path to absolute path.
-		 * @param[in] 
-		 *		path is the given relative path.
-		 * @param[out] 
-		 *		absolute_path is the absolute path.
+		 * 	Convert given relative path to absolute path.
+		 * 
+		 * @param[in] path
+		 *		Relative path.
+		 * @param[out] absolute_path
+		 *		Absolute path.
 		 * @return
-		 *		bool.
+		 *		true if succeeds;
+		 *		false if fails.
 		 */
 		bool convert_path_to_absolute(const std::string& path, std::string& absolute_path);
 
 		/**
-		 * @brief
-		 * 		Status Code Handler.
-		 * @param[in]
-		 * 		status code integer.
+		 * Clear up the header fields.
 		 */
-		void handle_status_code(const int status_code);
+		void clear_up_header_fields();
 
 	private:
 		struct Impl;
@@ -144,4 +147,5 @@ namespace Message
 	};
 }
 
+#endif
 

@@ -56,8 +56,22 @@ TEST(base64_tests, encode_and_decode_url_test)
     size_t index = 0;
     for (const auto& testVector: testVectors) 
     {
-        EXPECT_EQ( testVector.encoding, base64::encode_url(testVector.decoding)) << "Error at index: " << index;
-        EXPECT_EQ( testVector.decoding, base64::decode_url(testVector.encoding)) << "Error at index: " << index;
+        EXPECT_EQ( testVector.encoding, base64::encode_url(testVector.decoding, false)) << "Error at index: " << index;
+        EXPECT_EQ( testVector.decoding, base64::decode_url(testVector.encoding, false)) << "Error at index: " << index;
         ++index;
     }
+}
+
+TEST(base64_tests, encode_hex_string_test)
+{
+    /**
+     * The problem is that: 
+     * b37a4f2cc0624f1690f64606cf385945b2bec4ea is byte sequence in the form of hex,
+     * we need convert this kind of string to byte sequence first;
+     * otherwise, the Base64 encoding is wrong.
+     */
+    std::string hex_string = "b37a4f2cc0624f1690f64606cf385945b2bec4ea";
+    std::string expected_string = "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=";
+    
+    ASSERT_EQ(base64::encode_hex_string(hex_string,true), expected_string);
 }

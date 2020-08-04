@@ -23,6 +23,7 @@ add_executable(${this} ${SouceFiles})
 target_link_libraries(${this} PUBLIC
     gtest_main 
     HTTP
+    mysqlcppconn
 )
 
 # CharacterSet test 
@@ -116,6 +117,13 @@ target_link_libraries(sha1_test PUBLIC
 # UTF-8 test
 add_executable(utf8_test Utf8Tests.cpp)
 target_link_libraries(utf8_test PUBLIC
+    gtest_main
+    HTTP    
+)
+
+# status handler test
+add_executable(status_handler status_handler_test.cpp)
+target_link_libraries(status_handler PUBLIC
     gtest_main
     HTTP    
 )

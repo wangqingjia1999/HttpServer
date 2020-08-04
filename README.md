@@ -23,8 +23,12 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 7. make
 ```
 
+## Third Party Libraries
+* [UTF-8](https://github.com/rhymu8354/Utf8)
 
 ## References
+* WebSocket
+  * https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 * Uri
   * https://nodejs.org/api/url.html#url_url
 * Percent encoding

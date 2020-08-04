@@ -19,6 +19,8 @@ set(HeaderFiles
     ../include/websocket.hpp
     ../include/base64.hpp
     ../include/sha1.hpp
+    ../include/Utf8.hpp
+    ../include/status_handler.hpp
 )
 
 set(SourceFiles
@@ -34,6 +36,8 @@ set(SourceFiles
     websocket.cpp
     base64.cpp
     sha1.cpp
+    Utf8.cpp
+    status_handler.cpp
 )
 
 add_library(${this} STATIC

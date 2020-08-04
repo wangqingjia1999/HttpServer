@@ -110,6 +110,12 @@ namespace Message
 		 */
 		bool set_user_agent(std::string user_agent = "Bitate");
 
+		/**
+		 * Get method string.
+		 * 
+		 * @return std::string
+		 * 		Method string of request message.
+		 */
 		std::string get_method();
 		std::string get_request_uri();
 		std::string get_http_version();
