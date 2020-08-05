@@ -35,7 +35,7 @@ public:
 	 * 		true if succeeds in listening given host:port.
 	 * 		false if any error happens.
 	 */
-	bool listen_at(const std::string& host, const int port);
+	bool listen_at(const std::string& host, const int port); 
 
 	/**
 	 * @brief
@@ -44,7 +44,7 @@ public:
 	 *		true if succeeds,
 	 *		false if failed.
 	 */
-	bool send_response(const int clietn_socket_fd);
+	bool send_response(const int clietn_socket_fd, const std::string& buffer);
 
 	/**
 	 * @brief

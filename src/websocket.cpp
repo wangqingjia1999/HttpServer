@@ -1,3 +1,5 @@
+#include <sys/socket.h>
+
 #include "websocket.hpp"
 #include "logger.hpp"
 #include "status_handler.hpp"
@@ -141,6 +143,42 @@ namespace
      * Status code from the received close frame.
      */
     unsigned int close_code;
+
+    /**
+     * Check whether the frame is masked.
+     * 
+     * @param[in] frame
+     *      Frame string.
+     * @return 
+     *      true if it's masked;
+     *      false if not.
+     */
+    bool is_masked_frame();
+
+    /** 
+     * Check whether the frame's FIN bit is set.
+     * 
+     * @return
+     *      true if FIN is set;
+     *      false if not.
+     */
+    bool is_fin_frame();
+
+    /**
+     * Send data in either text or binary format.
+     * 
+     * @param[in] file_descriptor
+     *      File descriptor of receiver.
+     * @param[in] data
+     *      Data in the form of text or binary.
+     * @return 
+     *      true if succeeds;
+     *      false if fails.
+     */
+    bool send_data(const int file_descriptor)
+    {
+        // auto send_result = send(file_descriptor, )
+    }   
 }
 
 struct websocket::Impl
@@ -152,6 +190,10 @@ struct websocket::Impl
 websocket::~websocket() noexcept
 {
 }
+websocket::websocket() : impl_(new Impl)
+{
+}
+
 websocket::websocket(
     std::shared_ptr< Message::Request > request,
     std::shared_ptr< Message::Response > response
@@ -196,6 +238,15 @@ std::string websocket::generate_sec_websocket_key()
     return base64::encode_hex_string(
         sha1::sha1_encrypt(
             impl_->request->get_header("Sec-WebSocket-Key") + WEBSOCKET_KEY
+        )
+    );
+}
+
+std::string websocket::generate_sec_websocket_key(const std::string& key_string)
+{
+    return base64::encode_hex_string(
+        sha1::sha1_encrypt(
+            key_string + WEBSOCKET_KEY
         )
     );
 }

@@ -247,7 +247,7 @@ namespace Message
 	bool Message::Response::set_response_message(const std::string& response)
 	{
 		impl_->response_message.clear();
-		impl_->response_message = response;
+		impl_->response_message = std::move(response);
 		return true;
 	}
 

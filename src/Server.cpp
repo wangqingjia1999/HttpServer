@@ -32,8 +32,13 @@ struct Server::Impl
     int client_socket;
     int server_socket;
 
-    static const int buffer_length = 1024;
-    char received_buffer[buffer_length] = { 0 };
+    // Receive buffer
+    static const int receive_buffer_length = 1024;
+    char receive_buffer[receive_buffer_length] = { 0 };
+
+    // Send buffer
+    static const size_t SEND_BUFFER_LENGTH = 1024;
+    std::string send_buffer = "";
 
     // Response object for generating response
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
@@ -133,11 +138,11 @@ bool Server::listen_at(const std::string& host, const int port)
                 int i;
                 for(i=0; i < nums; ++i)
                 {
-                    int arrived_socket_fd = epoll_result[i].data.fd;
+                    int triggered_socket_fd = epoll_result[i].data.fd;
                     uint32_t arrived_socket_event = epoll_result[i].events;
                     
                     // If new client socket comes into the listening queue of server listening socket.
-                    if(arrived_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
+                    if(triggered_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
                     {
                         struct sockaddr_in client_socket_address;
                         socklen_t client_socket_length = sizeof(client_socket_address);
@@ -164,31 +169,30 @@ bool Server::listen_at(const std::string& host, const int port)
                         epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
                         continue;
                     }
-                    else if (arrived_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
+                    else if (triggered_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
                             // receive request
-                            if(!receive_request(arrived_socket_fd))
+                            if(!receive_request(triggered_socket_fd))
                             {
-                                logger::record("Error: can't receive request from socket fd: " + std::to_string(arrived_socket_fd));
+                                logger::record("Error: can't receive request from socket fd: " + std::to_string(triggered_socket_fd));
                                 continue;
                             }
                             logger::record(impl_->request->get_raw_request());
-                            logger::record("Successfully: receive response of socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record("Successfully: receive request of socket fd: " + std::to_string(triggered_socket_fd));
                             
                             // parse and generate request
                             if(!request_core_handler())
                             {
-                                logger::record("Error: cant's handle request from socket fd: " + std::to_string(arrived_socket_fd));
+                                logger::record("Error: cant's handle request from socket fd: " + std::to_string(triggered_socket_fd));
                                 continue;
                             }
-                            logger::record("Successfully: handle request of socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record("Successfully: handle request of socket fd: " + std::to_string(triggered_socket_fd));
 
-                            ev.data.fd = arrived_socket_fd;
-                            // Edge-triggered 
+                            ev.data.fd = triggered_socket_fd;
                             ev.events = EPOLLOUT | EPOLLET;
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, arrived_socket_fd, &ev);
+                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
                             continue;
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
@@ -196,21 +200,23 @@ bool Server::listen_at(const std::string& host, const int port)
                             // generate response
                             if(!generate_response())
                             {
-                                logger::record("Error: can't generate response for socket fd: " + arrived_socket_fd);
+                                logger::record("Error: can't generate response for socket fd: " + triggered_socket_fd);
                                 continue;
                             }
-                            logger::record("Successfully: generate response for socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record("Successfully: generate response for socket fd: " + std::to_string(triggered_socket_fd));
                             
                             // send response
-                            if(!send_response(arrived_socket_fd))
+                            if(!send_response(triggered_socket_fd, impl_->send_buffer))
                             {
-                                logger::record("Error: can't send response to socket fd: " + std::to_string(arrived_socket_fd));
+                                logger::record("Error: can't send response to socket fd: " + std::to_string(triggered_socket_fd));
                                 continue;
                             }
-                            logger::record("Successfully: send response to socket fd: " + std::to_string(arrived_socket_fd));
+                            logger::record("Successfully: send response to socket fd: " + std::to_string(triggered_socket_fd));
                             logger::record(impl_->response->get_response_message());
-                            // after send response, we remove client socket from event interest list.
-                            epoll_ctl(epfd, EPOLL_CTL_DEL, arrived_socket_fd, &ev);
+                            
+                            ev.data.fd = triggered_socket_fd;
+                            ev.events = EPOLLIN | EPOLLET;
+                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
                             continue;
                         }
                     }
@@ -221,37 +227,43 @@ bool Server::listen_at(const std::string& host, const int port)
     }
 }
 
-bool Server::send_response(const int clietn_socket_fd)
+bool Server::send_response(const int clietn_socket_fd, const std::string& buffer)
 {
-    int sendResult = send(
+    if(buffer.size() == 0)
+    {
+        return false;    
+    }
+
+    int send_result = send(
         clietn_socket_fd, 
-        impl_->response->get_response_message().c_str(), 
-        impl_->response->get_response_length(), 
+        buffer.c_str(),
+        buffer.size(),
         0
     );
 
-    if(sendResult == -1)
+    if(send_result == -1)
     {
         return false;
     }
+
     return true;
 }
 
 bool Server::receive_request(const int client_socket_fd)
 {
-    int receive_result = recv(client_socket_fd, impl_->received_buffer, impl_->buffer_length, 0);
+    int receive_result = recv(client_socket_fd, impl_->receive_buffer, impl_->receive_buffer_length, 0);
     if(receive_result == 0 || receive_result == -1)
     {
         impl_->request->set_raw_request("");
         return false;
     }
     
-    if(!impl_->request->set_raw_request(impl_->received_buffer))
+    if(!impl_->request->set_raw_request(impl_->receive_buffer))
     {
         return false;
     }
 
-    memset(impl_->received_buffer, 0, impl_->buffer_length);
+    memset(impl_->receive_buffer, 0, impl_->receive_buffer_length);
 
     return true;
 }
@@ -269,7 +281,12 @@ bool Server::parse_request()
 
 bool Server::generate_response()
 {
-    return impl_->response->generate_response();
+    if(!impl_->response->generate_response())
+    {
+        return false;
+    }
+    impl_->send_buffer = impl_->response->get_response_message().c_str();
+    return true;
 }
 
 std::string Server::get_raw_request()
@@ -302,6 +319,8 @@ bool Server::request_core_handler()
     // Parse request
     if(!parse_request())
     {
+        // 400 Bad Request
+        status_handler::handle_status_code(impl_->response, 400);
         return false;
     }
 
@@ -326,6 +345,8 @@ bool Server::request_core_handler()
         !impl_->response->set_content(impl_->request->get_request_uri())
     )
     {
+        // 404 Not Found
+        status_handler::handle_status_code(impl_->response, 404);
         return false;
     }
 

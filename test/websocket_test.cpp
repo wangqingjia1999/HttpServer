@@ -58,22 +58,23 @@ TEST(websocket_tests, generate_websocket_response_test)
 
 TEST(websoket_teset, generate_websocket_key_test)
 {
-	std::shared_ptr< Message::Response > response = std::make_shared< Message::Response > ();
-    std::shared_ptr< Message::Request > request = std::make_shared< Message::Request > ();
-	websocket websocket(request, response);
-	
-	std::string raw_request = (
-		"GET / HTTP/1.1\r\n"
-		"Host: localhost\r\n"
-		"Upgrade: websocket\r\n"
-		"Connection: Upgrade\r\n"
-		"Upgrade: websocket\r\n"
-		"Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
-		"Sec-WebSocket-Version: 13\r\n"
-		"\r\n"
-	);
+	websocket websocket;
 
-	request->set_raw_request(raw_request);
-	ASSERT_TRUE(request->parse_raw_request());
-	ASSERT_EQ(websocket.generate_sec_websocket_key(), "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=");
+	struct test_vector
+	{
+		std::string raw_key;
+		std::string expected_key;
+	};
+
+	const std::vector< test_vector > test_vectors = {
+		{ "bKdPyn3u98cTfZJSh4TNeQ==", "4EaeSCkuOGBy+rjOSJSMV+VMoC0=" },
+		{ "dGhlIHNhbXBsZSBub25jZQ==", "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=" }
+	};
+
+	size_t index = 0;
+	for(auto test_vector : test_vectors)
+	{
+		ASSERT_EQ(websocket.generate_sec_websocket_key(test_vector.raw_key), test_vector.expected_key) << "Error at index: " << index;
+		++index;
+	}
 }

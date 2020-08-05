@@ -17,7 +17,7 @@ TEST(server_tests, response_400_bad_request)
     };
 
     server.set_raw_request(raw_request);
-    ASSERT_TRUE(server.parse_request());
+    ASSERT_FALSE(server.request_core_handler());
 
     std::string expected_response = 
     {
@@ -43,7 +43,7 @@ TEST(server_tests, response_404_not_found)
     };
 
     server.set_raw_request(raw_request);
-    ASSERT_TRUE(server.parse_request());
+    ASSERT_FALSE(server.request_core_handler());
 
     std::string expected_response = 
     {
@@ -78,6 +78,5 @@ TEST(server_tests, websocket_opening_handshake_test)
     };
 
     server.set_raw_request(raw_request);
-    ASSERT_TRUE(server.parse_request());
-
+    ASSERT_TRUE(server.request_core_handler());
 }

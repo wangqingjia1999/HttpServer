@@ -182,5 +182,5 @@ TEST(response_tests, status_code_500_test)
 TEST(response_teset, read_local_file)
 {
     Message::Response response;
-    ASSERT_TRUE(response.read_file("/"));
+    ASSERT_FALSE(response.read_file("/"));
 }
