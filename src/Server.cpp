@@ -1,9 +1,14 @@
 #include <sys/epoll.h>
+#include <queue>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
 
 #include "Server.hpp"
 #include "websocket.hpp"
 #include "logger.hpp"
 #include "status_handler.hpp"
+#include "thread_pool.hpp"
 
 namespace
 {
@@ -53,22 +58,6 @@ Server::~Server()
 Server::Server() : impl_(new Impl)
 {
 }
-
-Server::Server(const Server& other) 
-{
-    *this = other;
-}
-Server& Server::operator=(const Server& other)
-{
-    if(this!=&other)
-    {
-        *impl_=*other.impl_;
-    }
-    return *this;
-}
-
-Server::Server(Server&&) noexcept = default;
-Server& Server::operator=(Server&&) noexcept = default;
 
 bool Server::listen_at(const std::string& host, const int port)
 {
@@ -123,8 +112,8 @@ bool Server::listen_at(const std::string& host, const int port)
     // server core loop
     for (;;)
     {       
-        int nums = epoll_wait(epfd, epoll_result, 1024, -1);
-        switch (nums)
+        int triggered_fd_numbers = epoll_wait(epfd, epoll_result, 1024, -1);
+        switch (triggered_fd_numbers)
         {
         case 0:
             logger::record("Wait: time out");
@@ -136,12 +125,12 @@ bool Server::listen_at(const std::string& host, const int port)
         default:
             {
                 int i;
-                for(i=0; i < nums; ++i)
+                for(i=0; i < triggered_fd_numbers; ++i)
                 {
                     int triggered_socket_fd = epoll_result[i].data.fd;
                     uint32_t arrived_socket_event = epoll_result[i].events;
                     
-                    // If new client socket comes into the listening queue of server listening socket.
+                    // The listening socket is ready; this means a new peer/client is connecting.
                     if(triggered_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
                     {
                         struct sockaddr_in client_socket_address;
@@ -177,19 +166,26 @@ bool Server::listen_at(const std::string& host, const int port)
                             if(!receive_request(triggered_socket_fd))
                             {
                                 logger::record("Error: can't receive request from socket fd: " + std::to_string(triggered_socket_fd));
-                                continue;
                             }
-                            logger::record(impl_->request->get_raw_request());
-                            logger::record("Successfully: receive request of socket fd: " + std::to_string(triggered_socket_fd));
+                            else
+                            {
+                                logger::record("Successfully: receive request of socket fd: " + std::to_string(triggered_socket_fd));
+                            }
                             
                             // parse and generate request
                             if(!request_core_handler())
                             {
-                                logger::record("Error: cant's handle request from socket fd: " + std::to_string(triggered_socket_fd));
-                                continue;
+                                logger::record("Error: can not handle request from socket fd: " + std::to_string(triggered_socket_fd));
+                                logger::record("The raw request message is printed below: ");
+                                logger::record("------------------------------------------");
+                                logger::record(impl_->request->get_raw_request());
+                                logger::record("------------------------------------------");
                             }
-                            logger::record("Successfully: handle request of socket fd: " + std::to_string(triggered_socket_fd));
-
+                            else
+                            {
+                                logger::record("Successfully: handle request of socket fd: " + std::to_string(triggered_socket_fd));
+                            }
+                            
                             ev.data.fd = triggered_socket_fd;
                             ev.events = EPOLLOUT | EPOLLET;
                             epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
@@ -197,26 +193,31 @@ bool Server::listen_at(const std::string& host, const int port)
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
-                            // generate response
                             if(!generate_response())
                             {
-                                logger::record("Error: can't generate response for socket fd: " + triggered_socket_fd);
-                                continue;
+                                logger::record("Error: can not generate response");
                             }
-                            logger::record("Successfully: generate response for socket fd: " + std::to_string(triggered_socket_fd));
+                            else
+                            {
+                                logger::record("Successfully generate response");
+                            }
                             
-                            // send response
                             if(!send_response(triggered_socket_fd, impl_->send_buffer))
                             {
-                                logger::record("Error: can't send response to socket fd: " + std::to_string(triggered_socket_fd));
-                                continue;
+                                logger::record("Error: can not send response");
+                                logger::record("The generated response message is printed below: ");
+                                logger::record("------------------------------------------");
+                                logger::record(impl_->response->get_response_message());
+                                logger::record("------------------------------------------");
                             }
-                            logger::record("Successfully: send response to socket fd: " + std::to_string(triggered_socket_fd));
-                            logger::record(impl_->response->get_response_message());
+                            else
+                            {
+                                logger::record("Successfully: send response");
+                            }
                             
                             ev.data.fd = triggered_socket_fd;
                             ev.events = EPOLLIN | EPOLLET;
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
+                            epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_socket_fd, &ev);
                             continue;
                         }
                     }

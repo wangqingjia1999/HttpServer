@@ -16,11 +16,11 @@ public:
 	~Server() noexcept;
 	Server();
 
-	Server(const Server&);
-	Server& operator=(const Server&);
+	Server(const Server&) = delete;
+	Server& operator=(const Server&) = delete;
 	
-	Server(Server&&) noexcept;
-	Server& operator=(Server&&) noexcept;
+	Server(Server&&) = delete;
+	Server& operator=(Server&&) = delete;
 
 	/**
 	 * Create a socket to listen to clients.

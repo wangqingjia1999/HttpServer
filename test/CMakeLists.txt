@@ -122,8 +122,15 @@ target_link_libraries(utf8_test PUBLIC
 )
 
 # status handler test
-add_executable(status_handler status_handler_test.cpp)
-target_link_libraries(status_handler PUBLIC
+add_executable(status_handler_test status_handler_test.cpp)
+target_link_libraries(status_handler_test PUBLIC
+    gtest_main
+    HTTP    
+)
+
+# thread pool test
+add_executable(thread_pool_test thread_pool_test.cpp)
+target_link_libraries(thread_pool_test PUBLIC
     gtest_main
     HTTP    
 )

@@ -21,6 +21,7 @@ set(HeaderFiles
     ../include/sha1.hpp
     ../include/Utf8.hpp
     ../include/status_handler.hpp
+    ../include/thread_pool.hpp
 )
 
 set(SourceFiles
@@ -38,6 +39,7 @@ set(SourceFiles
     sha1.cpp
     Utf8.cpp
     status_handler.cpp
+    thread_pool.cpp
 )
 
 add_library(${this} STATIC
