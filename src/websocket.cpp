@@ -219,7 +219,7 @@ bool websocket::generate_websocket_request()
 bool websocket::parse_websocket_request()
 {    
     if(
-        impl_->request->get_method() != "GET"
+        impl_->request->get_request_method() != "GET"
         || !impl_->request->has_header("Connection")
         || !impl_->request->has_header("Upgrade")
         || !impl_->request->has_header("Sec-WebSocket-Key")

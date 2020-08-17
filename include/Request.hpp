@@ -11,143 +11,150 @@ namespace Message
 	class Request
 	{
 	public:
-		~Request();
+		~Request() noexcept;
 		Request();
-		Request(const Request&) noexcept;
+
+		Request& operator=(const Request&) ;
+		Request(const Request&);
+		
 		Request(Request&&) noexcept;
-		Request& operator=(const Request&) noexcept;
 		Request& operator=(Request&&) noexcept;
 
 	public:
 		/**
-		 * @brief
-		 * 		Generate request message.
-		 * @return 
-		 * 		true/false.
+		 * @brief  Generate request message.
+		 * @return  True if successfully generate request string.  
+		 * 
+		 * This generates request string based on request object's 
+		 * members and set the generated string to private member
+		 * @b impl_->raw_request.
 		 */
 		bool generate_request();
 
 		/**
-		 * @brief
-		 * 		Parse given request line(first line of request message).
-		 *
-		 * @param[in] 
-		 *		request_line is the given request line.
-		 *
-		 * @return
-		 *		true/false.
+		 * @brief  Parse given request line(first line of request message).
+		 * @param  request_line  Given request line in the form of string.
+		 * @return  True if parse successfully.
 		 */
 		bool parse_request_line(const std::string& request_line);
 
 		/** 
-		 * @brief
-		 * 		Parse given headers.
-		 * @param[in] 
-		 *		headers is the map that stores name-value
-		 *		header pairs.
-		 * @return 
-		 *		true/false.
+		 * @brief  Parse given headers string.
+		 * @param  headers  headers string.
+		 * @return  True if parse successfully.
 		 */
 		bool parse_headers(const std::string& headers);
 
 		/**
-		 * @brief
-		 * 		Parse raw request that has already set by set_raw_request()
-		 * @return 
-		 *		true/false.
+		 * @brief  Parse raw request that has already set by set_raw_request()
+		 * @return  True if parse raw request string successfully.
 		 */
 		bool parse_raw_request();
 
 		/**
-		 * @brief
-		 * 		Parse Uri.
-		 * @param[in]
-		 * 		Uri string.
-		 * @return
-		 * 		true/false.
+		 * @brief  Parse Uri.
+		 * @param  Uri Uri string.
+		 * @return  True if successfully parse the given URI string.
 		 */
 		bool parse_uri(const std::string& Uri);
 		
 		/**
-		 * @brief
-		 * 		Set received raw request message to request object's member variable.
-		 * @param rawRequestString
-		 * 		Received raw request message string.
-		 * @param raw_request
-		 * 		Object request's member raw_request is set.
-		 * @return 
-		 * 		true/false
+		 * @brief  Set raw request message to request object's member variable.
+		 * @param  raw_request_string  Given raw request message string.
+		 * @return  True if successfully set raw request.
 		 */
-		bool set_raw_request(std::string rawRequestString);
+		bool set_raw_request(std::string raw_request_string);
 
 		/**
-		 * @brief
-		 * 		Set method field.
-		 * @param[in] 
-		 * 		A method string. Default value is "GET".
-		 * @return
-		 * 		true/false.
+		 * @brief  Set method field.
+		 * @param  method  Method string. Default value is "GET".
+		 * @return  True if successfully set method string.
 		 */
 		bool set_method(const std::string method = "GET");
 
 		/**
-		 * @brief
-		 * 		Set http version field.
-		 * @param[in]
-		 * 		A http version string. Default value is "HTTP/1.1"
-		 * @return
-		 * 		true/false.
+		 * @brief  Set http version field.
+		 * @param  http_version  Http version string. Default value is "HTTP/1.1"
+		 * @return  True if successfully set http version string.
 		 */
 		bool set_http_version(const std::string http_version = "HTTP/1.1");
 
 		/**
-		 * @brief
-		 * 		Set User-Agent header field.
-		 * @param[in]
-		 * 		An User-Agent string with default value of "Bitate".
-		 * @return 
-		 * 		true/false.
+		 * @brief  Set User-Agent header field.
+		 * @param  user_agent  User agent header field. Default value is "Bitate".
+		 * @return  True if successfully set User Agent field.
 		 */
 		bool set_user_agent(std::string user_agent = "Bitate");
 
 		/**
-		 * Get method string.
-		 * 
-		 * @return std::string
-		 * 		Method string of request message.
+		 * @brief  Get request method string.
+		 * @return Method string of request message.
 		 */
-		std::string get_method();
+		std::string get_request_method();
+
+		/**
+		 * @brief  Get request URI string.
+		 * @return  Request URI string.
+		 */
 		std::string get_request_uri();
+
+		/**
+		 * @brief  Get request http protocol version.
+		 * @return  Http protocol version string.
+		 */
 		std::string get_http_version();
+
+		/**
+		 * @brief  Get given request header.
+		 * @return  Header name's corresponding header value.
+		 */
 		std::string get_header(const std::string& header_name);
+
+		/**
+		 * @brief  Get request body string.
+		 * @return Request body string.
+		 */
 		std::string get_body();
+
+		/**
+		 * @brief  Get generated request string.
+		 * @return  Request string.
+		 */
 		std::string get_generated_request();
 
+		/**
+		 * @brief  Has given header?
+		 * @return  True if it has.
+		 */
 		bool has_header(const std::string& header_name) const;
+
+		/**
+		 * @brief  Has http version field set?
+		 * @return  True if it sets.
+		 */
 		bool has_http_version() const;
+
+		/**
+		 * @brief  Has request method set? 
+		 * @return True if it sets.
+		 */
 		bool has_method(const std::string& method) const;
 		
 		/**
-		 * @brief
-		 * 		Get raw request.
-		 * @return 
-		 * 		Raw request string.
+		 * @brief  Get raw request.
+		 * @return  Raw request string.
 		 */
 		std::string get_raw_request();
 
 		/**
-		 * @brief 
-		 * 		Get host name.
-		 * @return
-		 * 		Host string.
+		 * @brief  Get host name.
+		 * @return  Host string.
 		 */
 		std::string get_host();
 
 		/**
-		 * @brief
-		 * 		Get port string.
-		 * @return
-		 * 		Port string.
+		 * @brief  Get port string.
+		 * @return  Port string.
 		 */
 		std::string get_port();
 

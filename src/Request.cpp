@@ -1,5 +1,6 @@
 #include "Uri.hpp"
 #include "Request.hpp"
+
 #include <sstream>
 
 namespace Message
@@ -36,11 +37,11 @@ namespace Message
     {
     }
 
-    Message::Request::Request(const Request& other) noexcept
+    Message::Request::Request(const Request& other)
     {
         *this = other;
     }
-    Request& Message::Request::operator=(const Request& other) noexcept
+    Request& Message::Request::operator=(const Request& other)
     {
         if(this!=&other)
         {
@@ -48,13 +49,14 @@ namespace Message
         }
         return *this;
     }
+    
     Message::Request::Request(Request&&) noexcept = default;
     Request& Message::Request::operator=(Request&& ) noexcept = default;
 
     // public methods
-    bool Message::Request::set_raw_request(std::string rawRequestString)
+    bool Message::Request::set_raw_request(std::string raw_request_string)
     {
-        impl_->raw_request = rawRequestString;
+        impl_->raw_request = raw_request_string;
         return true;
     }
 
@@ -75,20 +77,20 @@ namespace Message
             return false;
         }
         
-        std::stringstream rawRequestStream;
+        std::stringstream raw_request_string_stream;
         // set status line
-        rawRequestStream << impl_->method << " " << impl_->uri->get_path_string() << " " << impl_->http_version << "\r\n";
+        raw_request_string_stream << impl_->method << " " << impl_->uri->get_path_string() << " " << impl_->http_version << "\r\n";
         // set headers
         for(auto position = impl_->headers_map.cbegin(); position != impl_->headers_map.cend(); ++position)
         {
-            rawRequestStream << position->first.c_str() << ": " << position->second.c_str() << "\r\n";    
+            raw_request_string_stream << position->first.c_str() << ": " << position->second.c_str() << "\r\n";    
         }
         // set headers end delimiter
-        rawRequestStream << "\r\n";
+        raw_request_string_stream << "\r\n";
         // set body 
-        rawRequestStream << impl_->body;
+        raw_request_string_stream << impl_->body;
 
-        impl_->raw_request = rawRequestStream.str();
+        impl_->raw_request = raw_request_string_stream.str();
         return true;
     }
 
@@ -112,8 +114,18 @@ namespace Message
         {
             return false;
         }
-        // +2 is to make sure the last header also has the trailing "\r\n";
-        impl_->headers = impl_->raw_request.substr(request_line_end_delimiter + 2, headers_end_delimiter + 2);
+
+        size_t headers_begin_position = request_line_end_delimiter + 2;
+        /**
+         * +2 is to make sure the last header also has the trailing "\r\n",
+         * so that each header:value pair has "\r\n" at the end.
+         * It makes the parsing of headers more easier.
+         */
+        size_t headers_end_position = headers_end_delimiter + 2;
+        
+        size_t headers_size = headers_end_position - headers_begin_position;
+        
+        impl_->headers = impl_->raw_request.substr(headers_begin_position, headers_size);
         if (!parse_headers(impl_->headers))
         {
             return false;
@@ -134,7 +146,6 @@ namespace Message
 
         std::string headers_buffer = headers;
 
-        
         for(;;)
         {
             auto single_header_line_end_delimiter = headers_buffer.find("\r\n");
@@ -150,41 +161,27 @@ namespace Message
             {
                 std::string single_header_line = headers_buffer.substr(0, single_header_line_end_delimiter);
 
-                auto colonPosition = single_header_line.find(':');
+                auto colon_position = single_header_line.find(':');
 
-                if (colonPosition == std::string::npos)
+                if (colon_position == std::string::npos)
                 {
                     impl_->headers.clear();
                     return false;
                 }
 
-                
-                std::string header_name = single_header_line.substr(0, colonPosition);
-                std::string headerValue = single_header_line.substr(colonPosition + 1);
+                std::string header_name = single_header_line.substr(0, colon_position);
+                std::string header_value = single_header_line.substr(colon_position + 1);
 
-                // TODO: add new function to strip leading and trailing whitespace from string
-                // Any number of spaces or tabs may be between the ":" and the value. 
-                // Header lines beginning with space or tab are actually part of the previous header line,
-                // folded into multiple lines for easy reading.
-                if (header_name.find_last_of(' ') == header_name.size())
-                {
-                    header_name = header_name.substr(0, header_name.find_last_of(' '));
-                }
-                else if(header_name.find_first_of(' ') == 0)
-                {
-                    header_name = header_name.substr(1);
-                }
-
-                if (headerValue.find_first_of(' ') == 0)
-                {
-                    headerValue = headerValue.substr(1);
-                }
-                else if (headerValue.find_last_of(' ') == headerValue.size())
-                {
-                    headerValue = headerValue.substr(0, headerValue.find_last_of(' '));
-                }
+                /**
+                 * Strip leading and trailing whitespaces of header name and header value;
+                 * e.g. " Host  "        => "Host" 
+                 *      "  bitate.com  " => "bitate.com"
+                 * Note: Any number of spaces of tabs may exist around the ':'
+                 */
+                header_name = header_name.substr(header_name.find_first_not_of(' '), header_name.find_last_not_of(' ') + 1);
+                header_value = header_value.substr(header_value.find_first_not_of(' '), header_value.find_last_not_of(' ') + 1);
             
-                impl_->headers_map[header_name] = headerValue;
+                impl_->headers_map[header_name] = header_value;
                 
                 headers_buffer = headers_buffer.substr(single_header_line_end_delimiter + 2);
             }
@@ -267,7 +264,7 @@ namespace Message
         return true;
     }
 
-    std::string Message::Request::get_method()
+    std::string Message::Request::get_request_method()
     {
         return impl_->method;
     }
