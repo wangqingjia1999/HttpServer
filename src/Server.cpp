@@ -150,7 +150,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         
                         std::string ip_string = inet_ntoa(client_socket_address.sin_addr);
                         std::string port_string = std::to_string((client_socket_address.sin_port));
-                        logger::record("Accept request from: " + ip_string + ":" + port_string);
+                        logger::record("Accept connection from: " + ip_string + ":" + port_string);
                     
                         // and add new client socket into epoll events list
                         ev.data.fd = impl_->client_socket;
@@ -199,7 +199,7 @@ bool Server::listen_at(const std::string& host, const int port)
                             }
                             else
                             {
-                                logger::record("Successfully generate response");
+                                logger::record("Successfully generate response for socket: " + std::to_string(triggered_socket_fd));
                             }
                             
                             if(!send_response(triggered_socket_fd, impl_->send_buffer))
@@ -212,7 +212,7 @@ bool Server::listen_at(const std::string& host, const int port)
                             }
                             else
                             {
-                                logger::record("Successfully: send response");
+                                logger::record("Successfully: send response for socket: " + std::to_string(triggered_socket_fd));
                             }
                             
                             ev.data.fd = triggered_socket_fd;

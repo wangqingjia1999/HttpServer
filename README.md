@@ -23,6 +23,17 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 7. make
 ```
 
+# Supported
+- Methods
+  - Get
+- Logging
+- Concurrency up to 900+
+
+## TODOs
+- WebSocket
+- Keep-live Connection
+- Multithreading
+
 ## Third Party Libraries
 * [UTF-8](https://github.com/rhymu8354/Utf8)
 
