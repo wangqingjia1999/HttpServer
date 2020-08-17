@@ -1,6 +1,8 @@
-#pragma once
+#ifndef REQUEST_HPP
+#define REQUEST_HPP
 
 #include "Uri.hpp"
+
 #include <memory>
 #include <sstream>
 #include <map>
@@ -164,4 +166,4 @@ namespace Message
 	};
 }
 
-
+#endif

@@ -76,6 +76,12 @@ public:
 	bool generate_response();
 
 	/**
+	 * @brief  Handle POST request.
+	 * @return  True if successfully handle it.
+	 */
+	bool handle_post_request();
+
+	/**
 	 * @brief
 	 * 		Get raw request string.
 	 * @return 

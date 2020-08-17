@@ -13,12 +13,13 @@ mysql_handler::mysql_handler() : impl_(new Impl)
 };
 mysql_handler::~mysql_handler() = default;
 
-mysql_handler::mysql_handler(const mysql_handler& other) noexcept
+mysql_handler::mysql_handler(const mysql_handler& other)
 {   
     *this = other;
 };
-mysql_handler& mysql_handler::operator=(const mysql_handler& other) noexcept
+mysql_handler& mysql_handler::operator=(const mysql_handler& other)
 {
+    // prevent self-copy
     if(this != &other)
     {
         *impl_ = *other.impl_;
@@ -43,9 +44,11 @@ bool mysql_handler::initialize_mysql_layout()
                                     // "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                     "user_name VARCHAR(20),"
                                     "user_age TINYINT UNSIGNED,"
-                                    "user_email VARCHAR(255) NOT NULL PRIMARY KEY"
+                                    "user_email VARCHAR(255) NOT NULL PRIMARY KEY,"
+                                    "user_password VARCHAR(255) NOT NULL"
                                     ")";
         execute_command(user_info_table);
+        impl_->connection_ptr->setSchema("Http_Server");
         return true;
     }
     catch(const std::exception& e)
@@ -65,8 +68,7 @@ bool mysql_handler::connect_to_mysql(const int port, const std::string username,
     const std::string mysql_connection_uri = "tcp://127.0.0.1:" + std::to_string(port);
     // Connect to mysql database.
     impl_->connection_ptr = driver->connect(mysql_connection_uri, username, password);
-    impl_->connection_ptr->setSchema("Http_Server");
-    return true;
+    return initialize_mysql_layout();
 }
 
 void mysql_handler::execute_command(const std::string command_string)
@@ -93,12 +95,13 @@ void mysql_handler::drop_table(const std::string table_name)
     execute_command("DROP TABLE IF EXISTS " + table_name);
 }
 
-bool mysql_handler::add_user(const std::string name, const int age, const std::string email)
+bool mysql_handler::add_user(const std::string& name, const int age, const std::string& email, const std::string& password)
 {
-    sql::PreparedStatement* prepared_statement_ptr = impl_->connection_ptr->prepareStatement("INSERT IGNORE INTO user_info VALUES (?, ?, ?)");
+    sql::PreparedStatement* prepared_statement_ptr = impl_->connection_ptr->prepareStatement("INSERT IGNORE INTO user_info VALUES (?, ?, ?, ?)");
     prepared_statement_ptr->setString(1, name);
     prepared_statement_ptr->setInt(2, age);
     prepared_statement_ptr->setString(3, email);
+    prepared_statement_ptr->setString(4, password);
     
     try
     {
@@ -129,6 +132,8 @@ std::vector<std::string> mysql_handler::fetch_user_by_name(const std::string& qu
             query_result.push_back(user_age);
             auto user_email = result_set_ptr->getString(3);
             query_result.push_back(user_email);
+            auto user_password = result_set_ptr->getString(4);
+            query_result.push_back(user_password);
 
             delete result_set_ptr;
             delete prepared_statement_ptr;    
@@ -142,5 +147,4 @@ std::vector<std::string> mysql_handler::fetch_user_by_name(const std::string& qu
     {
         std::cerr << e.what() << std::endl;
     }
-    
 }

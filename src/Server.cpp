@@ -1,26 +1,25 @@
+#include "Server.hpp"
+#include "mysql_handler.hpp"
+#include "websocket.hpp"
+#include "logger.hpp"
+#include "status_handler.hpp"
+#include "thread_pool.hpp"
+
 #include <sys/epoll.h>
 #include <queue>
 #include <mutex>
 #include <thread>
 #include <condition_variable>
 
-#include "Server.hpp"
-#include "websocket.hpp"
-#include "logger.hpp"
-#include "status_handler.hpp"
-#include "thread_pool.hpp"
 
 namespace
 {
     /**
-     * If request is a websocket opening handshake request.
-     * This function is experimental. I'm not sure this is an appropriate way.
+     * @brief  Whether the request is a WebSocket openning handshake request.
+     * @param  request  Request object that has been parsed successfully.
+     * @return  True if it is WebSocket openning handshake request.
      * 
-     * @param[in] request
-     *      Request object that has been parsed successfully.
-     * @return
-     *      true if it's websocket opening handshake;
-     *      false if it's not.
+     * Note: this is in experimental, I'm not ensure its satety :)
      */
     bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request)
     {
@@ -50,6 +49,10 @@ struct Server::Impl
 
     // Server side request object that is responsible for parseing coming request.
     std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
+
+    mysql_handler mysql;
+    
+    std::map< std::string, std::string > post_data_map;
 };
 
 Server::~Server()
@@ -315,6 +318,62 @@ void Server::set_raw_request(const std::string& raw_request)
     impl_->request->set_raw_request(raw_request);
 }
 
+bool Server::handle_post_request()
+{
+    /**
+     * e.g. impl_->request->get_body() is "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer"
+     */
+    Uri::PercentEncoding percent_encoding;
+    /**
+     * Append an additional '&', so that each name=value pair has a trailing '&'
+     */
+    std::string body_buffer = percent_encoding.decode(impl_->request->get_body()) + '&';
+
+    while(!body_buffer.empty())
+    {
+        if(body_buffer.find_first_of('&') != std::string::npos)
+        {
+            if(body_buffer.find_first_of('=') != std::string::npos)
+            {   
+                std::string name = body_buffer.substr(0, body_buffer.find_first_of('='));
+                
+                std::string value = body_buffer.substr(
+                    body_buffer.find_first_of('=') + 1, 
+                    body_buffer.find_first_of('&') - body_buffer.find_first_of('=') - 1
+                );
+
+                impl_->post_data_map[std::move(name)] = std::move(value);
+
+                body_buffer = body_buffer.substr(body_buffer.find_first_of('&')+1);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // add data to mysql
+    if(!impl_->post_data_map.empty())
+    {
+        impl_->mysql.connect_to_mysql(3306, "bitate", "qwer");
+        
+        impl_->mysql.initialize_mysql_layout();
+
+        return impl_->mysql.add_user(
+            impl_->post_data_map.find("Name")->second,
+            std::stoi(impl_->post_data_map.find("Age")->second),
+            impl_->post_data_map.find("Email")->second,
+            impl_->post_data_map.find("Password")->second
+        );
+    }
+    return true;
+}
+
 bool Server::request_core_handler()
 {
     // Parse request
@@ -323,6 +382,22 @@ bool Server::request_core_handler()
         // 400 Bad Request
         status_handler::handle_status_code(impl_->response, 400);
         return false;
+    }
+
+    // Is POST request
+    if(impl_->request->get_request_method() == "POST")
+    {
+        if(handle_post_request())
+        {
+            // Content created
+            status_handler::handle_status_code(impl_->response, 201);
+            return true;
+        }
+        else
+        {
+            // bad request
+            status_handler::handle_status_code(impl_->response, 400);
+        }
     }
 
     // Is websocket opening handshake?
@@ -343,7 +418,8 @@ bool Server::request_core_handler()
 
     // Resources handler
     if(
-        !impl_->response->set_content(impl_->request->get_request_uri())
+        impl_->request->get_request_method() == "GET"
+        && !impl_->response->set_content(impl_->request->get_request_uri())
     )
     {
         // 404 Not Found
