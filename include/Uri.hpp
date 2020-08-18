@@ -11,237 +11,185 @@ namespace Uri
 {
 	class Uri
 	{
-		// Lifecycle management
 	public:
 		~Uri() noexcept;
-        Uri(const Uri& other);
-        Uri(Uri&&) noexcept;
-        Uri& operator=(const Uri& other);
-        Uri& operator=(Uri&&) noexcept;
-		
-	public:
-		// constructor
-		Uri();
+        Uri();
 
+		Uri(const Uri& other);
+		Uri& operator=(const Uri& other);
+
+        Uri(Uri&&) noexcept;
+        Uri& operator=(Uri&&) noexcept;
+	public:
 		/**
-		 * This function is used to get scheme.
-		 *
-		 * @param[in] s
-		 *
-		 * @return
-		 *		A string of scheme.
+		 * @brief  Get scheme of URI.
+		 * @return  Scheme string.
 		 */
 		std::string get_scheme();
 
 		/**
-		 * This function is used to get Host.
-		 *
-		 * @param[in] s
-		 *
-		 * @return
-		 *		A string of host.
+		 * @brief  Get Host of URI.
+		 * @return  Host string.
 		 */
 		std::string get_host();
 
 		/**
-		 * @brief
-		 * 		Get path vector.
-		 * @return
-		 *		A vector of path elements
+		 * @brief  Get path vector of URI.
+		 * @return  A vector of path elements
 		 */
 		std::vector< std::string > get_path();
 
 		/**
-		 * @brief
-		 * 		Get path string.
-		 * @return 
-		 * 		A path string.
+		 * @brief  Get path string of URI.
+		 * @return  A path string.
 		 */
 		std::string get_path_string();
 
 		/**
-		 * @brief
-		 * 		Get port number.
-		 * @return
-		 *		A int number of port.
+		 * @brief  Get port number of URI.
+		 * @return  A int number represents port.
 		 */
 		int get_port();
 
 		/**
-		 * This function is used to get query.
-		 *
-		 * @param[in] s
-		 *
-		 * return
-		 *		A query string.
+		 * @brief  Get query string of URI.
+		 * @return  A query string.
 		 */
 		std::string get_query();
 
 		/**
-		 * This function is used to get fragment.
-		 *
-		 * @param[in] s
-		 *
-		 * return
-		 *		A fragment string.
+		 * @brief  Get fragment string of URI.
+		 * @return  A fragment string.
 		 */
 		std::string get_fragment();
 
 		/**
-		 * This function is used to get user info.
-		 *
-		 * @param[in] s
-		 *
-		 * return
-		 *		A user info string.
+		 * @brief  Get user info of URI.
+		 * @return  A user info string.
 		 */
 		std::string get_user_info();
 
 		
 		/**
-		 * This function is used to set scheme.
-		 *
-		 * @param[in] s
-		 *		A scheme string.
-		 *
-		 * @return
-		 *		An indication of whether or not the scheme is set
-		 *		is returned.
+		 * @brief  Set scheme.
+		 * @return  True if successfully set.
 		 */
-		bool set_scheme(std::string& s);
+		bool set_scheme(std::string& scheme);
 
 		/**
-		 * This function is used to set scheme.
-		 *
-		 * @param[in] h
-		 *		A host string.
-		 *
-		 * @return
-		 *		An indication of whether or not the host is set
-		 *		is returned.
+		 * @brief  Set host.
+		 * @param  host  Host string.
+		 * @return  True if successfully set.
 		 */
-		bool set_host(std::string& h);
+		bool set_host(std::string& host);
 
 		/**
-		 * This function is used to set scheme.
-		 *
-		 * @param[in] p
-		 *		A port int.
-		 *
-		 * @return
-		 *		An indication of whether or not the port is set
-		 *		is returned.
+		 * @brief  Set port.
+		 * @param  port  Port int.
+		 * @return  True if successfully set.
 		 */
-		bool set_port(int& p);
+		bool set_port(int& port);
 
 		/**
-		 * This function is used to set scheme.
-		 *
-		 * @param[in] q
-		 *		A query string.
-		 *
-		 * @return
-		 *		An indication of whether or not the query is set
-		 *		is returned.
+		 * @brief  Set query.
+		 * @param  query  Query string.
+		 * @return  True if successfully set.
 		 */
-		bool set_query(std::string q);
+		bool set_query(std::string query);
 
 		/**
-		 * This function is used to set scheme.
-		 *
-		 * @param[in] s
-		 *		A scheme string.
-		 *
-		 * @return
-		 *		An indication of whether or not the fragment is set
-		 *		is returned.
+		 * @brief  Set fragment.
+		 * @param  fragment  Fragment string.
+		 * @return  True if successfully set.
 		 */
-		bool set_fragment(std::string& s);
+		bool set_fragment(std::string& fragment);
 
 		/**
-		 * This function is used to set user info.
-		 *
-		 * @param[in] u
-		 *		A user info string.
-		 *
-		 * @return
-		 *		An indication of whether or not the user info
-		 *		is set is returned.
+		 * @brief  Set user info.
+		 * @param  user_info  User info string.
+		 * @return  True if successfully set.
 		 */
-		bool set_user_info(std::string& u);
+		bool set_user_info(std::string& user_info);
 
 		
 		/**
-		 * Clear port field.
-		 *
-		 * @return
-		 *		An indication of whether or not the
-		 *		port is cleared successfully.
+		 * @brief  Clear port.
+		 * @return  True if successfully clear.
 		 */
 		bool clear_port();
 
 		/**
-		 * Clear query field
-		 *
-		 * @return
-		 *		An indication of whether or not the
-		 *		query is cleared is returned.
+		 * @brief  Clear query.
+		 * @return  True if successfully clear.
 		 */
 		bool clear_query();
 
 		/**
-		 * Clear fragment field.
-		 *
-		 * @return
-		 *		An indication of whether or not the
-		 *		fragment is cleared is returned.
+		 * @brief  Clear fragment.
+		 * @return  True if successfully clear..
 		 */
 		bool clear_fragment();
 
 		/**
-		 * Clear scheme field.
-		 *
-		 * return
-		 *		An indication of whether or not
-		 *		the scheme is cleared successfully.
+		 * @brief  Clear scheme.
+		 * @return  True if successfully clear.
 		 */
 		bool clear_scheme();
 
 		/**
-		 * Clear path field.
-		 *
-		 * return
-		 *		An indication of whether or not
-		 *		the path is cleared successfully.
+		 * @brief  Clear path.
+		 * @return  True if successfully clear.
 		 */
 		bool clear_path();
 
 		/**
-		 * Main uri-string-parser to parse the raw uri string.
-		 *
-		 * @param[in]
-		 *
-		 * @return
-		 *		An indication of whether or not
-		 *		the raw uri string is parsed successfully.
+		 * @brief  Parse an URI string.
+		 * @param  uri_string  URI string to be parsed.
+		 * @return  True if successfully parse.
 		 */
 		bool parse_from_string(const std::string& uri_string);
 		
+		/**
+		 * @brief  Has port?
+		 * @return  True if it has port.
+		 */
 		bool has_port();
+
+		/**
+		 * @brief  Has fragment?
+		 * @return  True if it has fragment.
+		 */
 		bool has_fragment();
+
+		/**
+		 * @brief  Has query?
+		 * @return  True if it has query.
+		 */
 		bool has_query();
 
+		/**
+		 * @brief  Is relative reference?
+		 * @return  True if it is relative reference.
+		 */  
 		bool is_relative_reference();
 
+		/**
+		 * @brief  Has relative path?
+		 * @return  True if it has relativ path.
+		 */
 		bool has_relative_path();
 
 	private:
 		/**
-         * This is the structure that contains the private properties.  
-		 * It is defined in the implementation
+         * @brief  This is the type of structure that contains the private
+         * properties of the instance.  It is defined in the implementation
          * and declared here to ensure that it is scoped inside the class.
          */
 		struct Impl;
+
+		/**
+         * @brief  This contains the private properties of the instance.
+         */
 		std::unique_ptr< Impl > impl_;
 	};
 }

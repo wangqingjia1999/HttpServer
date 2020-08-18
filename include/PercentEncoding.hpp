@@ -10,20 +10,40 @@ namespace Uri
 	public:
 		~PercentEncoding();
 		PercentEncoding();
-		PercentEncoding(const PercentEncoding&) noexcept;
+
+		PercentEncoding(const PercentEncoding&);
+		PercentEncoding& operator=(const PercentEncoding&) ;
+
 		PercentEncoding(PercentEncoding&&) noexcept;
-		PercentEncoding& operator=(const PercentEncoding&) noexcept;
 		PercentEncoding& operator=(PercentEncoding&&) noexcept;
 
 		// Member methods
 	public:
 
-		std::string encode(const std::string& s);
+		/**
+		 * @brief  Encode raw unencoded string.
+		 * @param  unencoded_string  Raw unencoded string.
+		 * @return  Encoded string.
+		 */
+		std::string encode(const std::string& unencoded_string);
 
-		std::string decode(const std::string& s);
+		/**
+		 * @brief  Decode the given encoded_string.
+		 * @param  encoded_string  String has been encoded.
+		 * @return  Decoded string.
+		 */
+		std::string decode(const std::string& encoded_string);
 
+		/**
+		 * @brief  Is finished processing?
+		 * @return  True if it is finished.
+		 */
 		bool is_finished();
 
+		/**
+		 * @brief  Get decoded character.
+		 * @return  Decoded character.
+		 */
 		char get_decoded_character();
 
 	private:

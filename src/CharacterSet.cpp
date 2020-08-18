@@ -8,15 +8,6 @@ Uri::CharacterSet::CharacterSet()
 {
 }
 
-bool Uri::CharacterSet::is_contains(char c) const
-{
-	if (characterSet.find(c) != characterSet.cend())
-	{
-		return true;
-	}
-	return false;
-}
-
 Uri::CharacterSet::CharacterSet(char c)
 {
 	characterSet.insert(c);
@@ -44,4 +35,13 @@ Uri::CharacterSet::CharacterSet(char first, char last)
 	{
 		characterSet.insert(c);
 	}
+}
+
+bool Uri::CharacterSet::is_contains(char c) const
+{
+	if (characterSet.find(c) != characterSet.cend())
+	{
+		return true;
+	}
+	return false;
 }

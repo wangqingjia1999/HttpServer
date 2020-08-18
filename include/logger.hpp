@@ -6,10 +6,10 @@
 namespace logger
 {
     /**
-     * Store log into ".../HttpServer/log.txt" in the project root directory.
+     * @brief  Record a message into log.txt.
+     * @param  message_string  Log information to be stored into log.txt.
      * 
-     * @param[in] message_string.
-     *      Log information to be stored into log.txt.
+     * @note  Store the logs into "../HttpServer/log.txt".
      */
     void record(const std::string& message_string);
 }

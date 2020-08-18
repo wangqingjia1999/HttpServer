@@ -7,12 +7,10 @@
 namespace status_handler
 {
     /**
-	 * Handle given status code.
+	 * @brief  Handle given status code.
 	 * 
-     * @param[in] response
-     *      A pointer to response object.
-	 * @param[in]
-	 * 		Status code integer.
+     * @param  response  Pointer to response object.
+	 * @param  status_code  Status code integer.
 	 */
 	void handle_status_code( std::shared_ptr< Message::Response >& response, const int status_code);
 

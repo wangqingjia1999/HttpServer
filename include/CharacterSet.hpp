@@ -11,38 +11,46 @@ namespace Uri
 		// Lifecycle management
 	public:
 		~CharacterSet();
+		CharacterSet();
+		
 		CharacterSet(const CharacterSet&) = default;
-		CharacterSet(CharacterSet&&) = default;
 		CharacterSet& operator=(const CharacterSet&) = default;
+
+		CharacterSet(CharacterSet&&) = default;
 		CharacterSet& operator=(CharacterSet&&) = default;
 
 		// Methods
 	public:
-		CharacterSet();
-
 		/**
-		 * Construct one argument.
+		 * @brief  Construct one argument.
+		 * @param  c  A character.
 		 */
 		CharacterSet(char c);
 
 		/**
-		 *
-		 * Construct a list of arguments.
+		 * @brief  Construct a list of arguments.
+		 * @param  characterSets  A list of characters.
 		 */
 		CharacterSet(std::initializer_list< const CharacterSet > characterSets);
 
 		/**
-		 * Construct a range of arguments.
+		 * @brief  Construct a range of arguments.
+		 * @param  first  First character.
+		 * @param  last  Last character.
 		 */
 		CharacterSet(char first, char last);
 
 		/**
-		 * Is contain given character?
+		 * @brief  Is contain given character?
+		 * @param  c  Character
+		 * @return  True if contain c.
 		 */
 		bool is_contains(char c) const;
 
 		/**
-		 * Is the given string integers
+		 * @brief  Given string is integer string?
+		 * @param  inputString  Input string.
+		 * @return  True if it is integer string.
 		 */
 		bool isIntegerString( std::string inputString ) const;
 

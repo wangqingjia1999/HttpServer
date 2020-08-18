@@ -24,9 +24,11 @@ namespace
 		SUB_DELIMS,
 	};
 
-	// Temporary solution
-	// URI producers and normalizers should use uppercase hexadecimal digits
-	// for all percent-encodings.
+	/**
+	 * Experimental solution:
+	 * URI producers and normalizers should use uppercase hexadecimal digits
+	 * for all percent-encodings.
+	 */
 	const std::map<int, char> hexMap
 	{
 		{0,'0'},
@@ -67,12 +69,12 @@ namespace Uri
 	{
 	}
 
-	Uri::PercentEncoding::PercentEncoding(const PercentEncoding& other) noexcept
+	Uri::PercentEncoding::PercentEncoding(const PercentEncoding& other)
 	{
 		*this = other;
 	}
 
-	PercentEncoding& Uri::PercentEncoding::operator=(const PercentEncoding& other) noexcept
+	PercentEncoding& Uri::PercentEncoding::operator=(const PercentEncoding& other)
 	{
 		if(this != &other)
 		{
@@ -84,30 +86,26 @@ namespace Uri
 	Uri::PercentEncoding::PercentEncoding(PercentEncoding&&) noexcept = default;
 	PercentEncoding& Uri::PercentEncoding::operator=(PercentEncoding&&) noexcept = default;
 
-	std::string Uri::PercentEncoding::encode(const std::string& s)
+	std::string Uri::PercentEncoding::encode(const std::string& unencoded_string)
 	{
-		// Under normal circumstances, the only time to encode 
-
-		// is during the process of producing the URI from components.
-
-		// "%" is the indicater of percent-encoded octets.
-
-		// Implementations must not encode/decode the same string more than once
-
-		// encode two steps:
-		// 1. Convert the character string into a sequence of bytes using the UTF-8 encoding
-		// 2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is the 
-		//	  hexadecimal value of the byte
-
+		/**
+		 * Under normal circumstances, the only time to encode is during the process
+		 * of assembling the URI from its components.
+		 * '%' is the indicator of percent-encoding.
+		 * 
+		 * Two steps to encode:
+		 * 	1. Convert the character string into a sequence of bytes using the UTF-8 encoding;
+		 * 	2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is 
+		 * 	   the hexadecimal value of the byte
+		 */
 		std::string encoded_string;
-
-		for (size_t i = 0; i < s.size(); ++i)
+		for (size_t i = 0; i < unencoded_string.size(); ++i)
 		{
 			// only encode reserved characters
-			if (RESERVED.is_contains(s[i]))
+			if (RESERVED.is_contains(unencoded_string[i]))
 			{
-				int second = s[i] % 16;
-				int first = (s[i] - second) / 16;
+				int second = unencoded_string[i] % 16;
+				int first = (unencoded_string[i] - second) / 16;
 
 				encoded_string.push_back('%');
 				encoded_string.push_back(convertDecimalToHexoCharacter(first));
@@ -115,25 +113,14 @@ namespace Uri
 			}
 			else
 			{
-				encoded_string.push_back(s[i]);
+				encoded_string.push_back(unencoded_string[i]);
 			}
 		}
 		return  encoded_string;
 	}
 
-	/**
-	 * decode the given encoded_string.
-	 *
-	 * @note
-	 *		Only support ASCII characters.
-	*
-	* @param[in] s
-	*		is the given encoded_string.
-	*
-	* @return
-	*		DecodedString.
-	*/
-	std::string Uri::PercentEncoding::decode(const std::string& s)
+	
+	std::string Uri::PercentEncoding::decode(const std::string& encoded_string)
 	{
 		// When a URI is dereferenced/decode, the components and subcomponents
 		// must be parsed and separated before the decoding.
@@ -141,25 +128,26 @@ namespace Uri
 
 		// The uppercase hexadecimal digits 'A' through 'F' are equivalent to
 		// the lowercase digits 'a' through 'f', respectively.
-		if (s.find('%') == std::string::npos)
+		if (encoded_string.find('%') == std::string::npos)
 		{
-			return s;
+			return encoded_string;
 		}
 
 		std::string decoded_uri_string;
-
-		for (size_t i = 0; i < s.size(); ++i)
+		for (size_t i = 0; i < encoded_string.size(); ++i)
 		{
-			// %[1][2] 
-			// [1]*16 + [2] 
-			// This way, we can get its corespoding decimal number,
-			// Thus, directly turn it into char.
-
-			// TODO: Add toUper string extension
-			if (s[i] == '%')
+			/**
+			 * Each character is in the form of: %[1][2]
+			 * We do this:  [1]*16 + [2]
+			 * Use this method, we get the decimal number,
+			 * then directly converting it to char.
+			 * 
+			 * TODO:  Add to_upper_case().
+			 */
+			if (encoded_string[i] == '%')
 			{
-				char first = s[i + 1];
-				char second = s[i + 2];
+				char first = encoded_string[i + 1];
+				char second = encoded_string[i + 2];
 				i = i + 2;
 				if (first >= 'A')
 				{
@@ -189,7 +177,7 @@ namespace Uri
 			}
 			else
 			{
-				decoded_uri_string.push_back(s[i]);
+				decoded_uri_string.push_back(encoded_string[i]);
 			}
 		}
 

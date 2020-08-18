@@ -10,62 +10,47 @@ class Client
 public:
 	~Client();
 	Client();
-	Client(const Client&) noexcept;
+
+	Client(const Client&);
+	Client& operator=(const Client&) ;
+	
 	Client(Client&&) noexcept;
-	Client& operator=(const Client&) noexcept;
 	Client& operator=(Client&&) noexcept;
 public:
 	/**
-	 * @brief
-	 * 		Connect to target server.
-	 * @param[in] 
-	 * 		Host string.
-	 * @param[in]
-	 * 		Port string.
-	 * @return
-	 * 		true/false.
+	 * @brief  Connect to target server.
+	 * @return  True if successfully connect to server.
 	 */
 	bool connect_to();
 	
 	/**
-	 * @brief
-	 * 		Send request to server.
-	 * @return 
-	 * 		true/false.
+	 * @brief  Send request to server.
+	 * @return  True if successfully send request to server.
 	 */
 	bool send_request();
 
 	/** 
-	 * @brief
-	 * 		Parse received response from Server.
-	 * @return
-	 *		true/false.
+	 * @brief  Parse received response from Server.
+	 * @return  True if successfully parse the response.
 	 */
 	bool parse_response();
 
 	/**
-	 * @brief
-	 * 		Generate request message.
-	 * @return 
-	 * 		true/false
+	 * @brief  Generate request message.
+	 * @return  True if successfully generate message.
 	 */
 	bool generate_request();
 
 	/**
-	 * @brief
-	 * 		Parse uri string.
-	 * @param[in]
-	 * 		Uri string.
-	 * @return
-	 * 		true/false
+	 * @brief  Parse URI string.
+	 * @param  uri  URI string.
+	 * @return  True if successfully parse URI.
 	 */
 	bool parse_uri(const std::string uri);
 
 	/**
-	 * @brief
-	 * 		Get generated request string.
-	 * @return
-	 * 		Generated Request String.
+	 * @brief  Get generated request string.
+	 * @return  Generated request string.
 	 */
 	std::string get_generated_request();
 

@@ -31,31 +31,23 @@ public:
     websocket& operator=(websocket&&) noexcept;
 public:
     /**
-     * Send a ping message over the WebSocket.
-     * 
-     * @param[in] data
-     *      This is the optional data to be included in the message. 
+     * @brief  Send a ping message over the WebSocket.
+     * @param  data  Optional data to be included in the message. 
      */
     void ping(const std::string& data = "");
 
     /**
      * Send a poing unsolicited pong message over WebSocket.
      * 
-     * @param[in] data
-     *      This is the optional data to be included in the message.
+     * @param  data  Optional data to be included in the message.
      */
     void pong(const std::string& data = "");
 
     /**
-     * Send a binary message over the WebSocket.
-     * 
-     * @param[in] file_descriptor
-     *      The file descriptor of receiver.
-     * @param[in] data
-     *      This is the data to be included in the message.
-     * @param[in] is_last_fragment
-     *      This indicates whether or not it's 
-     *      the last frame in the message.
+     * @brief  Send a binary message over the WebSocket.
+     * @param  file_descriptor  The file descriptor of receiver.
+     * @param  data  Data to be included in the message.
+     * @param  is_last_fragment  Whether or not it's the last frame in the message.
      */
     void send_binary(
         const int file_descriptor,
@@ -64,14 +56,10 @@ public:
     );
 
     /**
-     * Send a text message over the WebSocket.
-     * 
-     * @param[in] file_descriptor
-     *      The file descriptor of receiver.
-     * @param[in] data
-     *      This is the data to be included in the message.
-     * @param[in] is_last_fragment
-     *      Whether or not this is the last fragment in the message.
+     * @brief  Send a text message over the WebSocket.
+     * @param  file_descriptor  The file descriptor of receiver.
+     * @param  data  Data to be included in the message.
+     * @param  is_last_fragment  Whether or not this is the last fragment in the message.
      */
     void send_text(
         const int file_descriptor,
@@ -79,10 +67,22 @@ public:
         bool is_last_fragment = false
     );
 
-    bool parse_websocket_request();
-    bool generate_websocket_request();
     /**
-     * Close WebSocket connection.
+     * @brief  Parse websocket request.
+     * @return  True if successfully parse websocket request.
+     */
+    bool parse_websocket_request();
+
+    /**
+     * @brief  Generate websocket request.
+     * @return  True if successfully generate websocket request.
+     */
+    bool generate_websocket_request();
+    
+    /**
+     * @brief  Close WebSocket connection.
+     * @param  code  Close flag code, with default value of 1005.
+     * @param  reason  Reason phrase.
      */
     void close_connection(
         unsigned int code = 1005,
@@ -90,22 +90,18 @@ public:
     );
 
     /**
+     * @brief  Generate WebSocket Key
+     * @return  WebSocket Key.
+     * 
      * Generate WebSocket Key for Sec-WebSocket-Accept header's value,
      * based on the request's Sec-WebSocket-Key field.
-     * 
-     * @return std::string
-     *      WebSocket Key to be filled in Sec-WebSocket-Accept of response.
      */
     std::string generate_sec_websocket_key();
 
     /**
-     * Generate WebSocket Key for Sec-WebSocket-Accept header's value,
-     * based on given string.
-     * 
-     * @param[in] key_string
-     *      Given key string.
-     * @return std::string
-     *      WebSocket Key to be filled in Sec-WebSocket-Accept of response.
+     * @brief  Generate WebSocket Key
+     * @param  key_string  Given key string.
+     * @return  WebSocket Key to be filled in Sec-WebSocket-Accept of response.
      */
     std::string generate_sec_websocket_key(const std::string& key_string);
 

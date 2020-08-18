@@ -27,12 +27,11 @@ Client::Client() : impl_(new Impl)
 {
 }
 
-Client::Client(const Client& other) noexcept
+Client::Client(const Client& other)
 {
     *this = other;
 }
-
-Client& Client::operator=(const Client& other) noexcept
+Client& Client::operator=(const Client& other)
 {
     if(this!=&other)
     {
