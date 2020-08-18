@@ -21,7 +21,12 @@ namespace Message
         // Store the generated/received raw headers
         std::string headers;
 
-        // For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
+        /**
+         * For search bar: /?Search=This+is+just+a+demo
+         * For normal get: /index.html
+         * 
+         * For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
+         */
         std::string request_uri;
 
         // Contain the header {key: value} pairs

@@ -26,6 +26,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 # Supported
 - Methods
   - Get
+  - POST
 - Logging
 - Concurrency up to 900+
 

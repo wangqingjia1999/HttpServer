@@ -1,4 +1,7 @@
 #include "Response.hpp"
+#include "logger.hpp"
+#include "mysql_handler.hpp"
+
 #include <memory>
 
 namespace
@@ -105,6 +108,8 @@ namespace Message
 
 		// Generated response message in the form of string
 		std::string response_message;
+
+		Uri::Uri uri;
 	};
 	
 	Message::Response::~Response() noexcept = default;
@@ -113,12 +118,12 @@ namespace Message
 	{
 	}
 
-	Message::Response::Response(const Response& other) noexcept : impl_(new Impl) 
+	Message::Response::Response(const Response& other)
     {
         *this = other;
     }
 
-	Response& Message::Response::operator=(const Response& other) noexcept
+	Response& Message::Response::operator=(const Response& other)
 	{
 		if(this != &other)
 		{
@@ -183,34 +188,34 @@ namespace Message
 		return impl_->response_message.size();
 	}
 
-	bool Message::Response::set_status(int status_codeInput)
+	bool Message::Response::set_status(int status_code)
 	{
-		impl_->status_code = status_codeInput;
-		impl_->reason_phrase = status_code_map[status_codeInput];
+		impl_->status_code = status_code;
+		impl_->reason_phrase = status_code_map[status_code];
 		return true;
 	}
 
-	bool Message::Response::set_protocol_version(const std::string versionProtocolInput)
+	bool Message::Response::set_protocol_version(const std::string protocol_version)
 	{
-		impl_->protocol_version = versionProtocolInput;
+		impl_->protocol_version = protocol_version;
 		return true;
 	}
 	
-	bool Message::Response::set_body(const std::string& bodyInput)
+	bool Message::Response::set_body(const std::string& response_body)
 	{
 		if (!impl_->body.empty())
 		{
 			impl_->body.clear();
 		}
-		impl_->body = bodyInput;
+		impl_->body = response_body;
 		return true;
 	}
 
-	bool Message::Response::set_body_length(const std::streamoff body_lengthInput)
+	bool Message::Response::set_body_length(const std::streamoff body_length)
 	{
 		if (impl_->body_length != -1)
 		{
-			impl_->body_length = body_lengthInput;
+			impl_->body_length = body_length;
 			return true;
 		}
 		else
@@ -231,15 +236,15 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::set_content_length(const std::streamoff& contentLengthInput)
+	bool Message::Response::set_content_length(const std::streamoff& content_length)
 	{
-		if (contentLengthInput < 0)
+		if (content_length < 0)
 		{
 			return false;
 		}
 		else
 		{
-			add_header("Content-Length", std::to_string(contentLengthInput));
+			add_header("Content-Length", std::to_string(content_length));
 			return true;
 		}
 	}
@@ -303,11 +308,11 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::read_file(const std::string& path)
+	bool Message::Response::read_file(const std::string& request_uri)
 	{
-		// first, convert given relative path to absolute path
+		// first, convert given relative request_uri to absolute request_uri
 		std::string absolute_path;
-		if (!convert_path_to_absolute(path, absolute_path))
+		if (!convert_path_to_absolute(request_uri, absolute_path))
 		{
 			set_body_length(0);
 			set_body("");
@@ -323,7 +328,7 @@ namespace Message
 			return false;
 		}
 
-		// position at end of fileObject
+		// position at end of file object
 		file.seekg(0, std::ios_base::end);
 
 		auto size = file.tellg();
@@ -356,7 +361,7 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::convert_path_to_absolute(const std::string& path,  std::string& absolute_path)
+	bool Message::Response::convert_path_to_absolute(const std::string& relative_path,  std::string& absolute_path)
 	{ 
 		char path_buffer[1024];
 		if(getcwd(path_buffer, 1024) == nullptr)
@@ -366,19 +371,19 @@ namespace Message
 
 		std::string current_working_directory = path_buffer;
 
-		// if path only has '/', redirect it to index.html
-		if( (path[0] == '/')  &&  (path.size() == 1) )
+		// if relative path only has '/', redirect it to index.html
+		if( (relative_path[0] == '/')  &&  (relative_path.size() == 1) )
 		{
 			absolute_path = current_working_directory + "/public_html/index.html"; 
 			return true;
 		}
 
-		absolute_path = current_working_directory + "/public_html" + path;
+		absolute_path = current_working_directory + "/public_html" + relative_path;
 		
 		return true;
 	}
 
-	bool Message::Response::set_content_type(const std::string& path)
+	bool Message::Response::set_content_type(const std::string& request_uri)
 	{
 		std::smatch matchResult;
 
@@ -386,7 +391,7 @@ namespace Message
 
 		std::string fileExtention;
 
-		if (std::regex_search(path, matchResult, regex))
+		if (std::regex_search(request_uri, matchResult, regex))
 		{
 			fileExtention = matchResult[1].str();
 		}
@@ -469,9 +474,9 @@ namespace Message
 		return false;
 	}
 
-	bool Message::Response::set_content(const std::string& path)
+	bool Message::Response::set_content(const std::string& request_uri)
 	{
-		if (path.size() == 1 && path[0] == '/')
+		if (request_uri.size() == 1 && request_uri[0] == '/')
 		{
 			if(read_file("/index.html") && set_content_type("/index.html"))
 			{
@@ -479,8 +484,49 @@ namespace Message
 			}
 		}
 
+		// Query request
+		if(request_uri.find('?') != std::string::npos)
+		{
+			if(!impl_->uri.parse_from_string(request_uri))
+			{
+				return false;
+			}
+			if(impl_->uri.get_query().find_first_of('=') != std::string::npos)
+			{
+				std::string query_string = impl_->uri.get_query().substr( impl_->uri.get_query().find_first_of('=') + 1 );
+				mysql_handler mysql;
+				mysql.connect_to_mysql(3306, "bitate", "qwer");
+				std::vector< std::string > query_result = mysql.fetch_user_by_name(query_string);
+				
+				if(query_result.empty())
+				{	
+					impl_->body = "<html><h1> Sorry, we can not find this guy. </h1>";
+					impl_->body += "<a href=\"index.html\">Return to home</a></html>";
+					impl_->body_length = impl_->body.size();
+					return true;
+				}
+
+				std::string html_query_result = "<html><h1> Haha, We find this guy. </h1>";
+				
+				html_query_result += ("Name: " + query_result[0] + "<br>");
+				html_query_result += ("Age: " + query_result[1] + "<br>");
+				html_query_result += ("Email: " + query_result[2] + "<br>");
+				html_query_result += ("Password: " + query_result[3] + "<br>");
+
+				html_query_result += "<a href=\"index.html\">Return to home</a></html>";
+
+				impl_->body = html_query_result;
+				impl_->body_length = html_query_result.size();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		// set body and body length
-		if (!read_file(path))
+		if (!read_file(request_uri))
 		{
 			return false;
 		}
@@ -490,7 +536,7 @@ namespace Message
 		impl_->headers.insert({ "Content-Language", "en-US" });
 
 		// set content-type
-		if (!set_content_type(path))
+		if (!set_content_type(request_uri))
 		{
 			return false;
 		}

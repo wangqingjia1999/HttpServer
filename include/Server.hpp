@@ -23,55 +23,37 @@ public:
 	Server& operator=(Server&&) = delete;
 
 	/**
-	 * Create a socket to listen to clients.
-	 *
-	 * @param[in] 
-	 *		host is the host name. e.g. "localhost"
-	 * @param[in] 
-	 *		port is the port number. e.g. 1080.
-	 * @param[out] 
-	 *		client_socket is the established socket connection.
-	 * @return
-	 * 		true if succeeds in listening given host:port.
-	 * 		false if any error happens.
+	 * @brief  Create a socket to listen to clients.
+	 * @param  host  Host name. e.g. "localhost".
+	 * @param  port  Port number. e.g. 80.
+	 * @return  True if successfully lisen at specific host:port.
 	 */
 	bool listen_at(const std::string& host, const int port); 
 
 	/**
-	 * @brief
-	 * 		Send generated response to client.
-	 * @return 
-	 *		true if succeeds,
-	 *		false if failed.
+	 * @brief  Send generated response to client.
+	 * @param  client_socket_fd  File descriptor of client socket.
+	 * @param  buffer  Data to be sent.
+	 * @return  True if successfully send response to client.
 	 */
 	bool send_response(const int clietn_socket_fd, const std::string& buffer);
 
 	/**
-	 * @brief
-	 * 		Receive request from client.
-	 * @param[in]
-	 * 		client_socket_fd is the accepted socket fd.
-	 * @return 
-	 *		true if succeeds;
-	 *		false if failed.
+	 * @brief  Receive request from client.
+	 * @param  client_socket_fd  File descriptor of accepted socket
+	 * @return  True if successfully receive from client.
 	 */
 	bool receive_request(const int client_socket_fd);
 	
 	/**
-	 * @brief
-	 * 		Parse raw request.
-	 * @return
-	 * 		true if succeeds;
-	 * 		false if failed.
+	 * @brief  Parse raw request.
+	 * @return  Ture if successfully parse request.
 	 */
 	bool parse_request();
 
 	/**
-	 * @brief
-	 * 		Generate response message.
-	 * @return 
-	 * 		true if succeeds;
-	 * 		false if failed.
+	 * @brief  Generate response message.
+	 * @return  True if successfully generate response.
 	 */
 	bool generate_response();
 
@@ -82,54 +64,43 @@ public:
 	bool handle_post_request();
 
 	/**
-	 * @brief
-	 * 		Get raw request string.
-	 * @return 
-	 * 		Raw request string.
+	 * @brief  Get raw request string.
+	 * @return  Raw request string.
 	 */
 	std::string get_raw_request();
 
 	/**
-	 * @brief
-	 * 		Get raw response string.
-	 * @return 
-	 * 		Raw response string.
+	 * @brief  Get raw response string.
+	 * @return  Raw response string.
 	 */
 	std::string get_raw_response();
 
 	/**
-	 * @brief
-	 * 		Get client socket file descriptor.
-	 * @return 
-	 * 		Client socket file descriptor if succeeds.
-	 * 		-1 if failed.
+	 * @brief  Get client socket file descriptor.
+	 * @return  Client socket file descriptor if succeed,
+	 * 			otherwise, return -1.
 	 */
 	int get_client_fd();
 
 	/**
-	 * @brief
-	 * 		Get server socket file descriptor.
-	 * @return 
-	 * 		Server socket file descriptor if succeeds.
-	 * 		-1 if failed.
+	 * @brief  Get server socket file descriptor.
+	 * @return  Server socket file descriptor if succeed,
+	 * 			otherwise, return -1.
 	 */
 	int get_server_fd();
 	
 	/**
-	 * @brief
-	 * 		Set raw request string.
+	 * @brief  Set raw request string.
 	 */
 	void set_raw_request(const std::string& raw_request);
 
 	/**
-	 * Handler given request to fetch requested resources either static or dynamic.
+	 * @brief  Handle/Process given request to fetch/get either static or dynamic resources.  
+	 * @return  True if successfully handle request.
 	 * 
-	 * @return
-	 * 		true if succeeds;
-	 * 		false if fails.
+	 * Note: this is currently the core function to handler either static or dynamic request.
 	 */
 	bool request_core_handler();
-
 
 private:
 	struct Impl;

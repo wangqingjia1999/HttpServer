@@ -22,8 +22,23 @@ namespace status_handler
                 response->add_header("Accept-Ranges", "bytes");
                 response->add_header("Content-Length", response->get_body_length());
                 response->add_header("Content-Type", "text/html");
-                // add_header("Date", "Mon, 3 Jul 2020 12:28:53 GMT");
                 break;
+            }
+
+            case 201:
+            {   // TODO
+                response->set_status(201);
+                response->set_reason_phrase(201);
+                // response->add_header("Location", "http://192.168.72.128:2333/sign_up_done.html");
+                // response->set_content("http://192.168.72.128:2333/sign_up_done.html");
+                // response->add_header("Content-Type", "text/html");
+                // response->add_header("Content-Length", response->get_body_length());
+            }
+            
+            case 301:
+            {
+                response->set_status(301);
+                response->set_reason_phrase(301);
             }
 
             case 400:	// bad request

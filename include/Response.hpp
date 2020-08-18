@@ -20,8 +20,10 @@ namespace Message
 	public:
 		Response(); 
 		~Response() noexcept;
-		Response(const Response&) noexcept;
-		Response& operator=(const Response&) noexcept;
+		
+		Response(const Response&);
+		Response& operator=(const Response&);
+		
 		Response(Response&&) noexcept;
 		Response& operator=(Response&&) noexcept;
 
@@ -38,106 +40,106 @@ namespace Message
 		size_t get_response_length();
 
 		/**
-		 * 		Set status code and corresponding reason phrase.
-		 * @param[in]
-		 * 		status code
-		 * @return
-		 * 		true if succeeds;
-		 * 		false if fails.
+		 * @brief  Set status code and corresponding reason phrase.
+		 * @param  status_code  Response status code
+		 * @return  True if set successfully.
 		 */
-		bool set_status(const int status_codeInput);
-		bool set_protocol_version(const std::string versionProtocolInput);
-		bool set_body(const std::string& bodyInput);
-		bool set_body_length(const std::streamoff body_lengthInput);
+		bool set_status(const int status_code);
+		
+		/**
+		 * @brief  Set HTTP protocol version.
+		 * @param  protocol_version  Protocol version.
+		 * @return  True if set successfully.
+		 */
+		bool set_protocol_version(const std::string protocol_version);
+		
+		/**
+		 * @brief  Set response body.
+		 * @param  response_body  Response body string.
+		 * @return  True if set successfully.
+		 */
+		bool set_body(const std::string& response_body);
+		
+		/**
+		 * @brief  Set response body length.
+		 * @param  body_length  Length of response body.
+		 * @return  True if set successfully.
+		 */
+		bool set_body_length(const std::streamoff body_length);
+		
+		/**
+		 * @brief  Add header.
+		 * @param  name  Header name
+		 * @param  value  Corresponding header value
+		 * @return  True if add successfully.
+		 */
 		bool add_header(const std::string& name, const std::string& value);
 
 		/**
-	     * Set content-length to headers if length >= 0.
-		 * 
-		 * @param[in] 
-		 *		contentLengthInput is the size of given file in bytes;
-		 * @return 
-		 *		true if succeeds;
-		 *		false if fails.
+		 * @brief  Set Content-Length header.
+		 * @param  content_length  Length of response body.
+		 * @return  True if set successfully.
 		 */
-		bool set_content_length(const std::streamoff& contentLengthInput);
+		bool set_content_length(const std::streamoff& content_length);
 		
 		/**
-	     * Maps the given Uri path onto the specified content type according to file extention.
-		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
+		 * @brief  Determine content type based on the file extension.
+		 * @param  request_uri  Request URI taken from request message
+		 * @return  True if successfully set content type.
 		 * 
-		 * @return 
-		 *		true if find the correspoinding content type.
-		 *		false if doesn't have type or currently not supported.
+		 * For all available content types, see:
+		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
 		 */
-		bool set_content_type(const std::string& path);
-
-		/** 
-		 * Set the Response's entity body and the corresponding entity header fields.
-		 *
-		 * @return
-		 *		true if succeeds;
-		 *		false if fails.
-		 */
-		bool set_content(const std::string& path);
+		bool set_content_type(const std::string& request_uri);
 
 		/**
-		 * Set the generated complete response message.
-		 *
-		 * @param[in] 
-		 *		response is the generated complete response message.
-		 * @return 
-		 *		true if succeeds;
-		 *		false if fails.
+		 * @brief  Map given URI to local file system.
+		 * @param  request_uri  Request URI taken from request message
+		 * @return  True if successfully set content.
+		 */
+		bool set_content(const std::string& request_uri);
+
+		/**
+		 * @brief  Set the complete response message.
+		 * @param  response  Complete response message.
+		 * @return  True if set successfully.
 		 */
 		bool set_response_message(const std::string& response);
 		
 		/**
-		 * 		Set reason phrase.
-		 * @param[in]
-		 * 		Status code integer.
-		 * @return 
-		 * 		true if succeeds;
-		 * 		false if fails.
+		 * @brief  Set reason phrase.
+		 * @param  status_code  Status code integer.
+		 * @return  True if set reason phrase successfully.
 		 */
 		bool set_reason_phrase(const int stauts_code);
 
 		/**
-		 * Generate/Assemble response string and store the string into member variable.
-		 *
-		 * @return 
-		 *		true if succeeds;
-		 *		false if fails.
+		 * @brief  Generate/Assemble response string.
+		 * @return  True if generate successfully.
 		 */
 		bool generate_response();
 
 		/**
-		 * Map the input path string to local file system as the payloal of response. 
-		 * It will set the body and body length as well.
+		 * @brief  Read from local file system.
+		 * @param  path  Path string.
+		 * @return  True if read local file successfully.
 		 * 
-		 * @param[in] path
-		 *		Path string parsed from request string.
-		 * @return
-		 *		true if succeeds;
-		 *		false if fails.
+		 * Map the input path string to local file system 
+		 * as the payloal/body of response message. 
+		 * It will set the body and body length as well.
 		 */
 		bool read_file(const std::string& path);
 
 		/**
-		 * 	Convert given relative path to absolute path.
-		 * 
-		 * @param[in] path
-		 *		Relative path.
-		 * @param[out] absolute_path
-		 *		Absolute path.
-		 * @return
-		 *		true if succeeds;
-		 *		false if fails.
+		 * @brief  Convert given relative path to absolute path.
+		 * @param  path  Relative path.
+		 * @param  absolute_path  Generated absolute path.
+		 * @return  True if convert successfully.
 		 */
-		bool convert_path_to_absolute(const std::string& path, std::string& absolute_path);
+		bool convert_path_to_absolute(const std::string& relative_path, std::string& absolute_path);
 
 		/**
-		 * Clear up the header fields.
+		 * @brief  Clear up the header fields.
 		 */
 		void clear_up_header_fields();
 

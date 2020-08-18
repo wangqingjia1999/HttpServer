@@ -274,13 +274,7 @@ bool Server::receive_request(const int client_socket_fd)
 
 bool Server::parse_request()
 {
-    if(!impl_->request->parse_raw_request())
-    {
-        // 400 Bad Request
-        status_handler::handle_status_code(impl_->response, 400);
-        return false;
-    }
-    return true;
+    return impl_->request->parse_raw_request();
 }
 
 bool Server::generate_response()
@@ -346,14 +340,6 @@ bool Server::handle_post_request()
 
                 body_buffer = body_buffer.substr(body_buffer.find_first_of('&')+1);
             }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
         }
     }
 
@@ -361,8 +347,6 @@ bool Server::handle_post_request()
     if(!impl_->post_data_map.empty())
     {
         impl_->mysql.connect_to_mysql(3306, "bitate", "qwer");
-        
-        impl_->mysql.initialize_mysql_layout();
 
         return impl_->mysql.add_user(
             impl_->post_data_map.find("Name")->second,
@@ -380,22 +364,28 @@ bool Server::request_core_handler()
     if(!parse_request())
     {
         // 400 Bad Request
+        logger::record("Can not parse request");
         status_handler::handle_status_code(impl_->response, 400);
         return false;
     }
 
-    // Is POST request
+    // Is POST request?
     if(impl_->request->get_request_method() == "POST")
     {
         if(handle_post_request())
         {
             // Content created
-            status_handler::handle_status_code(impl_->response, 201);
+            status_handler::handle_status_code(impl_->response, 200);
+            impl_->response->add_header("Location", "/sign_up_done.html");
+            impl_->response->set_content("/sign_up_done.html");
+            impl_->response->add_header("Content-Type", "text/html");
+            impl_->response->add_header("Content-Length", impl_->response->get_body_length());
             return true;
         }
         else
         {
             // bad request
+            logger::record("Can not parse POST request");
             status_handler::handle_status_code(impl_->response, 400);
         }
     }
