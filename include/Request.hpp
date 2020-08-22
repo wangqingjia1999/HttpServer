@@ -1,7 +1,7 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
-#include "Uri.hpp"
+#include "URI.hpp"
 
 #include <memory>
 #include <sstream>
@@ -54,11 +54,11 @@ namespace Message
 		bool parse_raw_request();
 
 		/**
-		 * @brief  Parse Uri.
-		 * @param  Uri Uri string.
+		 * @brief  Parse URI.
+		 * @param  URI URI string.
 		 * @return  True if successfully parse the given URI string.
 		 */
-		bool parse_uri(const std::string& Uri);
+		bool parse_uri(const std::string& URI);
 		
 		/**
 		 * @brief  Set raw request message to request object's member variable.

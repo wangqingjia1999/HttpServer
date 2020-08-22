@@ -1,9 +1,9 @@
 #include "Server.hpp"
-#include "mysql_handler.hpp"
-#include "websocket.hpp"
-#include "logger.hpp"
-#include "status_handler.hpp"
-#include "thread_pool.hpp"
+#include "Mysql_Handler.hpp"
+#include "WebSocket.hpp"
+#include "Logger.hpp"
+#include "Status_Handler.hpp"
+#include "Thread_Pool.hpp"
 
 #include <sys/epoll.h>
 #include <queue>
@@ -50,9 +50,11 @@ struct Server::Impl
     // Server side request object that is responsible for parseing coming request.
     std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
 
-    mysql_handler mysql;
+    Mysql_Handler mysql;
     
     std::map< std::string, std::string > post_data_map;
+
+    std::shared_ptr< Thread_Pool > thread_pool = std::make_shared< Thread_Pool >();
 };
 
 Server::~Server()
@@ -119,11 +121,11 @@ bool Server::listen_at(const std::string& host, const int port)
         switch (triggered_fd_numbers)
         {
         case 0:
-            logger::record("Wait: time out");
+            Logger::record("Wait: time out");
             
             break;
         case -1:
-            logger::record("Wait: error occurs");
+            Logger::record("Wait: error occurs");
             break;
         default:
             {
@@ -147,13 +149,13 @@ bool Server::listen_at(const std::string& host, const int port)
                         );
                         if(impl_->client_socket < 0)
                         {
-                            logger::record("Failed to accept client socket");
+                            Logger::record("Failed to accept client socket");
                             continue;
                         }
                         
                         std::string ip_string = inet_ntoa(client_socket_address.sin_addr);
                         std::string port_string = std::to_string((client_socket_address.sin_port));
-                        logger::record("Accept connection from: " + ip_string + ":" + port_string);
+                        Logger::record("Accept connection from: " + ip_string + ":" + port_string);
                     
                         // and add new client socket into epoll events list
                         ev.data.fd = impl_->client_socket;
@@ -168,27 +170,16 @@ bool Server::listen_at(const std::string& host, const int port)
                             // receive request
                             if(!receive_request(triggered_socket_fd))
                             {
-                                logger::record("Error: can't receive request from socket fd: " + std::to_string(triggered_socket_fd));
+                                Logger::record("Error: can't receive request from socket fd: " + std::to_string(triggered_socket_fd));
                             }
                             else
                             {
-                                logger::record("Successfully: receive request of socket fd: " + std::to_string(triggered_socket_fd));
+                                Logger::record("Successfully: receive request of socket fd: " + std::to_string(triggered_socket_fd));
                             }
                             
                             // parse and generate request
-                            if(!request_core_handler())
-                            {
-                                logger::record("Error: can not handle request from socket fd: " + std::to_string(triggered_socket_fd));
-                                logger::record("The raw request message is printed below: ");
-                                logger::record("------------------------------------------");
-                                logger::record(impl_->request->get_raw_request());
-                                logger::record("------------------------------------------");
-                            }
-                            else
-                            {
-                                logger::record("Successfully: handle request of socket fd: " + std::to_string(triggered_socket_fd));
-                            }
-                            
+                            impl_->thread_pool->add_work([this]{ this->request_core_handler(); });
+
                             ev.data.fd = triggered_socket_fd;
                             ev.events = EPOLLOUT | EPOLLET;
                             epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
@@ -196,26 +187,19 @@ bool Server::listen_at(const std::string& host, const int port)
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
-                            if(!generate_response())
-                            {
-                                logger::record("Error: can not generate response");
-                            }
-                            else
-                            {
-                                logger::record("Successfully generate response for socket: " + std::to_string(triggered_socket_fd));
-                            }
+                            impl_->thread_pool->add_work( [this]{ this->generate_response(); });
                             
                             if(!send_response(triggered_socket_fd, impl_->send_buffer))
                             {
-                                logger::record("Error: can not send response");
-                                logger::record("The generated response message is printed below: ");
-                                logger::record("------------------------------------------");
-                                logger::record(impl_->response->get_response_message());
-                                logger::record("------------------------------------------");
+                                Logger::record("Error: can not send response");
+                                Logger::record("The generated response message is printed below: ");
+                                Logger::record("------------------------------------------");
+                                Logger::record(impl_->response->get_response_message());
+                                Logger::record("------------------------------------------");
                             }
                             else
                             {
-                                logger::record("Successfully: send response for socket: " + std::to_string(triggered_socket_fd));
+                                Logger::record("Successfully: send response for socket: " + std::to_string(triggered_socket_fd));
                             }
                             
                             ev.data.fd = triggered_socket_fd;
@@ -277,14 +261,13 @@ bool Server::parse_request()
     return impl_->request->parse_raw_request();
 }
 
-bool Server::generate_response()
+void Server::generate_response()
 {
-    if(!impl_->response->generate_response())
-    {
-        return false;
-    }
+    impl_->response->generate_response();
     impl_->send_buffer = impl_->response->get_response_message().c_str();
-    return true;
+    Logger::record("Sending buffer is: \n");
+    Logger::record(impl_->send_buffer);
+
 }
 
 std::string Server::get_raw_request()
@@ -317,7 +300,7 @@ bool Server::handle_post_request()
     /**
      * e.g. impl_->request->get_body() is "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer"
      */
-    Uri::PercentEncoding percent_encoding;
+    URI::Percent_Encoding percent_encoding;
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
      */
@@ -358,52 +341,52 @@ bool Server::handle_post_request()
     return true;
 }
 
-bool Server::request_core_handler()
+void Server::request_core_handler()
 {
     // Parse request
     if(!parse_request())
     {
         // 400 Bad Request
-        logger::record("Can not parse request");
-        status_handler::handle_status_code(impl_->response, 400);
-        return false;
+        Logger::record("Can not parse request");
+        Status_Handler::handle_status_code(impl_->response, 400);
+        return;
     }
 
-    // Is POST request?
+    // If it is POST request
     if(impl_->request->get_request_method() == "POST")
     {
         if(handle_post_request())
         {
             // Content created
-            status_handler::handle_status_code(impl_->response, 200);
+            Status_Handler::handle_status_code(impl_->response, 200);
             impl_->response->add_header("Location", "/sign_up_done.html");
             impl_->response->set_content("/sign_up_done.html");
             impl_->response->add_header("Content-Type", "text/html");
             impl_->response->add_header("Content-Length", impl_->response->get_body_length());
-            return true;
+            return;
         }
         else
         {
             // bad request
-            logger::record("Can not parse POST request");
-            status_handler::handle_status_code(impl_->response, 400);
+            Logger::record("Can not parse POST request");
+            Status_Handler::handle_status_code(impl_->response, 400);
         }
     }
 
-    // Is websocket opening handshake?
+    // If it is websocket opening handshake
     if(
         impl_->request->has_header("Upgrade")
         && impl_->request->get_header("Upgrade") == "websocket"
     )
     {
-        websocket websocket(impl_->request, impl_->response);
+        WebSocket websocket(impl_->request, impl_->response);
         if(!websocket.parse_websocket_request())
         {
-            return false;
+            return;
         }
         impl_->response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
-        status_handler::handle_status_code(impl_->response, 101);
-        return true;
+        Status_Handler::handle_status_code(impl_->response, 101);
+        return;
     }
 
     // Resources handler
@@ -413,12 +396,12 @@ bool Server::request_core_handler()
     )
     {
         // 404 Not Found
-        status_handler::handle_status_code(impl_->response, 404);
-        return false;
+        Status_Handler::handle_status_code(impl_->response, 404);
+        return;
     }
 
     // Status handler
-    status_handler::handle_status_code(impl_->response, 200);
+    Status_Handler::handle_status_code(impl_->response, 200);
 
-    return true; 
+    Logger::record("OK: handle request :-) ");
 }

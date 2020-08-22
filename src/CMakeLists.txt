@@ -7,39 +7,39 @@ project(${this})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(HeaderFiles
-    ../include/CharacterSet.hpp
+    ../include/Character_Set.hpp
     ../include/Client.hpp
-    ../include/PercentEncoding.hpp
+    ../include/Percent_Encoding.hpp
     ../include/Request.hpp
     ../include/Response.hpp
     ../include/Server.hpp
-    ../include/Uri.hpp
-    ../include/mysql_handler.hpp
-    ../include/logger.hpp
-    ../include/websocket.hpp
-    ../include/base64.hpp
-    ../include/sha1.hpp
-    ../include/Utf8.hpp
-    ../include/status_handler.hpp
-    ../include/thread_pool.hpp
+    ../include/URI.hpp
+    ../include/Mysql_Handler.hpp
+    ../include/Logger.hpp
+    ../include/WebSocket.hpp
+    ../include/Base64.hpp
+    ../include/SHA1.hpp
+    ../include/UTF8.hpp
+    ../include/Status_Handler.hpp
+    ../include/Thread_Pool.hpp
 )
 
 set(SourceFiles
-    CharacterSet.cpp
+    Character_Set.cpp
     Client.cpp
-    PercentEncoding.cpp
+    Percent_Encoding.cpp
     Request.cpp
     Response.cpp
     Server.cpp
-    Uri.cpp
-    mysql_handler.cpp
-    logger.cpp
-    websocket.cpp
-    base64.cpp
-    sha1.cpp
-    Utf8.cpp
-    status_handler.cpp
-    thread_pool.cpp
+    URI.cpp
+    Mysql_Handler.cpp
+    Logger.cpp
+    WebSocket.cpp
+    Base64.cpp
+    SHA1.cpp
+    UTF8.cpp
+    Status_Handler.cpp
+    Thread_Pool.cpp
 )
 
 add_library(${this} STATIC

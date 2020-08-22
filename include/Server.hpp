@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SERVER_HPP
+#define SERVER_HPP
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -55,7 +56,7 @@ public:
 	 * @brief  Generate response message.
 	 * @return  True if successfully generate response.
 	 */
-	bool generate_response();
+	void generate_response();
 
 	/**
 	 * @brief  Handle POST request.
@@ -96,15 +97,14 @@ public:
 
 	/**
 	 * @brief  Handle/Process given request to fetch/get either static or dynamic resources.  
-	 * @return  True if successfully handle request.
 	 * 
-	 * Note: this is currently the core function to handler either static or dynamic request.
+	 * This is currently the core function to handler either static or dynamic request.
 	 */
-	bool request_core_handler();
+	void request_core_handler();
 
 private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;
 };
 
-
+#endif

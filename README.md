@@ -41,7 +41,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 ## References
 * WebSocket
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
-* Uri
+* URI
   * https://nodejs.org/api/url.html#url_url
 * Percent encoding
   * https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
@@ -57,7 +57,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   * https://stackoverflow.com/questions/5661596/do-i-need-a-content-type-header-for-http-get-requests
   * http://httpd.apache.org/docs/2.2/mod/mod_mime.html#addtype
 * Tools
-  * [Online Uri decode/encode tool](https://meyerweb.com/eric/tools/dencoder/)
+  * [Online URI decode/encode tool](https://meyerweb.com/eric/tools/dencoder/)
   * [RawCap - windows command line tool to capture localhost/loopback IP packets](https://www.netresec.com/?page=RawCap)
   * [Database design website](https://dbdiagram.io)
   * [Wireshark - cross platform free software to capture IP packets](https://www.wireshark.org/)

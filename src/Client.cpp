@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Uri.hpp"
+#include "URI.hpp"
 
 #include <sys/socket.h>
 #include <netdb.h>

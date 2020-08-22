@@ -1,4 +1,4 @@
-#include "Uri.hpp"
+#include "URI.hpp"
 #include "Request.hpp"
 
 #include <sstream>
@@ -7,7 +7,7 @@ namespace Message
 {
     struct Message::Request::Impl
     {
-        std::shared_ptr< Uri::Uri > uri = std::make_shared< Uri::Uri > ();
+        std::shared_ptr< URI::URI > uri = std::make_shared< URI::URI > ();
         
         // Generated/Received raw request string
         std::string raw_request;
@@ -217,14 +217,14 @@ namespace Message
         return true;
     }
 
-    bool Message::Request::parse_uri(const std::string& Uri)
+    bool Message::Request::parse_uri(const std::string& URI)
     {
         if(impl_->uri == nullptr)
         {
             return false;
         }
         
-        if(!impl_->uri->parse_from_string(Uri))
+        if(!impl_->uri->parse_from_string(URI))
         {
             return false;
         }

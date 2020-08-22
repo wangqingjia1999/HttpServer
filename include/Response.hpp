@@ -115,9 +115,8 @@ namespace Message
 
 		/**
 		 * @brief  Generate/Assemble response string.
-		 * @return  True if generate successfully.
 		 */
-		bool generate_response();
+		void generate_response();
 
 		/**
 		 * @brief  Read from local file system.

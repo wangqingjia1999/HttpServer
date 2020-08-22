@@ -1,6 +1,6 @@
 #include "Response.hpp"
-#include "logger.hpp"
-#include "mysql_handler.hpp"
+#include "Logger.hpp"
+#include "Mysql_Handler.hpp"
 
 #include <memory>
 
@@ -109,7 +109,7 @@ namespace Message
 		// Generated response message in the form of string
 		std::string response_message;
 
-		Uri::Uri uri;
+		URI::URI uri;
 	};
 	
 	Message::Response::~Response() noexcept = default;
@@ -268,7 +268,7 @@ namespace Message
 		return true;
 	}
 	
-	bool Message::Response::generate_response()
+	void Message::Response::generate_response()
 	{
 		std::ostringstream response;
 		// Set first line of response string.
@@ -302,10 +302,9 @@ namespace Message
 		// store generated message to member variable
 		if (!set_response_message(response.str()))
 		{
-			return false;
+			Logger::record("Error: set response message");
+			return;
 		}
-
-		return true;
 	}
 
 	bool Message::Response::read_file(const std::string& request_uri)
@@ -494,7 +493,7 @@ namespace Message
 			if(impl_->uri.get_query().find_first_of('=') != std::string::npos)
 			{
 				std::string query_string = impl_->uri.get_query().substr( impl_->uri.get_query().find_first_of('=') + 1 );
-				mysql_handler mysql;
+				Mysql_Handler mysql;
 				mysql.connect_to_mysql(3306, "bitate", "qwer");
 				std::vector< std::string > query_result = mysql.fetch_user_by_name(query_string);
 				

@@ -1,12 +1,12 @@
-#pragma once
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
 
 #include "Request.hpp"
 #include "Response.hpp"
 
-
-
 class Client
 {
+	// Life-cycle management
 public:
 	~Client();
 	Client();
@@ -59,4 +59,4 @@ private:
 	std::unique_ptr< Impl > impl_;
 };
 
-
+#endif
