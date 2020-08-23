@@ -13,6 +13,10 @@
 
 class Thread_Pool
 {
+    // Types
+public:
+    using Task = std::function< void() >;
+
     // Life-cycle management
 public:
     ~Thread_Pool() noexcept;
@@ -24,29 +28,25 @@ public:
     Thread_Pool(Thread_Pool&&) = delete;
     Thread_Pool& operator=(Thread_Pool&&) = delete;
 
-    // Types
-private:
-    using Work = std::function< void() >;
-
     // Public methods
 public:
     /**
-     * @brief  Add work to work queue.
-     * @param  new_work  New work.
+     * @brief  Post task to task queue.
+     * @param  new_task  New task.
      */
-    void add_work(Work new_work);
+    void post_task(const Task& new_task);
 
     /**
-     * @brief  Single thread infinite work-loop.
+     * @brief  Single thread infinite task-loop.
      * 
-     * Consistently check whether the work queue has something to fetch.
+     * Consistently check whether the task queue has something to fetch.
      */
     void infinite_loop();
     
     /**
      * @brief  Shutdown the thread pool.
      */
-    void shutdown_workers();
+    void shutdown_taskers();
 
     // Private properties
 private:
@@ -58,7 +58,7 @@ private:
     const int hardware_supported_threads = std::thread::hardware_concurrency();
     
     /**
-     * Thread pool that contains threads in infinite working loop.
+     * Thread pool that contains threads in infinite tasking loop.
      */
     std::vector< std::thread > thread_pool;
 
@@ -68,19 +68,19 @@ private:
     std::mutex thread_pool_mutex;
     
     /**
-     * Work queue based on FIFO principle.
+     * Task queue based on FIFO principle.
      */
-    std::queue< std::function< void () >> work_queue; 
+    std::queue< Task > task_queue; 
 
     /**
-     * Mutex for work queue.
+     * Mutex for task queue.
      */
-    std::mutex work_queue_mutex;
+    std::mutex task_queue_mutex;
 
     /**
-     * Condition variable for work queue.
+     * Condition variable for task queue.
      */
-    std::condition_variable work_queue_condition;
+    std::condition_variable task_queue_condition;
 
 };
 

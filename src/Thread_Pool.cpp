@@ -23,28 +23,28 @@ void Thread_Pool::infinite_loop()
 {
     while(true)
     {
-        Work work;
+        Task task;
         {
-            std::unique_lock< std::mutex > lock(work_queue_mutex);
+            std::unique_lock< std::mutex > lock(task_queue_mutex);
 
-            work_queue_condition.wait( lock, [this]{ return !this->work_queue.empty(); } );
-            work = work_queue.front();
-            work_queue.pop();
+            task_queue_condition.wait( lock, [this]{ return !this->task_queue.empty(); } );
+            task = std::move( task_queue.front() );
+            task_queue.pop();
         }
-        work();
+        task();
     }
 }
 
-void Thread_Pool::add_work(Work new_work)
+void Thread_Pool::post_task(const Task& new_task)
 {
     {
-        std::unique_lock< std::mutex > lock(work_queue_mutex);
-        work_queue.push(new_work);
+        std::unique_lock< std::mutex > lock(task_queue_mutex);
+        task_queue.push(new_task);
     }
-    work_queue_condition.notify_one();
+    task_queue_condition.notify_one();
 }
 
-void Thread_Pool::shutdown_workers()
+void Thread_Pool::shutdown_taskers()
 {
     std::unique_lock< std::mutex > lock( thread_pool_mutex );
 
@@ -54,3 +54,4 @@ void Thread_Pool::shutdown_workers()
     }
     thread_pool.clear();
 }
+

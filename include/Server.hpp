@@ -35,16 +35,14 @@ public:
 	 * @brief  Send generated response to client.
 	 * @param  client_socket_fd  File descriptor of client socket.
 	 * @param  buffer  Data to be sent.
-	 * @return  True if successfully send response to client.
 	 */
-	bool send_response(const int clietn_socket_fd, const std::string& buffer);
+	void send_response(const int clietn_socket_fd, const std::string& buffer);
 
 	/**
 	 * @brief  Receive request from client.
 	 * @param  client_socket_fd  File descriptor of accepted socket
-	 * @return  True if successfully receive from client.
 	 */
-	bool receive_request(const int client_socket_fd);
+	void receive_request(const int client_socket_fd);
 	
 	/**
 	 * @brief  Parse raw request.
