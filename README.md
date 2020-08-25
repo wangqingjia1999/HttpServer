@@ -25,15 +25,15 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 # Supported
 - Methods
-  - Get
+  - GET
   - POST
 - Logging
-- Concurrency up to 900+
+- Multithreading
 
 ## TODOs
 - WebSocket
 - Keep-live Connection
-- Multithreading
+- Cache
 
 ## Third Party Libraries
 * [UTF-8](https://github.com/rhymu8354/Utf8)

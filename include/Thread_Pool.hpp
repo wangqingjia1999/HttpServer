@@ -41,12 +41,12 @@ public:
      * 
      * Consistently check whether the task queue has something to fetch.
      */
-    void infinite_loop();
+    void thread_work_loop();
     
     /**
      * @brief  Shutdown the thread pool.
      */
-    void shutdown_taskers();
+    void shutdown_thread_pool();
 
     // Private properties
 private:
@@ -81,6 +81,11 @@ private:
      * Condition variable for task queue.
      */
     std::condition_variable task_queue_condition;
+
+    /**
+     * Wether the thread pool is shutdown.
+     */
+    bool is_shutdown_thread_pool;
 
 };
 
