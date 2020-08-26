@@ -138,3 +138,12 @@ target_link_libraries(Thread_Pool_Test PUBLIC
     HTTP
     mysqlcppconn    
 )
+
+# timer test
+add_executable(Timer_Test Timer_Test.cpp)
+target_link_libraries(Timer_Test PUBLIC
+    gtest_main
+    HTTP
+    mysqlcppconn    
+)
+

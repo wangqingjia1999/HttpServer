@@ -22,6 +22,7 @@ set(HeaderFiles
     ../include/UTF8.hpp
     ../include/Status_Handler.hpp
     ../include/Thread_Pool.hpp
+    ../include/Timer.hpp
 )
 
 set(SourceFiles
@@ -40,6 +41,7 @@ set(SourceFiles
     UTF8.cpp
     Status_Handler.cpp
     Thread_Pool.cpp
+    Timer.cpp
 )
 
 add_library(${this} STATIC
