@@ -3,24 +3,14 @@
 #include <chrono>
 #include <vector>
 
-namespace
-{
-    std::vector< std::string > week = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-    std::vector< std::string > months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-}
-
 namespace Timer
 {
-    
-
     std::string get_current_time()
     {
-        /**
-         * TODO:  
-         * Hot to generate appropriate GMT time string.
-         * Especially, 9 => 09 
-         */
-
-        return {};
+        time_t now = std::time(0);
+        struct tm* current_time = std::gmtime(&now);
+        char current_time_string[30];
+        std::strftime(current_time_string, 30, "%a, %d %b %Y %H:%M:%S GMT", current_time);
+        return current_time_string;
     }
 }

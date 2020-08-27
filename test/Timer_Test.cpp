@@ -5,6 +5,11 @@
 
 TEST(timer_tests, get_current_GMT_time)
 {
-    std::string date = "Date: Tue, 15 Nov 1994 08:12:31 GMT";
+    /**
+     * HTTP Date string length is 29 characters
+     * (not including tailing '\0' in C string)
+     */
+    ASSERT_EQ( Timer::get_current_time().size(), 29);
+    std::cout << "Current GMT time is: " << std::endl;
     std::cout << Timer::get_current_time() << std::endl;
 }
