@@ -128,7 +128,8 @@ target_link_libraries(UTF8_Test PUBLIC
 add_executable(Status_Handler_Test Status_Handler_Test.cpp)
 target_link_libraries(Status_Handler_Test PUBLIC
     gtest_main
-    HTTP    
+    HTTP
+    mysqlcppconn    
 )
 
 # thread pool test

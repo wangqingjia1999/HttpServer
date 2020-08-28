@@ -206,12 +206,6 @@ bool Server::listen_at(const std::string& host, const int port)
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
                             impl_->thread_pool->post_task(
-                                [this]{
-                                    this->generate_response();
-                                }
-                            );
-
-                            impl_->thread_pool->post_task(
                                 [this, triggered_socket_fd]{
                                     this->send_response(triggered_socket_fd, impl_->send_buffer);
                                 }

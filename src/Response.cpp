@@ -106,7 +106,10 @@ namespace Message
 		// Length of body of response message
 		std::streamoff body_length;
 
-		// Generated response message in the form of string
+		// Content type
+		std::string content_type;
+
+		// Generated response message string
 		std::string response_message;
 
 		URI::URI uri;
@@ -188,6 +191,11 @@ namespace Message
 		return impl_->response_message.size();
 	}
 
+	std::string Message::Response::get_content_type()
+	{
+		return impl_->content_type;
+	}
+
 	bool Message::Response::set_status(int status_code)
 	{
 		impl_->status_code = status_code;
@@ -222,6 +230,12 @@ namespace Message
 		{
 			return false;
 		}
+	}
+
+	void Message::Response::set_content_type(const std::string& content_type)
+	{
+		impl_->content_type = content_type;
+		return;
 	}
 
 	bool Message::Response::add_header(const std::string& name, const std::string& value)
@@ -271,6 +285,7 @@ namespace Message
 	void Message::Response::generate_response()
 	{
 		std::ostringstream response;
+
 		// Set first line of response string.
 		response << impl_->protocol_version << " " << std::to_string(impl_->status_code) << " " << impl_->reason_phrase << "\r\n";
 
@@ -286,7 +301,7 @@ namespace Message
 		// Set body content.
 		if (impl_->body.empty())
 		{
-			response << "\r\n\r\n";
+			response << "\r\n";
 		}
 		else
 		{
@@ -382,103 +397,104 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::set_content_type(const std::string& request_uri)
+	void Message::Response::parse_content_type(const std::string& request_uri)
 	{
 		std::smatch matchResult;
 
 		auto regex = std::regex("\\.([0-9a-zA-Z]+)$");
 
-		std::string fileExtention;
+		std::string file_extention;
 
 		if (std::regex_search(request_uri, matchResult, regex))
 		{
-			fileExtention = matchResult[1].str();
+			file_extention = matchResult[1].str();
 		}
 		else
 		{
-			return false;
+			return;
 		}
 
-		if ( fileExtention == "txt")
+		if ( file_extention == "txt")
 		{
-			add_header("Content-Type", "text/plain");
-			return true;
+			impl_->content_type = "text/plain";
+			return;
 		}
-		else if (fileExtention == "html" || fileExtention == "htm")
+		else if (file_extention == "html" || file_extention == "htm")
 		{
-			add_header("Content-Type", "text/html");
-			return true;
+			impl_->content_type = "text/html";
+			return;
 		}
-		else if (fileExtention == "css")
+		else if (file_extention == "css")
 		{
-			add_header("Content-Type", "text/css");
-			return true;
+			impl_->content_type = "text/css";
+			return;
 		}
-		else if (fileExtention == "jpeg" || fileExtention == "jpg")
+		else if (file_extention == "jpeg" || file_extention == "jpg")
 		{
-			add_header("Content-Type", "image/jpg");
-			return true;
+			impl_->content_type = "image/jpg";
+			return;
 		}
-		else if (fileExtention == "png")
+		else if (file_extention == "png")
 		{
-			add_header("Content-Type", "image/png");
-			return true;
+			impl_->content_type = "image/png";
+			return;
 		}
-		else if (fileExtention == "gif")
+		else if (file_extention == "gif")
 		{
-			add_header("Content-Type", "image/gif");
-			return true;
+			impl_->content_type = "image/gif";
+			return;
 		}
-		else if (fileExtention == "svg")
+		else if (file_extention == "svg")
 		{
-			add_header("Content-Type", "image/svg+xml");
-			return true;
+			impl_->content_type = "image/svg+xml";
+			return;
 		}
-		else if (fileExtention == "ico")
+		else if (file_extention == "ico")
 		{
-			add_header("Content-Type", "image/x-icon");
-			return true;
+			impl_->content_type = "image/x-icon";
+			return;
 		}
-		else if (fileExtention == "json")
+		else if (file_extention == "json")
 		{
-			add_header("Content-Type", "application/json");
-			return true;
+			impl_->content_type = "application/json";
+			return;
 		}
-		else if (fileExtention == "pdf")
+		else if (file_extention == "pdf")
 		{
-			add_header("Content-Type", "application/pdf");
-			return true;
+			impl_->content_type = "application/pdf";
+			return;
 		}
-		else if (fileExtention == "js")
+		else if (file_extention == "js")
 		{
-			add_header("Content-Type", "application/javascript");
-			return true;
+			impl_->content_type = "application/javascript";
+			return;
 		}
-		else if (fileExtention == "wasm")
+		else if (file_extention == "wasm")
 		{
-			add_header("Content-Type", "application/wasm");
-			return true;
+			impl_->content_type = "application/wasm";
+			return;
 		}
-		else if (fileExtention == "xml")
+		else if (file_extention == "xml")
 		{
-			add_header("Content-Type", "application/xml");
-			return true;
+			impl_->content_type = "application/xml";
+			return;
 		}
-		else if (fileExtention == "xhtml")
+		else if (file_extention == "xhtml")
 		{
-			add_header("Content-Type", "application/xhtml+xml");
-			return true;
+			impl_->content_type = "application/xhtml+xml";
+			return;
 		}
 
-		return false;
+		return;
 	}
 
 	bool Message::Response::set_content(const std::string& request_uri)
 	{
 		if (request_uri.size() == 1 && request_uri[0] == '/')
 		{
-			if(read_file("/index.html") && set_content_type("/index.html"))
+			if(read_file("/index.html"))
 			{
+				parse_content_type("/index.html");
 				return true;
 			}
 		}
@@ -530,15 +546,9 @@ namespace Message
 			return false;
 		}
 
-		// set Content-Language
-		// TODO: dynamicly generate language according to request
-		impl_->headers.insert({ "Content-Language", "en-US" });
-
 		// set content-type
-		if (!set_content_type(request_uri))
-		{
-			return false;
-		}
+		parse_content_type(request_uri);
+
 		return true;
 	}
 

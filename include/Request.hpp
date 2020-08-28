@@ -16,7 +16,7 @@ namespace Message
 		~Request() noexcept;
 		Request();
 
-		Request& operator=(const Request&) ;
+		Request& operator=(const Request&);
 		Request(const Request&);
 		
 		Request(Request&&) noexcept;

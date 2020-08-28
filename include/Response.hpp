@@ -28,16 +28,74 @@ namespace Message
 		Response& operator=(Response&&) noexcept;
 
 	public:
+		/**
+		 * @brief  Whether response has header with name of @name.
+		 * @param  name  Header name.
+		 * @return  True if has header with name of @name.
+		 */
 		bool has_header(const std::string& name);
+
+		/**
+		 * @brief  Get response's status code.
+		 * @return  An integer represents status code.
+		 */
 		int get_status_code();
+
+		/**
+		 * @brief  Get response's protocol version.
+		 * @return  Protocol version. Default value is "HTTP/1.1".
+		 */
 		std::string get_protocol_version();
+
+		/**
+		 * @brief  Get response's reason phrase.
+		 * @return Reason phrase.
+		 */
 		std::string get_reason_phrase();
+
+		/**
+		 * @brief  Get response's body.
+		 * @return  Response's body string.
+		 */
 		std::string get_body();
+
+		/**
+		 * @brief  Get response's specific header value of @header_name.
+		 * @param  header_name  Response header name. 
+		 * @return  Corresponding header value.
+		 */
 		std::string get_header(const std::string& header_name);
+
+		/**
+		 * @brief  Get status code's corresponding reason phrase.
+		 * @param  status_code  Status code integer.
+		 * @return  Corresponding reason phrase of given status_code.
+		 */
 		std::string get_status_code_reason_string(const int status_code);
+
+		/**
+		 * @brief  Get response's body length
+		 * @return  Response body length.
+		 */
 		std::string get_body_length();
+
+		/**
+		 * @brief  Get generated response message string.
+		 * @return  Response string.
+		 */
 		std::string get_response_message();
+
+		/**
+		 * @brief  Get response message length.
+		 * @return  Size of response message.
+		 */
 		size_t get_response_length();
+
+		/**
+		 * @brief  Get content type.
+		 * @return  Content type.
+		 */
+		std::string get_content_type();
 
 		/**
 		 * @brief  Set status code and corresponding reason phrase.
@@ -83,14 +141,10 @@ namespace Message
 		bool set_content_length(const std::streamoff& content_length);
 		
 		/**
-		 * @brief  Determine content type based on the file extension.
-		 * @param  request_uri  Request URI taken from request message
-		 * @return  True if successfully set content type.
-		 * 
-		 * For all available content types, see:
-		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
+		 * @brief  Set content type.
+		 * @param  content_type  Content type.
 		 */
-		bool set_content_type(const std::string& request_uri);
+		void set_content_type(const std::string& content_type);
 
 		/**
 		 * @brief  Map given URI to local file system.
@@ -114,7 +168,7 @@ namespace Message
 		bool set_reason_phrase(const int stauts_code);
 
 		/**
-		 * @brief  Generate/Assemble response string.
+		 * @brief  Assemble response string from member variables.
 		 */
 		void generate_response();
 
@@ -128,6 +182,15 @@ namespace Message
 		 * It will set the body and body length as well.
 		 */
 		bool read_file(const std::string& path);
+
+		/**
+		 * @brief  Determine content type based on the file extension.
+		 * @param  request_uri  Request URI taken from request message
+		 * 
+		 * For all available content types, see:
+		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
+		 */
+		void parse_content_type(const std::string& request_uri);
 
 		/**
 		 * @brief  Convert given relative path to absolute path.

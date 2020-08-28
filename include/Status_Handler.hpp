@@ -9,7 +9,6 @@ namespace Status_Handler
 {
     /**
 	 * @brief  Handle given status code.
-	 * 
      * @param  response  Pointer to response object.
 	 * @param  status_code  Status code integer.
 	 */

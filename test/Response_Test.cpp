@@ -18,19 +18,20 @@ TEST(response_tests, add_headers) {
 TEST(response_tests, generate_200_response)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 200);
+    
     response->set_body("Hello World! My payload includes a trailing CRLF.\r\n");
+    response->set_content_type("text/html");
+    Status_Handler::handle_status_code(response, 200);
 
     std::string expected_result =
     {
         "HTTP/1.1 200 OK\r\n"
-        "Accept-Ranges: bytes\r\n"
         "Content-Length: 0\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
-    response->generate_response();
+
     ASSERT_EQ(response->get_response_message(), expected_result);
 }
 
@@ -48,140 +49,67 @@ TEST(response_tests, map_status_code_to_reaseon_phrase)
     ASSERT_EQ(response.get_status_code_reason_string(505), "HTTP Version Not Supported");
 }
 
-TEST(response_tests, content_types)
+TEST(response_tests, parse_content_types)
 {
     Message::Response response;
 
-    ASSERT_TRUE(response.set_content_type("/demo.txt"));
+    response.parse_content_type("/demo.txt");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
 
-    ASSERT_TRUE(response.set_content_type("/demo.html"));
+    response.parse_content_type("/demo.html");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "text/html");
 
-    ASSERT_TRUE(response.set_content_type("/demo.css"));
+    response.parse_content_type("/demo.css");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "text/css");
 
-    ASSERT_TRUE(response.set_content_type("/demo.jpeg"));
+    response.parse_content_type("/demo.jpeg");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
 
-    ASSERT_TRUE(response.set_content_type("/demo.jpg"));
+    response.parse_content_type("/demo.jpg");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
 
-    ASSERT_TRUE(response.set_content_type("/demo.png"));
+    response.parse_content_type("/demo.png");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/png");
 
-    ASSERT_TRUE(response.set_content_type("/demo.gif"));
+    response.parse_content_type("/demo.gif");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/gif");
 
-    ASSERT_TRUE(response.set_content_type("/demo.svg"));
+    response.parse_content_type("/demo.svg");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/svg+xml");
 
-    ASSERT_TRUE(response.set_content_type("/demo.ico"));
+    response.parse_content_type("/demo.ico");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "image/x-icon");
 
-    ASSERT_TRUE(response.set_content_type("/demo.json"));
+    response.parse_content_type("/demo.json");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/json");
 
-    ASSERT_TRUE(response.set_content_type("/demo.pdf"));
+    response.parse_content_type("/demo.pdf");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/pdf");
 
-    ASSERT_TRUE(response.set_content_type("/demo.js"));
+    response.parse_content_type("/demo.js");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/javascript");
 
-    ASSERT_TRUE(response.set_content_type("/demo.xml"));
+    response.parse_content_type("/demo.xml");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/xml");
 
-    ASSERT_TRUE(response.set_content_type("/demo.wasm"));
+    response.parse_content_type("/demo.wasm");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/wasm");
 
-    ASSERT_TRUE(response.set_content_type("/demo.xhtml"));
+    response.parse_content_type("/demo.xhtml");
+    response.add_header("Content-Type", response.get_content_type());
     ASSERT_EQ(response.get_header("Content-Type"), "application/xhtml+xml");
-
-    // unsupported types
-    ASSERT_FALSE(response.set_content_type("/demo.abc"));
-    ASSERT_FALSE(response.set_content_type("/demo.dic"));
-    ASSERT_FALSE(response.set_content_type("/demo.ext"));
-    ASSERT_FALSE(response.set_content_type("/demo.xyz"));
-    ASSERT_FALSE(response.set_content_type("/demo.com"));
 };
-
-
-TEST(response_tests, status_code_400_test)
-{
-    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-
-    Status_Handler::handle_status_code(response, 400);
-
-    response->generate_response();
-    
-    std::string expected_response = 
-    {
-        "HTTP/1.1 400 Bad Request\r\n"
-        "Content-Type: text/html\r\n"
-        "\r\n"
-        "<html><h1> 400 Bad Request :( </h1></html>\r\n"
-    };
-    ASSERT_EQ(response->get_response_message(), expected_response);
-}
-
-TEST(response_tests, status_code_404_test)
-{
-    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-
-    Status_Handler::handle_status_code(response, 404);
-
-    response->generate_response();
-    
-    std::string expected_response = 
-    {
-        "HTTP/1.1 404 Not Found\r\n"
-        "Content-Type: text/html\r\n"
-        "\r\n"
-        "<html><h1> 404 Not Found :( </h1></html>\r\n"
-    };
-    ASSERT_EQ(response->get_response_message(), expected_response);
-}
-
-
-TEST(response_tests, status_code_405_test)
-{
-    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-
-    Status_Handler::handle_status_code(response, 405);
-
-    response->generate_response();
-    
-    std::string expected_response = 
-    {
-        "HTTP/1.1 405 Method Not Allowed\r\n"
-        "Allow: GET, HEAD, PUT\r\n"
-        "Content-Type: text/html\r\n"
-        "\r\n"
-        "<html><h1> 405 Method Not Allowed :( </h1></html>\r\n"
-    };
-    ASSERT_EQ(response->get_response_message(), expected_response);
-}
-
-TEST(response_tests, status_code_500_test)
-{
-    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-
-    Status_Handler::handle_status_code(response, 500);
-
-    response->generate_response();
-    
-    std::string expected_response = 
-    {
-        "HTTP/1.1 500 Internal Server Error\r\n"
-        "Content-Type: text/html\r\n"
-        "\r\n"
-        "<html><h1> 500 Internal Server Error :( </h1></html>\r\n"
-    };
-    ASSERT_EQ(response->get_response_message(), expected_response);
-}
-
-TEST(response_teset, read_local_file)
-{
-    Message::Response response;
-    ASSERT_FALSE(response.read_file("/"));
-}
