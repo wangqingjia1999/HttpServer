@@ -76,8 +76,8 @@ TEST(mysql_handler_tests, fetch_user_by_name_test)
         ++index;
     }
 
-    std::string query = "tom";
-    std::vector<std::string> query_result = { "Tom", "20", "tom@gmail.com", "123456789" };
+    std::string query = "Michael";
+    std::vector<std::string> query_result = { "Michael", "25", "Happy@gmail.com", "password" };
     ASSERT_EQ(mysql.fetch_user_by_name(query), query_result);
 }
 

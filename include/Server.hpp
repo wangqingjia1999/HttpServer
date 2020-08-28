@@ -51,12 +51,6 @@ public:
 	bool parse_request();
 
 	/**
-	 * @brief  Generate response message.
-	 * @return  True if successfully generate response.
-	 */
-	void generate_response();
-
-	/**
 	 * @brief  Handle POST request.
 	 * @return  True if successfully handle it.
 	 */

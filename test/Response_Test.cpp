@@ -19,14 +19,16 @@ TEST(response_tests, generate_200_response)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
     
-    response->set_body("Hello World! My payload includes a trailing CRLF.\r\n");
+    std::string response_body = "Hello World! My payload includes a trailing CRLF.\r\n";
+    response->set_body(response_body);
     response->set_content_type("text/html");
+    response->set_body_length(response_body.size());
     Status_Handler::handle_status_code(response, 200);
 
     std::string expected_result =
     {
         "HTTP/1.1 200 OK\r\n"
-        "Content-Length: 0\r\n"
+        "Content-Length: 51\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",

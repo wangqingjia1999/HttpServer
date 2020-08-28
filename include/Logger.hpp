@@ -12,6 +12,12 @@ namespace Logger
      * @note  Store the logs into "../HttpServer/log.txt".
      */
     void record(const std::string& message_string);
+
+    /**
+     * @brief  Record errors.
+     * @param  error_message  Error message.
+     */
+    void record_error(const std::string& error_message);
 }
 
 #endif

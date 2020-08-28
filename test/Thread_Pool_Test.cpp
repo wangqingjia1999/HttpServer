@@ -3,10 +3,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-bool try_it()
-{
-    return true;
-}
 TEST(thread_pool_tests, simple_test)
 {
     Thread_Pool thread_pool;

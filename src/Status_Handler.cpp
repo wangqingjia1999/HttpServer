@@ -34,6 +34,10 @@ namespace Status_Handler
                 {
                     response->add_header("Content-Type", response->get_content_type());
                 }
+                if(!response->get_body_length().empty())
+                {
+                    response->add_header("Content-Length", response->get_body_length());
+                }
                 break;
             }
 
@@ -117,6 +121,7 @@ namespace Status_Handler
             case 400:   // bad request
             {
                 response->set_body("<html> Bad Request :< </html>");
+                response->add_header("Content-Type", response->get_content_type());
                 response->add_header("Content-Length", response->get_body_length());
                 break;
             }

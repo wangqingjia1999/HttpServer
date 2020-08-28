@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(this Http_Server_Test)
+set(this Http_Server_All_Test)
 
 enable_testing()
 

@@ -28,4 +28,9 @@ namespace Logger
         std::ofstream log_file_object(log_file_absolute_path, std::ios::app);
         log_file_object << message_string << '\n';
     }
+
+    void record_error(const std::string& error_message)
+    {
+        record("Error: can not " + error_message);
+    }
 }

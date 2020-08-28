@@ -109,6 +109,9 @@ namespace Message
 		// Content type
 		std::string content_type;
 
+		// Content length
+		std::string content_length = "0";
+
 		// Generated response message string
 		std::string response_message;
 
@@ -258,6 +261,7 @@ namespace Message
 		}
 		else
 		{
+			impl_->content_length = std::to_string(content_length);
 			add_header("Content-Length", std::to_string(content_length));
 			return true;
 		}

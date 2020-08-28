@@ -56,7 +56,7 @@ struct Server::Impl
     Mysql_Handler mysql;
     
     /**
-     * Data obtained from POST request, I just store those name:value pair into a map :).
+     * Data obtained from POST request, I just store those name:value pairs into a map :).
      */
     std::map< std::string, std::string > post_data_map;
 
@@ -64,6 +64,8 @@ struct Server::Impl
      * Thread pool to avoid the unnecessary creation and deletion of multiple threads.
      */
     std::shared_ptr< Thread_Pool > thread_pool = std::make_shared< Thread_Pool >();
+
+
 };
 
 Server::~Server()
@@ -130,30 +132,21 @@ bool Server::listen_at(const std::string& host, const int port)
         switch (triggered_fd_numbers)
         {
         case 0:
-            impl_->thread_pool->post_task(
-                []{
-                    Logger::record("Error: wait time out");
-                }
-            );
-            
+            impl_->thread_pool->post_task( []{ Logger::record_error("epoll wait, because wait time out"); } );
             break;
         case -1:
-            impl_->thread_pool->post_task(
-                []{
-                    Logger::record("Error: epoll can not wait");
-                }
-            );
+            impl_->thread_pool->post_task( []{ Logger::record_error("epoll wait"); } );
             break;
         default:
             {
                 int i;
-                for(i=0; i < triggered_fd_numbers; ++i)
+                for(i = 0; i < triggered_fd_numbers; ++i)
                 {
                     int triggered_socket_fd = epoll_result[i].data.fd;
                     uint32_t arrived_socket_event = epoll_result[i].events;
                     
                     // The listening socket is ready; this means a new peer/client is connecting.
-                    if(triggered_socket_fd == impl_->server_socket && (arrived_socket_event & EPOLLIN))
+                    if( (triggered_socket_fd == impl_->server_socket) && (arrived_socket_event & EPOLLIN))
                     {
                         struct sockaddr_in client_socket_address;
                         socklen_t client_socket_length = sizeof(client_socket_address);
@@ -166,11 +159,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         );
                         if(impl_->client_socket < 0)
                         {
-                            impl_->thread_pool->post_task(
-                                []{
-                                    Logger::record("Error: accept client socket");
-                                }
-                            );
+                            impl_->thread_pool->post_task( []{ Logger::record_error("accept client socket"); } );
                             continue;
                         }
                         
@@ -207,7 +196,7 @@ bool Server::listen_at(const std::string& host, const int port)
                         {
                             impl_->thread_pool->post_task(
                                 [this, triggered_socket_fd]{
-                                    this->send_response(triggered_socket_fd, impl_->send_buffer);
+                                    this->send_response(triggered_socket_fd, impl_->response->get_response_message());
                                 }
                             );
 
@@ -240,11 +229,7 @@ void Server::send_response(const int clietn_socket_fd, const std::string& buffer
 
     if(send_result == -1)
     {
-        impl_->thread_pool->post_task(
-            []{
-                Logger::record("Error: send the response");
-            }
-        );
+        impl_->thread_pool->post_task( []{ Logger::record_error("send response"); } );
         return;
     }
     return;
@@ -258,14 +243,10 @@ void Server::receive_request(const int client_socket_fd)
         impl_->request->set_raw_request("");
         return;
     }
-    
+
     if(!impl_->request->set_raw_request(impl_->receive_buffer))
     {
-        impl_->thread_pool->post_task(
-            []{
-                Logger::record("Error: Set received request");
-            }
-        );
+        impl_->thread_pool->post_task( []{ Logger::record_error("set raw requst"); } );
         return;
     }
 
@@ -277,17 +258,6 @@ void Server::receive_request(const int client_socket_fd)
 bool Server::parse_request()
 {
     return impl_->request->parse_raw_request();
-}
-
-void Server::generate_response()
-{
-    impl_->response->generate_response();
-    impl_->send_buffer = impl_->response->get_response_message().c_str();
-    impl_->thread_pool->post_task(
-        [this]{
-            Logger::record("Sending: \n" + impl_->send_buffer);
-        }
-    );
 }
 
 std::string Server::get_raw_request()
@@ -350,15 +320,6 @@ bool Server::handle_post_request()
     if(!impl_->post_data_map.empty())
     {
         impl_->mysql.connect_to_mysql(3306, "bitate", "qwer");
-
-        try
-        {
-            
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
         
         try
         {
@@ -387,11 +348,7 @@ void Server::request_core_handler()
     if(!parse_request())
     {
         // 400 Bad Request
-        impl_->thread_pool->post_task(
-            []{
-                Logger::record("Error: parse request");
-            }
-        );
+        impl_->thread_pool->post_task( []{ Logger::record_error("parse request"); } );
         Status_Handler::handle_status_code(impl_->response, 400);
         return;
     }
@@ -412,11 +369,7 @@ void Server::request_core_handler()
         else
         {
             // bad request
-            impl_->thread_pool->post_task(
-                []{
-                    Logger::record("Error: parse POST request");
-                }
-            );
+            impl_->thread_pool->post_task( []{ Logger::record_error("parse POST request"); } );
             Status_Handler::handle_status_code(impl_->response, 400);
         }
     }
@@ -430,11 +383,7 @@ void Server::request_core_handler()
         WebSocket websocket(impl_->request, impl_->response);
         if(!websocket.parse_websocket_request())
         {
-            impl_->thread_pool->post_task(
-                []{
-                    Logger::record("Error: parse WebSocket request");
-                }
-            );
+            impl_->thread_pool->post_task( []{ Logger::record_error("parse WebSocket request"); } );
             return;
         }
         impl_->response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
@@ -450,11 +399,7 @@ void Server::request_core_handler()
     {
         // 404 Not Found
         Status_Handler::handle_status_code(impl_->response, 404);
-        impl_->thread_pool->post_task(
-                []{
-                    Logger::record("Error: handle requested resouces");
-                }
-            );
+        impl_->thread_pool->post_task( []{ Logger::record_error("handle requested resources"); } );
         return;
     }
 
