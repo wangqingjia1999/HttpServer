@@ -61,11 +61,6 @@ private:
      * Thread pool that contains threads in infinite tasking loop.
      */
     std::vector< std::thread > thread_pool;
-
-    /**
-     * Mutex for thread pool.
-     */
-    std::mutex thread_pool_mutex;
     
     /**
      * Task queue based on FIFO principle.

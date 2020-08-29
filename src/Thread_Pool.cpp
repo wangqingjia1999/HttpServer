@@ -1,6 +1,6 @@
 #include "Thread_Pool.hpp"
 
-Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false)
+Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false) 
 {
     for(int i = 0; i < hardware_supported_threads; ++i)
     {
@@ -8,9 +8,7 @@ Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false)
     }
 }
 
-Thread_Pool::~Thread_Pool()
-{
-}
+Thread_Pool::~Thread_Pool() = default;
 
 void Thread_Pool::thread_work_loop()
 {
@@ -19,13 +17,15 @@ void Thread_Pool::thread_work_loop()
         Task task;
         {
             std::unique_lock< std::mutex > lock(task_queue_mutex);
+            
+            task_queue_condition.wait( lock, [this]{ return !this->task_queue.empty() || is_shutdown_thread_pool; } );
 
-            task_queue_condition.wait( lock, [this]{ return !this->task_queue.empty(); } );
-
-            if (is_shutdown_thread_pool) { break; }
+            if(is_shutdown_thread_pool && task_queue.empty())
+            {
+                break;
+            }
 
             task = std::move( task_queue.front() );
-
             task_queue.pop();
         }
         task();
@@ -44,16 +44,15 @@ void Thread_Pool::post_task(const Task& new_task)
 void Thread_Pool::shutdown_thread_pool()
 {
     {
-        std::unique_lock< std::mutex > lock( thread_pool_mutex );
+        std::unique_lock< std::mutex > lock( task_queue_mutex );
         is_shutdown_thread_pool = true;
     }
-
+    
     task_queue_condition.notify_all();
 
     for(std::thread& each_thread : thread_pool)
     {
         each_thread.join();
     }
-    thread_pool.clear();
+    thread_pool.clear();   
 }
-

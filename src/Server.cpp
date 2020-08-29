@@ -44,6 +44,15 @@ struct Server::Impl
     static const size_t SEND_BUFFER_LENGTH = 1024;
     std::string send_buffer = "";
 
+    // Epoll file descriptor
+    int epfd = epoll_create(1024);
+    
+    // Epoll events
+    struct epoll_event epoll_events;
+
+    // Epoll events result list
+    struct epoll_event epoll_events_result[1024];
+    
     // Response object for generating response
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
 
@@ -65,7 +74,25 @@ struct Server::Impl
      */
     std::shared_ptr< Thread_Pool > thread_pool = std::make_shared< Thread_Pool >();
 
+    void add_epoll_wait_read_event(int target_fd)
+    {
+        epoll_events.events = EPOLLIN | EPOLLET;
+        epoll_events.data.fd = target_fd;
+        epoll_ctl(epfd, EPOLL_CTL_ADD, target_fd, &epoll_events);
+    }
 
+    void add_epoll_wait_write_event(int target_fd)
+    {
+        epoll_events.events = EPOLLOUT | EPOLLET;
+        epoll_events.data.fd = target_fd;
+        epoll_ctl(epfd, EPOLL_CTL_DEL, target_fd, &epoll_events);
+    }
+
+    void delete_from_epoll_events_list(int target_fd)
+    {
+        epoll_events.data.fd = target_fd;
+        epoll_ctl(epfd, EPOLL_CTL_DEL, target_fd, &epoll_events);
+    }
 };
 
 Server::~Server()
@@ -77,58 +104,37 @@ Server::Server() : impl_(new Impl)
 
 bool Server::listen_at(const std::string& host, const int port)
 {
-    // IPv4 socket address
-    struct sockaddr_in ipv4_address;
-    
-    // create socket
     impl_->server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if(impl_->server_socket == -1)
     {
         return false;
     }
 
-    // set address info
+    struct sockaddr_in ipv4_address;
     memset(&ipv4_address, 0 , sizeof(ipv4_address));
     ipv4_address.sin_family = AF_INET;
     ipv4_address.sin_addr.s_addr = inet_addr(host.c_str());
     ipv4_address.sin_port = htons(port);
     int ipv4_address_length = sizeof(ipv4_address);
 
-    // bind address to socket
     int bind_result = bind(impl_->server_socket, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
         return false;
     }
 
-    // listen at given host and port
-    // Note that the listen socket file descriptor remains unchanged
     int listen_result = listen(impl_->server_socket, 4096);
     if(listen_result == -1)
     {
         return false;
-    }
-
-    // create epoll fd
-    int epfd = epoll_create(1024);
-    if(epfd < 0)
-    {
-        return false;
-    }
-
-    // create epoll event
-    struct epoll_event ev;
-    ev.data.fd = impl_->server_socket;
-    // monitor inputs
-    ev.events = EPOLLIN;
-    epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->server_socket, &ev);
-
-    struct epoll_event epoll_result[1024];
+    }    
+    
+    impl_->add_epoll_wait_read_event(impl_->server_socket);
 
     // server core loop
     for (;;)
-    {       
-        int triggered_fd_numbers = epoll_wait(epfd, epoll_result, 1024, -1);
+    {
+        int triggered_fd_numbers = epoll_wait(impl_->epfd, impl_->epoll_events_result, 1024, -1);
         switch (triggered_fd_numbers)
         {
         case 0:
@@ -142,8 +148,8 @@ bool Server::listen_at(const std::string& host, const int port)
                 int i;
                 for(i = 0; i < triggered_fd_numbers; ++i)
                 {
-                    int triggered_socket_fd = epoll_result[i].data.fd;
-                    uint32_t arrived_socket_event = epoll_result[i].events;
+                    int triggered_socket_fd = impl_->epoll_events_result[i].data.fd;
+                    uint32_t arrived_socket_event = impl_->epoll_events_result[i].events;
                     
                     // The listening socket is ready; this means a new peer/client is connecting.
                     if( (triggered_socket_fd == impl_->server_socket) && (arrived_socket_event & EPOLLIN))
@@ -151,25 +157,23 @@ bool Server::listen_at(const std::string& host, const int port)
                         struct sockaddr_in client_socket_address;
                         socklen_t client_socket_length = sizeof(client_socket_address);
 
-                        // accept new client socket
                         impl_->client_socket = accept(
                             impl_->server_socket, 
                             (struct sockaddr*)&client_socket_address, 
                             &client_socket_length 
                         );
+
                         if(impl_->client_socket < 0)
                         {
                             impl_->thread_pool->post_task( []{ Logger::record_error("accept client socket"); } );
                             continue;
                         }
                         
-                        // and add new client socket into epoll events list
-                        ev.data.fd = impl_->client_socket;
-                        ev.events = EPOLLIN;
-                        epoll_ctl(epfd, EPOLL_CTL_ADD, impl_->client_socket, &ev);
+                        // add new client socket into epoll wait-read list.
+                        impl_->add_epoll_wait_read_event(impl_->client_socket);
                         continue;
                     }
-                    else if (triggered_socket_fd != impl_->server_socket) // If fds(exclude listen socket) triggered events
+                    else if (triggered_socket_fd != impl_->server_socket)
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
@@ -187,9 +191,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 }
                             );
 
-                            ev.data.fd = triggered_socket_fd;
-                            ev.events = EPOLLOUT | EPOLLET;
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_socket_fd, &ev);
+                            impl_->add_epoll_wait_write_event(triggered_socket_fd);
                             continue;
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
@@ -200,9 +202,7 @@ bool Server::listen_at(const std::string& host, const int port)
                                 }
                             );
 
-                            ev.data.fd = triggered_socket_fd;
-                            ev.events = EPOLLIN | EPOLLET;
-                            epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_socket_fd, &ev);
+                            impl_->add_epoll_wait_read_event(triggered_socket_fd);
                             continue;
                         }
                     }
