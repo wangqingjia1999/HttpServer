@@ -13,14 +13,10 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 * Google Test Framework
 
 ## Build 
-```bash
-1. git clone https://github.com/Bitate/HttpServer
-2. cd HttpServer
-3. git clone https://github.com/google/googletest
-4. sudo apt-get install libmysqlcppconn-dev
-5. mkdir build && cd build
-6. cmake ..
-7. make
+```
+git clone https://github.com/Bitate/HttpServer
+cd HttpServer
+bash build.sh
 ```
 
 # Supported
