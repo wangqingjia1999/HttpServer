@@ -1,38 +1,38 @@
-## Overview
+# Overview
 ` Be strict in what you send and tolerant in what you receive. `  
 
 This is an implementation of HTTP/1.1 protocol (rfc2616). 
   
 Just for self-learning purpose to gain a deep insight into the mechanisims of HTTP servers.
 
+# Contents
+  * [Features](#features)
+  * [Requirements](#requirements)
+  * [How to build?](#how-to-build)
+  * [Examples](#examples)
+  
 
-## Enviroment & Dependence
-* Ubuntu Server 20.04 x86_64
-* CMake Build System
-* Mysql Connector for C++
-* Google Test Framework
+## Features
+  * POST
+  * GET
+  * Multithreading
+  * Logging
 
-## Build 
-```
+## Requirements
+* Linux
+* [Cmake](https://cmake.org/)
+* [Googletest](https://github.com/google/googletest)
+* [Mysql connector for c++](https://dev.mysql.com/doc/connector-cpp/1.1/en/)
+
+## How to build? 
+```shell
 git clone https://github.com/Bitate/HttpServer
 cd HttpServer
 bash build.sh
 ```
 
-# Supported
-- Methods
-  - GET
-  - POST
-- Logging
-- Multithreading
+# Examples
 
-## TODOs
-- WebSocket
-- Keep-live Connection
-- Cache
-
-## Third Party Libraries
-* [UTF-8](https://github.com/rhymu8354/Utf8)
 
 ## References
 * WebSocket
