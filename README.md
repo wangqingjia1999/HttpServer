@@ -19,7 +19,8 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   * Logging
 
 ## Requirements
-* Linux
+* Linux Server Edition
+* [Mysql Server]
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
 * [Mysql connector for c++](https://dev.mysql.com/doc/connector-cpp/1.1/en/)

@@ -11,8 +11,10 @@ else
     echo "Google test already exists :)"
 fi 
 
-# Install mysql cpp connector
-sudo apt-get install libmysqlcppconn-dev
+# Install mysql and cpp connector
+sudo apt update
+sudo apt install mysql-server
+sudo apt install libmysqlcppconn-dev
 
 # Create build directory and change directory to it.
 if [ -d "${PWD}/build" ] 

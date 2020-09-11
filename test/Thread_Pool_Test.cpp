@@ -9,10 +9,10 @@ TEST(thread_pool_tests, simple_test)
     {
         Thread_Pool thread_pool;
     
-        std::string message = "This is a simple test";
+        std::string message = "This is task: ";
         
-        auto logger = [](const std::string& message){
-            std::cout << message << std::endl;
+        auto logger = [i](const std::string& message){
+            std::cout << message << i << std::endl;
         };
 
         thread_pool.post_task( [&]{ logger(message); } );
