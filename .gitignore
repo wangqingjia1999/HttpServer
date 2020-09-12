@@ -5,3 +5,4 @@ out/
 googletest/
 CmakeSettings.json
 log.txt
+tags

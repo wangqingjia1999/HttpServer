@@ -1,6 +1,7 @@
 #include "Status_Handler.hpp"
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 TEST(status_handler_tests, status_code_100_test)
 {
@@ -36,10 +37,13 @@ TEST(status_handler_tests, status_code_200_test)
     std::string expected_response_string = {
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 0\r\n"
+	"Date: \r\n"
         "\r\n"
     };
-    
-    ASSERT_EQ(response->get_response_message(), expected_response_string);
+
+    // Date string is exactlly 29 character
+    ASSERT_EQ(response->get_header("Date").length(), 29);
+    ASSERT_EQ(response->get_header("Content-Length"), "0");
 }
 
 TEST(status_handler_tests, status_code_201_test)
