@@ -4,7 +4,10 @@
 #include <chrono>
 #include <string>
 #include <fstream>
-#include <unistd.h>
+
+#ifdef __linux__
+    #include <unistd.h>
+#endif
 
 namespace
 {
@@ -15,6 +18,7 @@ namespace Logger
 {
     void record(const std::string& message_string)
     {
+        #ifdef __linux__
         // Here path_buffer will contain the current working directory path (e.g. /home/bitate/HttpServer )
         char path_buffer[1024];
         if(getcwd(path_buffer, 1024) == nullptr)
@@ -27,6 +31,9 @@ namespace Logger
         
         std::ofstream log_file_object(log_file_absolute_path, std::ios::app);
         log_file_object << message_string << '\n';
+        #elif _WIN32
+
+        #endif
     }
 
     void record_error(const std::string& error_message)

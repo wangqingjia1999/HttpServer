@@ -1,8 +1,16 @@
-﻿.vs/
+﻿# For IDEs
+.vs/
 .vscode/
+CmakeSettings.json
+
+# For build directory
 build/
 out/
+
+# For third party library
 googletest/
-CmakeSettings.json
+
 log.txt
+
+# For linux add-on
 tags

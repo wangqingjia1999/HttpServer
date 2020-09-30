@@ -5,7 +5,6 @@
 #include "Status_Handler.hpp"
 #include "Thread_Pool.hpp"
 
-#include <sys/epoll.h>
 #include <queue>
 #include <mutex>
 #include <thread>

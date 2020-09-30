@@ -3,11 +3,13 @@
 #include "Response.hpp"
 #include "URI.hpp"
 
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <error.h>
+#ifdef __linux__
+    #include <sys/socket.h>
+    #include <netdb.h>
+    #include <unistd.h>
+    #include <arpa/inet.h>
+    #include <error.h>
+#endif
 
 #include <memory>
 #include <string>

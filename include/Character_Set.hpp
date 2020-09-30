@@ -4,6 +4,7 @@
 #include <memory>
 #include <set>
 #include <initializer_list>
+#include <string>
 
 namespace URI
 {
@@ -50,10 +51,10 @@ namespace URI
 
 		/**
 		 * @brief  Given string is integer string?
-		 * @param  inputString  Input string.
+		 * @param  input_string  Input string.
 		 * @return  True if it is integer string.
 		 */
-		bool isIntegerString( std::string inputString ) const;
+		bool isIntegerString( std::string input_string ) const;
 
 		// Private Properties;
 	public:

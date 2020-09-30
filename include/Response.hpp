@@ -8,8 +8,11 @@
 #include <set>
 #include <sstream>
 #include <fstream>
-#include <unistd.h>
 #include <memory>
+
+#ifdef __linux__
+	#include <unistd.h>
+#endif
 
 #include "Request.hpp"
 

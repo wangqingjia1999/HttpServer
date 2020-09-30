@@ -4,6 +4,8 @@ set(this Http_Server_All_Test)
 
 enable_testing()
 
+add_subdirectory(Interface_Test)
+
 set(source_files
     URI_Test.cpp
     Server_Test.cpp

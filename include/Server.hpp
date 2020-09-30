@@ -1,9 +1,11 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifdef __linux__
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+#endif
 #include <string.h>
 #include <string>
 #include <memory>

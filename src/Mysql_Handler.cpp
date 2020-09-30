@@ -1,5 +1,6 @@
 #include "Mysql_Handler.hpp"
 
+#ifdef ENABLE_MYSQL
 struct Mysql_Handler::Impl
 {
     // Pointer to connection object
@@ -149,3 +150,4 @@ std::vector<std::string> Mysql_Handler::fetch_user_by_name(const std::string& qu
     }
     return {};
 }
+#endif

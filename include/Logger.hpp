@@ -2,6 +2,7 @@
 #define LOGGER_HPP
 
 #include <memory>
+#include <string>
 
 namespace Logger
 {

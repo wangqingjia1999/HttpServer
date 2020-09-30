@@ -12,6 +12,9 @@ project(${this})
 
 enable_testing()
 
+# Use tis command to force google test to link dynamically
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
 add_subdirectory(src)
 add_subdirectory(googletest)
 add_subdirectory(test)

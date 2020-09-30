@@ -1,4 +1,6 @@
+#ifdef __linux__
 #include <sys/socket.h>
+#endif
 
 #include "WebSocket.hpp"
 #include "Logger.hpp"

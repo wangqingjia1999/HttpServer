@@ -6,11 +6,13 @@
 
 // Including directly from cppconn/*.h 
 // will speed up your build time
+#ifdef HTTP_SERVER_ENABLE_MYSQL
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
+#endif
 
 // tmp header
 #include <iostream>
