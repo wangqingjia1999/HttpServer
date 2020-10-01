@@ -10,36 +10,24 @@
 class ISocket
 {
 public:
-    virtual ~ISocket() {} 
     /**
-     * @brief  Let server listens at specific {ip address, port} pair.
-     * @param  ip  Ip address.
-     * @param  port  Port number.
+     * @brief  Virtual deconstructor to ensure proper cleanup.
      */
-    virtual void listen_at( const std::string ip, const int port );
+    virtual ~ISocket() {};
 
     /**
-     * @brief  Let client connect to {ip address, port} pair.
+     * @brief  Write/Send data to peer_socket.
+     * @param  peer_socket  Peer's socket.
+     * @param  data  Data to be wrote/sent.
      */
-    virtual void connect_to();
-
+    virtual void write_to(const int peer_socket, const std::vector< uint8_t >& data) = 0;
+    
     /**
-     * @brief  Close the socket connection.
+     * @brief  Read data from peer_socket.
+     * @param  peer_socket  Peer's socket. 
+     * @param  data  Data to be read.
      */
-    virtual void close_connection() = 0;
-
-    /**
-     * @brief  Send data to peer.
-     */
-    virtual void send_to() = 0;
-
-    /**
-     * @brief  Receive data from peer.
-     */
-    virtual void receive_from() = 0;
-
-protected:
-    ISocket();
+    virtual void read_from(const int peer_socket, const std::vector< uint8_t >& data) = 0;
 };
 
 

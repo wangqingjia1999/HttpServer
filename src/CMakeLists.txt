@@ -23,8 +23,6 @@ set(HeaderFiles
     ../include/Status_Handler.hpp
     ../include/Thread_Pool.hpp
     ../include/Timer.hpp
-    ../include/ISocket.hpp
-    ../include/Server_Socket.hpp
 )
 
 set(SourceFiles
@@ -51,9 +49,9 @@ add_library(${this} STATIC
     ${SourceFiles}
 )
 
-# Socket Interface Lib
-add_library(Socket_Interface
-    ../include/ISocket.hpp
+add_library(Socket_Interface STATIC
     ../include/Server_Socket.hpp
     Server_Socket.cpp
+    ../include/Client_Socket.hpp
+    Client_Socket.cpp
 )

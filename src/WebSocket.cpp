@@ -1,5 +1,5 @@
 #ifdef __linux__
-#include <sys/socket.h>
+    #include <sys/socket.h>
 #endif
 
 #include "WebSocket.hpp"

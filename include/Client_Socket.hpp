@@ -3,16 +3,21 @@
 
 #include "ISocket.hpp"
 
+#include <vector>
+
 class Client_Socket : public ISocket
 {
 public:
-    void connect_to() override;
+    /**
+     * @brief  Connect to server with the identity of ip:port.
+     * @param  ip  Ip address of server.
+     * @param  port  Port of server.
+     */
+    void connect_to(const std::string ip, const int port);
 
-    virtual void close_connection() override;
+    virtual void write_to(const int peer_socket, const std::vector< uint8_t >& data) override;
 
-    virtual void send_to() override;
-
-    virtual void receive_from() override;
+    virtual void read_from(const int peer_socket, const std::vector< uint8_t >& data) override;
 
 };
 

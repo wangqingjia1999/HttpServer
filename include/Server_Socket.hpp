@@ -12,10 +12,17 @@
 class Server_Socket : public ISocket
 {
 public:
-    void listen_at( const std::string ip, const int port ) override;
-    void close_connection() override;
-    void send_to() override;
-    void receive_from() override;
+    /**
+     * @brief  Listen at given ip:port.
+     * @param  ip  Ip address string.
+     * @param  port Port number.
+     */
+    void listen_at( const std::string ip, const int port );
+
+    virtual void write_to(const int peer_socket, const std::vector< uint8_t >& data) override;
+
+    virtual void read_from(const int peer_socket, const std::vector< uint8_t >& data) override;
+
 private:
 
 };
