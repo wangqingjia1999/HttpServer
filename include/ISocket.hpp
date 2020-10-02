@@ -19,15 +19,17 @@ public:
      * @brief  Write/Send data to peer_socket.
      * @param  peer_socket  Peer's socket.
      * @param  data  Data to be wrote/sent.
+     * @param  data_length  Length, in bytes, of the data in data_buffer.
      */
-    virtual void write_to(const int peer_socket, const std::vector< uint8_t >& data) = 0;
+    virtual void write_to(const int peer_socket, const char* data_buffer, int data_length) = 0;
     
     /**
      * @brief  Read data from peer_socket.
      * @param  peer_socket  Peer's socket. 
      * @param  data  Data to be read.
+     * @param  data_length  Length, in bytes, of the data in data_buffer.
      */
-    virtual void read_from(const int peer_socket, const std::vector< uint8_t >& data) = 0;
+    virtual void read_from(const int peer_socket, char* data_buffer, int data_length) = 0;
 };
 
 

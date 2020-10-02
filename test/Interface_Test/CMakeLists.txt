@@ -4,6 +4,7 @@ add_executable(Socket_Interface_Test
     Socket_Interface_Test.cpp
 )
 target_link_libraries(Socket_Interface_Test PUBLIC
+    Thread_Pool
     Socket_Interface
     gtest_main
 )

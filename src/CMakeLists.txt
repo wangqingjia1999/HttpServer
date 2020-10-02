@@ -49,9 +49,16 @@ add_library(${this} STATIC
     ${SourceFiles}
 )
 
+# Here we don't need to include ISocket.hpp
+# Since it's just an interface
 add_library(Socket_Interface STATIC
     ../include/Server_Socket.hpp
     Server_Socket.cpp
     ../include/Client_Socket.hpp
     Client_Socket.cpp
+)
+
+add_library(Thread_Pool STATIC
+    ../include/Thread_Pool.hpp
+    Thread_Pool.cpp
 )
