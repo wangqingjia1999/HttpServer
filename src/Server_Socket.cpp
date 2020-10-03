@@ -49,41 +49,14 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
-    if( millisecond != -1)
+    auto client_socket = accept(server_listening_socket, nullptr, nullptr);
+
+    if(client_socket == INVALID_SOCKET)
     {
-        auto elapsed_time = [start_time_point]()
-        {
-            return std::chrono::system_clock::now() - start_time_point;
-        };
-
-        while( elapsed_time() <= std::chrono::milliseconds( millisecond ));
-        {
-            auto client_socket = accept(server_listening_socket, nullptr, nullptr);
-
-            if(client_socket == INVALID_SOCKET)
-            {
-                WSACleanup();
-                throw std::runtime_error("Can not accept client socket");
-            }
-
-            std::cout << "Accept client of socket: " << client_socket;
-
-        }
+        WSACleanup();
+        throw std::runtime_error("Can not accept client socket");
     }
-    else // If caller does not set timer, then performing infinite listening loop.
-    {
-        for(;;)
-        {
-            auto client_socket = accept(server_listening_socket, nullptr, nullptr);
-        
-            if(client_socket == INVALID_SOCKET)
-            {
-                WSACleanup();
-                throw std::runtime_error("Can not accept client socket");
-            }
-        }
-    }
-    
+
     closesocket(server_listening_socket);
     WSACleanup();
     return;
