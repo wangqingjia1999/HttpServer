@@ -62,3 +62,8 @@ add_library(Thread_Pool STATIC
     ../include/Thread_Pool.hpp
     Thread_Pool.cpp
 )
+
+add_library(Timer STATIC
+    ../include/Timer.hpp
+    Timer.cpp
+)

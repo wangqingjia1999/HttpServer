@@ -39,7 +39,7 @@ namespace Status_Handler
                 {
                     response->add_header("Content-Length", response->get_body_length());
                 }
-		response->add_header("Date", Timer::get_current_time());
+		response->add_header("Date", Timer::get_current_http_time());
                 break;
             }
 
@@ -125,7 +125,7 @@ namespace Status_Handler
                 response->set_body("<html> Bad Request :< </html>");
                 response->add_header("Content-Type", response->get_content_type());
                 response->add_header("Content-Length", response->get_body_length());
-		response->add_header("Date", Timer::get_current_time());
+		response->add_header("Date", Timer::get_current_http_time());
                 break;
             }
 
