@@ -137,9 +137,8 @@ target_link_libraries(Status_Handler_Test PUBLIC
 # thread pool test
 add_executable(Thread_Pool_Test Thread_Pool_Test.cpp)
 target_link_libraries(Thread_Pool_Test PUBLIC
+    Thread_Pool
     gtest_main
-    HTTP
-    mysqlcppconn    
 )
 
 # timer test

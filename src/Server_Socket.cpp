@@ -43,7 +43,6 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     if(bind_result == INVALID_SOCKET)
     {
-        std::cout << WSAGetLastError() << std::endl;
         WSACleanup();
         throw std::runtime_error("Can not bind a socket");
     }
@@ -62,15 +61,11 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
                 throw std::runtime_error("Can not accept client socket");
             }
         }
-        
     }
     else // caller sets the listening timer
     {
-        std::cout << "elapsed time is : "<< listening_timer.get_elapsed_time().count() << std::endl;
         while( listening_timer.get_elapsed_time().count() < millisecond )
         {
-            std::cout << "elapsed time is : "<< listening_timer.get_elapsed_time().count() << std::endl;
-
             auto client_socket = accept(server_listening_socket, nullptr, nullptr);
 
             if(client_socket == INVALID_SOCKET)

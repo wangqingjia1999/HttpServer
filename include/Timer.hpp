@@ -34,6 +34,9 @@ public:
      */
     milisecond_duration_type get_elapsed_time() const;
 
+    /**
+     * @brief  Reset start_time time point.
+     */
     void reset_start_time();
 
 private:

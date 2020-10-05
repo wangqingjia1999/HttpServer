@@ -2,13 +2,15 @@ cmake_minimum_required(VERSION 3.8)
 
 set(this Http_Server_Demo)
 
+project(${this})
+
 # Use C++ 11 standard
 set(CMAKE_CXX_STANDARD 11)
 
-# Use POSIX threads library
-set(CMAKE_CXX_FLAGS "-pthread")
-
-project(${this})
+# Use POSIX threads library, not supported on Windows
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS "-pthread")
+endif()
 
 enable_testing()
 
