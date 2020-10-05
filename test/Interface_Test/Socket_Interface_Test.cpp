@@ -21,7 +21,7 @@ TEST(socket_interface_tests, server_listen_at_no_exception_test)
 {
     std::shared_ptr< Server_Socket > server_socket = std::make_shared< Server_Socket >();
 
-    EXPECT_NO_THROW( server_socket->listen_at("0.0.0.0", 2333) );
+    EXPECT_NO_THROW( server_socket->listen_at("0.0.0.0", 2333, 2000 ) );
 }
 
 TEST(socket_interface_tests, connect_to_no_exception_test)

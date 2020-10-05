@@ -5,7 +5,8 @@
 
 void Server_Socket::listen_at( const std::string ip, const int port, const long long millisecond ) 
 {
-    std::chrono::time_point< std::chrono::system_clock > start_time_point = std::chrono::system_clock::now();
+    if(millisecond != -1)
+        listening_timer.reset_start_time();
 
 #ifdef _WIN32
     WSADATA wsa_data = {0};
@@ -49,14 +50,37 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
-    auto client_socket = accept(server_listening_socket, nullptr, nullptr);
-
-    if(client_socket == INVALID_SOCKET)
+    if(millisecond == -1)
     {
-        WSACleanup();
-        throw std::runtime_error("Can not accept client socket");
-    }
+        for(;;)
+        {
+            auto client_socket = accept(server_listening_socket, nullptr, nullptr);
 
+            if(client_socket == INVALID_SOCKET)
+            {
+                WSACleanup();
+                throw std::runtime_error("Can not accept client socket");
+            }
+        }
+        
+    }
+    else // caller sets the listening timer
+    {
+        std::cout << "elapsed time is : "<< listening_timer.get_elapsed_time().count() << std::endl;
+        while( listening_timer.get_elapsed_time().count() < millisecond )
+        {
+            std::cout << "elapsed time is : "<< listening_timer.get_elapsed_time().count() << std::endl;
+
+            auto client_socket = accept(server_listening_socket, nullptr, nullptr);
+
+            if(client_socket == INVALID_SOCKET)
+            {
+                WSACleanup();
+                throw std::runtime_error("Can not accept client socket");
+            }
+        }
+    }
+    
     closesocket(server_listening_socket);
     WSACleanup();
     return;

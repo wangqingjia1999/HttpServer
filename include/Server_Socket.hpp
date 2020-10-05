@@ -2,6 +2,7 @@
 #define SERVER_SOCKET_HPP
 
 #include "ISocket.hpp"
+#include "Timer.hpp"
 
 #include <chrono>
 
@@ -28,6 +29,7 @@ public:
     virtual void read_from(const int peer_socket, char* data_buffer, int data_length) override;
 
 private:
+    Timer listening_timer;
 #ifdef _WIN32
     SOCKET server_listening_socket = INVALID_SOCKET;
 #elif __linux__

@@ -5,6 +5,7 @@ add_executable(Socket_Interface_Test
 )
 target_link_libraries(Socket_Interface_Test PUBLIC
     Thread_Pool
+    Timer
     Socket_Interface
     gtest_main
 )

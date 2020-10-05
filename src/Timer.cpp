@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <ctime>
+#include <iostream>
 
 std::string Timer::get_current_http_time()
 {
@@ -17,17 +18,7 @@ void Timer::reset_start_time()
     start_time = clock_type::now();
 }
 
-Timer::duration_type Timer::get_elapsed_time() const
+Timer::milisecond_duration_type Timer::get_elapsed_time() const
 {
-    return (clock_type::now() - start_time );
-}
-
-Timer::duration_type Timer::get_elapsed_time_in_millisecond() const
-{
-    return std::chrono::duration_cast< milliseconds_type >( get_elapsed_time() );
-}
-
-Timer::duration_type Timer::get_elapsed_time_in_second() const
-{
-    return std::chrono::duration_cast< seconds_type >( get_elapsed_time() );
+    return (clock_type::now() - start_time);
 }

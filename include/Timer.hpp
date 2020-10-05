@@ -10,7 +10,7 @@ public:
     using milliseconds_type = std::chrono::milliseconds;
     using seconds_type = std::chrono::seconds;
     using clock_type = std::chrono::high_resolution_clock;
-    using duration_type = clock_type::duration;
+    using milisecond_duration_type = std::chrono::duration< double, std::milli >;
 
 public:
     /**
@@ -25,14 +25,19 @@ public:
      */
     static std::string get_current_http_time();
 
-    duration_type get_elapsed_time_in_millisecond() const;
-    
-    duration_type get_elapsed_time_in_second() const;
+    /**
+     * @brief  Get elapsed time in millisecond ( 1/1000s ).
+     * @return  Duration in milliseconds.
+     * 
+     * @note  Call reset_start_time() first to set starting time, 
+     *        then call this function :)
+     */
+    milisecond_duration_type get_elapsed_time() const;
 
     void reset_start_time();
 
 private:
-    duration_type get_elapsed_time() const;
+    
 
 private:
     clock_type::time_point start_time;
