@@ -19,6 +19,15 @@ namespace Logger
      * @param  error_message  Error message.
      */
     void record_error(const std::string& error_message);
+    
+    /**
+     * @brief  Clear up log.
+     */
+    void clear_up_log();
+
+    std::string get_log_file_absolute_path();
+
+    std::string get_first_line_of_log();
 }
 
 #endif

@@ -67,3 +67,8 @@ add_library(Timer STATIC
     ../include/Timer.hpp
     Timer.cpp
 )
+
+add_library(Logger STATIC
+    ../include/Logger.hpp
+    Logger.cpp
+)

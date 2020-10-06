@@ -15,6 +15,7 @@ void Thread_Pool::thread_work_loop()
     for(;;)
     {
         Task task;
+        
         {
             std::unique_lock< std::mutex > lock(task_queue_mutex);
             
@@ -28,7 +29,7 @@ void Thread_Pool::thread_work_loop()
             task = std::move( task_queue.front() );
             
             task_queue.pop();
-            
+
             task();
         }
         

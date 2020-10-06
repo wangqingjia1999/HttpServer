@@ -93,8 +93,7 @@ target_link_libraries(Mysql_Handler_Test PUBLIC
 add_executable(Logger_Test Logger_Test.cpp)
 target_link_libraries(Logger_Test PUBLIC
     gtest_main 
-    HTTP
-    mysqlcppconn
+    Logger
 )
 
 # WebSocket test 
