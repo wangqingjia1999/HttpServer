@@ -4,11 +4,14 @@ Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false)
 {
     for(int i = 0; i < hardware_supported_threads; ++i)
     {
-        thread_pool.push_back( std::thread( [this]{ this->thread_work_loop(); } ) );
+        thread_pool.push_back( thread_entity( std::thread( [this]{ this->thread_work_loop(); } ) ) );
     }
 }
 
-Thread_Pool::~Thread_Pool() = default;
+Thread_Pool::~Thread_Pool()
+{
+    shutdown_thread_pool();
+}
 
 void Thread_Pool::thread_work_loop()
 {
@@ -32,7 +35,6 @@ void Thread_Pool::thread_work_loop()
 
             task();
         }
-        
     }
 }
 
@@ -54,9 +56,14 @@ void Thread_Pool::shutdown_thread_pool()
     
     task_queue_condition.notify_all();
 
-    for(std::thread& each_thread : thread_pool)
+    for(auto& each_thread : thread_pool)
     {
-        each_thread.join();
+        each_thread.thread.join();
     }
     thread_pool.clear();   
+}
+
+bool Thread_Pool::have_finished_taskes(int thread_index)
+{  
+    return thread_pool[thread_index].has_finished_task;
 }

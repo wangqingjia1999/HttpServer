@@ -7,6 +7,7 @@
 #include <functional>
 #include <mutex>
 #include <thread>
+#include <future>
 #include <condition_variable>
 #include <vector>
 #include <queue>
@@ -48,6 +49,13 @@ public:
      */
     void shutdown_thread_pool();
 
+    /**
+     * @brief  Whether the taskes have been finished by workers.
+     * @param  thread_index  Thread index within thread pool.
+     * @return  True if all taskes have been finished by workers.
+     */
+    bool have_finished_taskes(int thread_index);
+
     // Private properties
 private:
     /**
@@ -56,11 +64,18 @@ private:
      * it's better not to create new ones, or destroy old ones (by joining).
      */
     const int hardware_supported_threads = std::thread::hardware_concurrency();
+    struct thread_entity
+    {
+        std::thread thread;
+        bool has_finished_task;
+
+        thread_entity(std::thread task) : has_finished_task(false) { thread = std::move(task); }
+    };
     
     /**
      * Thread pool that contains threads in infinite tasking loop.
      */
-    std::vector< std::thread > thread_pool;
+    std::vector< thread_entity > thread_pool;
     
     /**
      * Task queue based on FIFO principle.
