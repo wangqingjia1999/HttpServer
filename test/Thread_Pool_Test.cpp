@@ -38,68 +38,70 @@ TEST(thread_pool_tests, fill_in_vector_test)
 {
     auto thread_pool = std::make_shared< Thread_Pool >();
 
-    constexpr int one_thousand = 1000;
-    constexpr int one_million = one_thousand*one_thousand;
-
-    std::vector<int> result_set(one_million);   
-
+    std::vector<int> result_set(10000);   
     std::mutex result_set_mutex;
-    std::promise<bool> promise_obj;
-    std::future<bool> future_obj = promise_obj.get_future();
-    
+    std::condition_variable result_set_condition;
+    bool is_finished = false;
+    bool has_initialized_result_set = false;
 
-    auto fill_in_function = [&](std::vector<int>& result, int begin, int end, std::promise< bool >& promise){
-        while(begin < end)
+    auto initialize_result_set = [&](){
+        std::lock_guard< std::mutex > lock(result_set_mutex);
+        for(int i = 0; i < 10000; ++i)
+        {
+            result_set[i] = 0;
+        }
+        has_initialized_result_set = true;
+        std::cout << "Finish initializing result set" << std::endl;
+        result_set_condition.notify_all();
+    };
+    thread_pool->post_task(
+        [&]{
+            initialize_result_set();
+        }
+    );
+    
+    auto fill_in_function = [&](std::vector<int>& result, int begin, int range){
+        for(int i = begin; i < begin+range; ++i)
         {
             {
                 std::lock_guard< std::mutex > lock(result_set_mutex); 
-                result[begin] = begin;
-                ++begin;
+                result[i] = i;            
             }
-            if(begin == 999)
-                    promise.set_value(true);
-        }
-        return;
-    };
 
+            if(i == 999)
+                is_finished = true;
+
+            std::cout << i << std::endl;
+        }
+        result_set_condition.notify_one();
+    };
+    
     /**
      * Split the taskes to 10 sub-taskes
      */
-    for(int i = 0; i < 1000; i += 1000/10 )
+    for(int i = 0; i < 1000; i += 100 )
     {
-        std::cout << "Post task from " << i << " to " << i+1000/10 << std::endl;
+        // After has initialized result set, we delegate works.
+        std::unique_lock< std::mutex > lock(result_set_mutex);
+        result_set_condition.wait(lock, [&]{ return has_initialized_result_set; });
+        std::cout << "OK, I will begin to delegate works" << std::endl;
         thread_pool->post_task(
             [&]{
-                fill_in_function( result_set, i, i+1000/10, promise_obj );
+                fill_in_function( result_set, i, 100 );
             }
         );
+        lock.unlock();
     }
 
     auto check_result_set = [&](){
-        std::cout << "Start future_obj.get()" << std::endl;
-        ASSERT_TRUE(future_obj.get());
-        std::cout << "End future_obj.get()" << std::endl;
-
-        if(future_obj.get())
-        {
-            for(int i = 0; i < 1000; ++i)
-            {
-                // BUG: It will block the thread    
-                std::cout << i << std::endl;
-                ASSERT_EQ(result_set[i], i) << "Error at index: " << i;
-            }
-        }
-        
+        std::unique_lock< std::mutex > lock(result_set_mutex);
+        std::cout << "Let me check the result" << std::endl;
+        result_set_condition.wait(lock, [&]{ return is_finished; });
+        std::cout << "Ok, we have finished filling the vector" << std::endl;
     };
-
-    thread_pool->post_task( 
+    thread_pool->post_task(
         [&]{
             check_result_set();
         }
     );
-
-    for(;;)
-    {
-        // main thread loop
-    }
 }
