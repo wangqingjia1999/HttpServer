@@ -1,6 +1,8 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include "Request.hpp"
+
 #include <string>
 #include <regex>
 #include <vector>
@@ -14,7 +16,6 @@
 	#include <unistd.h>
 #endif
 
-#include "Request.hpp"
 
 namespace Message
 {

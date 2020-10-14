@@ -1,17 +1,22 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Server_Socket.hpp"
+
+#include <string>
+#include <memory>
+
 #ifdef __linux__
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
-#endif
-#include <string.h>
-#include <string>
-#include <memory>
+#elif _WIN32
 
-#include "Request.hpp"
-#include "Response.hpp"
+#endif
+
 
 class Server
 {
@@ -97,6 +102,7 @@ public:
 	void request_core_handler();
 
 private:
+	Server_Socket server_socket;
 	struct Impl;
 	std::unique_ptr< Impl > impl_;
 };

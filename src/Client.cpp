@@ -9,6 +9,10 @@
     #include <unistd.h>
     #include <arpa/inet.h>
     #include <error.h>
+#elif _WIN32
+    // link with Ws2_32.lib
+    #pragma comment(lib,"Ws2_32.lib")
+    #include <WinSock2.h>
 #endif
 
 #include <memory>
@@ -48,42 +52,7 @@ Client& Client::operator=(Client&&) noexcept = default;
 // public methods
 bool Client::connect_to()
 {
-    // set address that contains host and post
-    struct addrinfo hints;
-    struct addrinfo* result, *resultPtr;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = 0;
-    hints.ai_flags = 0;
-    
-    int addrResult = getaddrinfo(impl_->request->get_host().c_str(), 
-        impl_->request->get_port().c_str(), 
-        &hints, 
-        &result
-    );
-
-    if(addrResult != 0)
-    {
-        perror("getaddrinfo");
-        return false;
-    }
-
-    impl_->serverSocket = socket(hints.ai_family, hints.ai_socktype, hints.ai_protocol);
-    if(impl_->serverSocket == -1)
-    {
-        return false;
-    }
-
-    resultPtr = result;
-    int connectResult = connect(impl_->serverSocket, resultPtr->ai_addr, resultPtr->ai_addrlen);
-    if(connectResult == -1)
-    {
-        perror("connect");
-        return false;
-    }
-    
-    return true;
+    return false;
 }
 
 bool Client::send_request()

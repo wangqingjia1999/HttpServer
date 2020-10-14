@@ -25,5 +25,4 @@ add_executable(${this} main.cpp)
 
 target_link_libraries(${this} PUBLIC
     HTTP
-    mysqlcppconn
 )

@@ -5,6 +5,7 @@
 #include "Status_Handler.hpp"
 #include "Thread_Pool.hpp"
 
+
 #include <queue>
 #include <mutex>
 #include <thread>
@@ -43,15 +44,6 @@ struct Server::Impl
     static const size_t SEND_BUFFER_LENGTH = 1024;
     std::string send_buffer = "";
 
-    // Epoll file descriptor
-    int epfd = epoll_create(1024);
-    
-    // Epoll events
-    struct epoll_event epoll_events;
-
-    // Epoll events result list
-    struct epoll_event epoll_events_result[1024];
-    
     // Response object for generating response
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
 
@@ -72,26 +64,6 @@ struct Server::Impl
      * Thread pool to avoid the unnecessary creation and deletion of multiple threads.
      */
     std::shared_ptr< Thread_Pool > thread_pool = std::make_shared< Thread_Pool >();
-
-    void add_epoll_wait_read_event(int target_fd)
-    {
-        epoll_events.events = EPOLLIN | EPOLLET;
-        epoll_events.data.fd = target_fd;
-        epoll_ctl(epfd, EPOLL_CTL_ADD, target_fd, &epoll_events);
-    }
-
-    void add_epoll_wait_write_event(int target_fd)
-    {
-        epoll_events.events = EPOLLOUT | EPOLLET;
-        epoll_events.data.fd = target_fd;
-        epoll_ctl(epfd, EPOLL_CTL_DEL, target_fd, &epoll_events);
-    }
-
-    void delete_from_epoll_events_list(int target_fd)
-    {
-        epoll_events.data.fd = target_fd;
-        epoll_ctl(epfd, EPOLL_CTL_DEL, target_fd, &epoll_events);
-    }
 };
 
 Server::~Server()
@@ -103,49 +75,18 @@ Server::Server() : impl_(new Impl)
 
 bool Server::listen_at(const std::string& host, const int port)
 {
-    
+    server_socket.listen_at(host, port);
+    return true; // TODO
 }
 
-void Server::send_response(const int clietn_socket_fd, const std::string& buffer)
+void Server::send_response(const int client_socket_fd, const std::string& buffer)
 {
-    if(buffer.size() == 0)
-    {
-        return;    
-    }
-
-    int send_result = send(
-        clietn_socket_fd, 
-        buffer.c_str(),
-        buffer.size(),
-        0
-    );
-
-    if(send_result == -1)
-    {
-        impl_->thread_pool->post_task( []{ Logger::record_error("send response"); } );
-        return;
-    }
-    return;
+    server_socket.write_to(client_socket_fd, buffer.c_str(), buffer.size());
 }
 
 void Server::receive_request(const int client_socket_fd)
 {
-    int receive_result = recv(client_socket_fd, impl_->receive_buffer, impl_->receive_buffer_length, 0);
-    if(receive_result == 0 || receive_result == -1)
-    {
-        impl_->request->set_raw_request("");
-        return;
-    }
-
-    if(!impl_->request->set_raw_request(impl_->receive_buffer))
-    {
-        impl_->thread_pool->post_task( []{ Logger::record_error("set raw requst"); } );
-        return;
-    }
-
-    memset(impl_->receive_buffer, 0, impl_->receive_buffer_length);
-
-    return;
+    server_socket.read_from(client_socket_fd, impl_->receive_buffer, impl_->receive_buffer_length);
 }
 
 bool Server::parse_request()

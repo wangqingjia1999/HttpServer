@@ -14,7 +14,6 @@ set(source_files
     Response_Test.cpp
     Character_Set_Test.cpp
     Percent_Encoding_Test.cpp
-    Mysql_Handler_Test.cpp
     WebSocket_Test.cpp
 )
 
@@ -24,7 +23,7 @@ add_executable(${this} ${source_files})
 target_link_libraries(${this} PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 # Character_Set test 
@@ -53,7 +52,7 @@ add_executable(Request_Test Request_Test.cpp)
 target_link_libraries(Request_Test PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 # Response test 
@@ -61,7 +60,7 @@ add_executable(Response_Test Response_Test.cpp)
 target_link_libraries(Response_Test PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 # Server test 
@@ -69,7 +68,7 @@ add_executable(Server_Test Server_Test.cpp)
 target_link_libraries(Server_Test PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 # Client test 
@@ -77,7 +76,7 @@ add_executable(Client_Test Client_Test.cpp)
 target_link_libraries(Client_Test PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 
@@ -85,8 +84,7 @@ target_link_libraries(Client_Test PUBLIC
 add_executable(Mysql_Handler_Test Mysql_Handler_Test.cpp)
 target_link_libraries(Mysql_Handler_Test PUBLIC
     gtest_main 
-    HTTP
-    mysqlcppconn
+    Response
 )
 
 # logger test 
@@ -101,7 +99,7 @@ add_executable(WebSocket_Test WebSocket_Test.cpp)
 target_link_libraries(WebSocket_Test PUBLIC
     gtest_main 
     HTTP
-    mysqlcppconn
+    
 )
 
 # base64 test
@@ -130,7 +128,7 @@ add_executable(Status_Handler_Test Status_Handler_Test.cpp)
 target_link_libraries(Status_Handler_Test PUBLIC
     gtest_main
     HTTP
-    mysqlcppconn    
+        
 )
 
 # thread pool test

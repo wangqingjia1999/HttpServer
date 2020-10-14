@@ -14,7 +14,6 @@ set(HeaderFiles
     ../include/Response.hpp
     ../include/Server.hpp
     ../include/URI.hpp
-    ../include/Mysql_Handler.hpp
     ../include/Logger.hpp
     ../include/WebSocket.hpp
     ../include/Base64.hpp
@@ -33,7 +32,6 @@ set(SourceFiles
     Response.cpp
     Server.cpp
     URI.cpp
-    Mysql_Handler.cpp
     Logger.cpp
     WebSocket.cpp
     Base64.cpp
@@ -71,4 +69,9 @@ add_library(Timer STATIC
 add_library(Logger STATIC
     ../include/Logger.hpp
     Logger.cpp
+)
+
+add_library(Response STATIC
+    ../include/Response.hpp
+    Response.cpp
 )
