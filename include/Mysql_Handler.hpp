@@ -3,19 +3,15 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
-// Including directly from cppconn/*.h 
-// will speed up your build time
-#ifdef HTTP_SERVER_ENABLE_MYSQL
-#include <cppconn/driver.h>
-#include <cppconn/connection.h>
-#include <cppconn/statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/prepared_statement.h>
+#ifdef _WIN32
+    #include <mysql.h>
+#elif __linux__
+    // For linux 
 #endif
 
-// tmp header
-#include <iostream>
+struct Mysql_Layout;
 
 class Mysql_Handler
 {
@@ -24,19 +20,25 @@ public:
     Mysql_Handler();
     ~Mysql_Handler();
 
-    Mysql_Handler(const Mysql_Handler& );
-    Mysql_Handler& operator=(const Mysql_Handler& );
+    Mysql_Handler(const Mysql_Handler&) = delete;
+    Mysql_Handler& operator=(const Mysql_Handler&) = delete;
     
-    Mysql_Handler(Mysql_Handler&& ) noexcept;
-    Mysql_Handler& operator=(Mysql_Handler&& ) noexcept;
+    Mysql_Handler(Mysql_Handler&&) = delete;
+    Mysql_Handler& operator=(Mysql_Handler&&) = delete;
 
 public:
-
     /**
      * @brief  Initialize database layout.
      * @return  True if successfully initialize mysql database and tables.
      */
     bool initialize_mysql_layout();
+
+    /**
+     * @brief  Initialize database layout based on given layout.
+     * @param  layout  Layout of the database.
+     * @return  True if successfully initialize mysql database and tables.
+     */
+    bool initialize_mysql_layout(Mysql_Layout& layout);
 
     /**
      * @brief  Connect to mysql based on given port, username and password.
@@ -71,24 +73,15 @@ public:
      */
     void drop_table(const std::string table_name);
 
-    /**
-     * @brief  Add new user into database.
-     * @param  name  User name.
-     * @param  age  User age.
-     * @param  email  User email.
-     * @return  True if successfully add user record.
-     */
-    bool add_user(const std::string& name, const int age, const std::string& email, const std::string& password);
-
-    /**
-     * @brief  Fetch user record by user name.
-     * @param  query  User name.
-     * @return  A record in the form of std:vector< std::string >.
-     */
-    std::vector< std::string > fetch_user_by_name(const std::string& query);
 private:
-    struct Impl;
-    std::unique_ptr< Impl > impl_;
+    MYSQL* mysql_connection = nullptr;
+
+};
+
+struct Mysql_Layout
+{
+
+
 };
 
 #endif

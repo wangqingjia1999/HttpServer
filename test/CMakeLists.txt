@@ -22,7 +22,7 @@ include_directories(${this} PUBLIC ../include)
 add_executable(${this} ${source_files})
 target_link_libraries(${this} PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
     
 )
 
@@ -30,28 +30,28 @@ target_link_libraries(${this} PUBLIC
 add_executable(Character_Set_Test Character_Set_Test.cpp)
 target_link_libraries(Character_Set_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
 )
 
 # Percent-Encoding test 
 add_executable(Percent_Encoding_Test Percent_Encoding_Test.cpp)
 target_link_libraries(Percent_Encoding_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
 )
 
 # URI test 
 add_executable(URI_Test URI_Test.cpp)
 target_link_libraries(URI_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
 )
 
 # Request test 
 add_executable(Request_Test Request_Test.cpp)
 target_link_libraries(Request_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
     
 )
 
@@ -59,7 +59,7 @@ target_link_libraries(Request_Test PUBLIC
 add_executable(Response_Test Response_Test.cpp)
 target_link_libraries(Response_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
     
 )
 
@@ -67,7 +67,7 @@ target_link_libraries(Response_Test PUBLIC
 add_executable(Server_Test Server_Test.cpp)
 target_link_libraries(Server_Test PUBLIC
     gtest_main 
-    HTTP
+    Http_Server
     
 )
 
@@ -75,8 +75,7 @@ target_link_libraries(Server_Test PUBLIC
 add_executable(Client_Test Client_Test.cpp)
 target_link_libraries(Client_Test PUBLIC
     gtest_main 
-    HTTP
-    
+    Http_Server
 )
 
 
@@ -84,7 +83,7 @@ target_link_libraries(Client_Test PUBLIC
 add_executable(Mysql_Handler_Test Mysql_Handler_Test.cpp)
 target_link_libraries(Mysql_Handler_Test PUBLIC
     gtest_main 
-    Response
+    Mysql_Handler
 )
 
 # logger test 
@@ -98,36 +97,35 @@ target_link_libraries(Logger_Test PUBLIC
 add_executable(WebSocket_Test WebSocket_Test.cpp)
 target_link_libraries(WebSocket_Test PUBLIC
     gtest_main 
-    HTTP
-    
+    Http_Server
 )
 
 # base64 test
 add_executable(Base64_Test Base64_Test.cpp)
 target_link_libraries(Base64_Test PUBLIC
     gtest_main
-    HTTP    
+    Http_Server    
 )
 
 # SHA-1 test
 add_executable(SHA1_Test SHA1_Test.cpp)
 target_link_libraries(SHA1_Test PUBLIC
     gtest_main
-    HTTP    
+    Http_Server    
 )
 
 # UTF-8 test
 add_executable(UTF8_Test UTF8_Test.cpp)
 target_link_libraries(UTF8_Test PUBLIC
     gtest_main
-    HTTP    
+    Http_Server    
 )
 
 # status handler test
 add_executable(Status_Handler_Test Status_Handler_Test.cpp)
 target_link_libraries(Status_Handler_Test PUBLIC
     gtest_main
-    HTTP
+    Http_Server
         
 )
 

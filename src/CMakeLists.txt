@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 3.8)
-
-set(this HTTP)
-
-project(${this})
-
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(HeaderFiles
@@ -75,3 +69,21 @@ add_library(Response STATIC
     ../include/Response.hpp
     Response.cpp
 )
+
+add_library(Mysql_Handler STATIC
+    ../include/Mysql_Handler.hpp
+    Mysql_Handler.cpp
+)
+
+# TODO: dynamically link mysql c connector library
+if(WIN32)
+    set(mysql_c_connector_static_library_include_path "C:/Program Files/MySQL/MySQL Server 8.0/include")
+    target_include_directories(Mysql_Handler PUBLIC
+        ${mysql_c_connector_static_library_include_path} 
+    )
+    set(mysql_c_connector_static_library_path "C:/Program Files/MySQL/MySQL Server 8.0/lib/libmysql.lib")
+    target_link_libraries(Mysql_Handler
+        ${mysql_c_connector_static_library_path}
+    )
+endif()
+
