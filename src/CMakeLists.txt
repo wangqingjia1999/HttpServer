@@ -1,4 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories("C:/Program Files/MySQL/Connector C++ 8.0/include")
 
 set(HeaderFiles
     ../include/Character_Set.hpp
@@ -74,16 +75,7 @@ add_library(Mysql_Handler STATIC
     ../include/Mysql_Handler.hpp
     Mysql_Handler.cpp
 )
-
-# TODO: dynamically link mysql c connector library
-if(WIN32)
-    set(mysql_c_connector_static_library_include_path "C:/Program Files/MySQL/MySQL Server 8.0/include")
-    target_include_directories(Mysql_Handler PUBLIC
-        ${mysql_c_connector_static_library_include_path} 
-    )
-    set(mysql_c_connector_static_library_path "C:/Program Files/MySQL/MySQL Server 8.0/lib/libmysql.lib")
-    target_link_libraries(Mysql_Handler
-        ${mysql_c_connector_static_library_path}
-    )
-endif()
+target_link_libraries(Mysql_Handler PUBLIC
+    "C:/Program Files/MySQL/Connector C++ 8.0/lib64/vs14/mysqlcppconn8-static.lib"
+) 
 

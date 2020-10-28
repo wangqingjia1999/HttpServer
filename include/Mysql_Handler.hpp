@@ -5,17 +5,16 @@
 #include <vector>
 #include <string>
 
-#ifdef _WIN32
-    #include <mysql.h>
-#elif __linux__
-    // For linux 
-#endif
+#include "mysqlx/xdevapi.h"
 
 struct Mysql_Layout;
 
+/**
+ * MySQL Connector/C++ Documentation
+ * https://dev.mysql.com/doc/dev/connector-cpp/8.0/
+ */
 class Mysql_Handler
 {
-    // Life-cycle management
 public:
     Mysql_Handler();
     ~Mysql_Handler();
@@ -74,7 +73,7 @@ public:
     void drop_table(const std::string table_name);
 
 private:
-    MYSQL* mysql_connection = nullptr;
+    
 
 };
 
