@@ -151,28 +151,8 @@ bool Server::handle_post_request()
     }
 
     // add data to mysql
-    if(!impl_->post_data_map.empty())
-    {
-        impl_->mysql.connect_to_mysql(3306, "bitate", "qwer");
-        
-        try
-        {
-            impl_->mysql.add_user(
-            impl_->post_data_map.find("Name")->second,
-            std::stoi(impl_->post_data_map.find("Age")->second),
-            impl_->post_data_map.find("Email")->second,
-            impl_->post_data_map.find("Password")->second
-            );
-        }
-        catch(const std::exception& exception_message)
-        {
-            impl_->thread_pool->post_task(
-                [exception_message]{
-                    Logger::record(exception_message.what());
-                }
-            );
-        }
-    }
+    // ...
+    
     return true;
 }
 

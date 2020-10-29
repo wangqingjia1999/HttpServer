@@ -510,47 +510,10 @@ namespace Message
 			}
 		}
 
-		// Query request
-		if(request_uri.find('?') != std::string::npos)
-		{
-			if(!impl_->uri.parse_from_string(request_uri))
-			{
-				return false;
-			}
-			if(impl_->uri.get_query().find_first_of('=') != std::string::npos)
-			{
-				std::string query_string = impl_->uri.get_query().substr( impl_->uri.get_query().find_first_of('=') + 1 );
-				Mysql_Handler mysql;
-				mysql.connect_to_mysql(3306, "bitate", "qwer");
-				std::vector< std::string > query_result = mysql.fetch_user_by_name(query_string);
-				
-				if(query_result.empty())
-				{	
-					impl_->body = "<html><h1> Sorry, we can not find this guy. </h1>";
-					impl_->body += "<a href=\"index.html\">Return to home</a></html>";
-					impl_->body_length = impl_->body.size();
-					return true;
-				}
+		// Query request goes here:
+		// ...
 
-				std::string html_query_result = "<html><h1> Haha, We find this guy. </h1>";
-				
-				html_query_result += ("Name: " + query_result[0] + "<br>");
-				html_query_result += ("Age: " + query_result[1] + "<br>");
-				html_query_result += ("Email: " + query_result[2] + "<br>");
-				html_query_result += ("Password: " + query_result[3] + "<br>");
-
-				html_query_result += "<a href=\"index.html\">Return to home</a></html>";
-
-				impl_->body = html_query_result;
-				impl_->body_length = html_query_result.size();
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
+		
 		// set body and body length
 		if (!read_file(request_uri))
 		{

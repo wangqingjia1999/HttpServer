@@ -7,7 +7,7 @@
 std::string Timer::get_current_http_time()
 {
     time_t now = std::time(0);
-    struct tm* current_time = std::gmtime(&now);
+    tm* current_time = std::gmtime(&now);
     char current_time_string[30];
     std::strftime(current_time_string, 30, "%a, %d %b %Y %H:%M:%S GMT", current_time);
     return current_time_string;
