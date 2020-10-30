@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-#include "mysqlx/xdevapi.h"
+#include "xdevapi.h"
 
 struct Mysql_Layout;
 

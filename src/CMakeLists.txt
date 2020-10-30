@@ -1,5 +1,8 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories("C:/Program Files/MySQL/Connector C++ 8.0/include")
+
+include_directories("C:/Program Files/MySQL/Connector C++ 8.0/include/mysqlx")
+# Or use double backward-slash for path
+# include_directories("C:\\Program Files\\MySQL\\Connector C++ 8.0\\include")
 
 set(HeaderFiles
     ../include/Character_Set.hpp
