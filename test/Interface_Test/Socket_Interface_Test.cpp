@@ -22,12 +22,14 @@ TEST(socket_interface_tests, server_listen_at_no_exception_test)
     std::string ip = "0.0.0.0";
     int port = 2333;
 
+    EXPECT_NO_THROW( server_socket->listen_at(ip, port, 2000) );
+
     // Bug: the test will abort without any warnings or errors
-    thread_pool->post_task(
-        [server_socket, ip, port]{
-            server_socket->listen_at(ip, port);
-        }
-    );
+    // thread_pool->post_task(
+    //     [server_socket, ip, port]{
+    //         server_socket->listen_at(ip, port);
+    //     }
+    // );
 }
 
 TEST(socket_interface_tests, connect_to_no_exception_test)

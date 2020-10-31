@@ -30,8 +30,12 @@ public:
 
 private:
     Timer listening_timer;
+
 #ifdef _WIN32
     SOCKET server_listening_socket = INVALID_SOCKET;
+    fd_set read_fds;
+    fd_set write_fds;
+    timeval listen_time_out_duration;
 #elif __linux__
     
 #endif
