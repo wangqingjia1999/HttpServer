@@ -5,6 +5,7 @@
 #include "Timer.hpp"
 
 #include <chrono>
+#include <queue>
 
 #ifdef __linux__
     // TODO: linux platform
@@ -13,24 +14,29 @@
     #include <WinSock2.h>
 #endif
 
+enum class server_status {
+    READY,
+    LISTEN_TIMEOUT,
+    ERROR_OCCURS
+};
 class Server_Socket : public ISocket
 {
 public:
     /**
      * @brief  Listen at given ip:port.
      * @param  ip  Ip address string.
-     * @param  port Port number.
-     * @param  millisecond  Time in millisecond for listening.
+     * @param  port  Port number.
+     * @param  timeout_microseconds  Listen for timeout_microseconds microseconds.
      */
-    void listen_at( const std::string ip, const int port, const long long millisecond = -1 );
+    void listen_at( const std::string ip, const int port, const long timeout_microseconds = -1 );
 
     virtual void write_to(const int peer_socket, const char* data_buffer, int data_length) override;
 
     virtual void read_from(const int peer_socket, char* data_buffer, int data_length) override;
-
+    
+    server_status get_current_server_status();
 private:
-    Timer listening_timer;
-
+    std::queue< server_status > server_status_recorder;
 #ifdef _WIN32
     SOCKET server_listening_socket = INVALID_SOCKET;
     fd_set read_fds;

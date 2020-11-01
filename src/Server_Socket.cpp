@@ -3,10 +3,13 @@
 #include <stdexcept>
 #include <iostream>
 
-void Server_Socket::listen_at( const std::string ip, const int port, const long long millisecond ) 
+void Server_Socket::listen_at( const std::string ip, const int port, const long timeout_microseconds ) 
 {
-    if(millisecond != -1)
-        listening_timer.reset_start_time();
+    // If user sets timeout
+    if(timeout_microseconds != -1)
+    {
+        listen_time_out_duration.tv_usec = timeout_microseconds;
+    }
 
 #ifdef _WIN32
     WSADATA wsa_data = {0};
@@ -49,6 +52,13 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
+    // Temporary hard-code
+    read_fds.fd_array[0] = server_listening_socket;
+    read_fds.fd_count = 1;
+
+    write_fds.fd_array[0] = server_listening_socket;
+    write_fds.fd_count = 1;
+
     int select_result = select(
         0,
         &read_fds,
@@ -57,6 +67,39 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         &listen_time_out_duration
     );
 
+    // timeout
+    if( select_result > 0 )
+    {
+        // read or write
+        // ...
+    }
+    else if( select_result == 0 )
+    {
+        server_status_recorder.push( server_status::LISTEN_TIMEOUT );
+        closesocket(server_listening_socket);
+        WSACleanup();
+        return;
+    }
+    else if( select_result == SOCKET_ERROR )
+    {
+    #ifdef _WIN32
+        wchar_t* error_info = nullptr;
+        FormatMessageW(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+            nullptr, 
+            WSAGetLastError(),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPWSTR)&error_info, 
+            0, 
+            nullptr
+        );
+        closesocket(server_listening_socket);
+        WSACleanup();
+        std::wstring error_string(error_info);
+        throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
+    #endif
+    }
+    
     closesocket(server_listening_socket);
     WSACleanup();
     return;
@@ -197,4 +240,9 @@ void Server_Socket::read_from(const int peer_socket, char* data_buffer, int data
     }
 
     return;
+}
+
+server_status Server_Socket::get_current_server_status()
+{
+    return server_status_recorder.back();
 }

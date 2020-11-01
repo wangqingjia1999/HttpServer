@@ -7,6 +7,12 @@
 #include <memory>
 #include <iostream>
 
+// Time units
+const u_int64 microseconds = 1;
+const u_int64 milliseconds = 1000 * microseconds;
+const u_int64 seconds = 1000 * milliseconds;
+
+
 TEST(socket_interface_tests, polymorphism_tests)
 {
     std::unique_ptr< ISocket > socket_interface_server = std::make_unique< Server_Socket >();
@@ -22,18 +28,7 @@ TEST(socket_interface_tests, server_listen_at_no_exception_test)
     std::string ip = "0.0.0.0";
     int port = 2333;
 
-    EXPECT_NO_THROW( server_socket->listen_at(ip, port, 2000) );
+    EXPECT_NO_THROW( server_socket->listen_at(ip, port, 1 * milliseconds) );
 
-    // Bug: the test will abort without any warnings or errors
-    // thread_pool->post_task(
-    //     [server_socket, ip, port]{
-    //         server_socket->listen_at(ip, port);
-    //     }
-    // );
-}
-
-TEST(socket_interface_tests, connect_to_no_exception_test)
-{
-    std::unique_ptr< ISocket > client_socket = std::make_unique< Client_Socket >();
-    // EXPECT_NO_THROW( client_socket->connect_to() );
+    EXPECT_EQ( server_socket->get_current_server_status(), server_status::LISTEN_TIMEOUT );
 }
