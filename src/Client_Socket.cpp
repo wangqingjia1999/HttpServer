@@ -1,6 +1,7 @@
 #include "Client_Socket.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 void Client_Socket::connect_to( const std::string ip, const int port )
 {
@@ -31,9 +32,25 @@ void Client_Socket::connect_to( const std::string ip, const int port )
 
     if(connect_result == INVALID_SOCKET)
     {
+    #ifdef _WIN32
+        wchar_t* error_info = nullptr;
+        FormatMessageW(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+            nullptr, 
+            WSAGetLastError(),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPWSTR)&error_info, 
+            0, 
+            nullptr
+        );
+        closesocket(client_socket);
         WSACleanup();
-        throw std::runtime_error("Can not connect to server socket");
+        std::wstring error_string(error_info);
+        throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
+    #endif
     }
+
+    // Add read/write
 
     closesocket(client_socket);
     WSACleanup();

@@ -16,7 +16,8 @@
 
 enum class server_status {
     READY,
-    LISTEN_TIMEOUT,
+    LISTENING,
+    LISTENING_TIMEOUT,
     ERROR_OCCURS
 };
 class Server_Socket : public ISocket
@@ -35,6 +36,13 @@ public:
     virtual void read_from(const int peer_socket, char* data_buffer, int data_length) override;
     
     server_status get_current_server_status();
+
+private:
+    void add_socket_to_read_fds( SOCKET socket );
+    void add_socket_to_write_fds( SOCKET socket );
+    void remove_socket_from_read_fds( SOCKET socket );
+    void remove_socket_from_write_fds( SOCKET socket );
+
 private:
     std::queue< server_status > server_status_recorder;
 #ifdef _WIN32

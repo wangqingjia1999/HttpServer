@@ -52,12 +52,7 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
-    // Temporary hard-code
-    read_fds.fd_array[0] = server_listening_socket;
-    read_fds.fd_count = 1;
-
-    write_fds.fd_array[0] = server_listening_socket;
-    write_fds.fd_count = 1;
+    add_socket_to_read_fds( server_listening_socket );
 
     int select_result = select(
         0,
@@ -67,22 +62,33 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         &listen_time_out_duration
     );
 
-    // timeout
     if( select_result > 0 )
     {
-        // read or write
-        // ...
+        int accept_result = accept(
+            server_listening_socket,
+            nullptr,
+            nullptr
+        );
+
+        std::cout << "Server: I accepts one " << std::endl;
+        
+        if( accept_result == INVALID_SOCKET )
+        {
+            WSACleanup();
+            throw std::runtime_error("Can not accept socket");
+        }     
     }
-    else if( select_result == 0 )
+    else if( select_result == 0 )   // timeout
     {
-        server_status_recorder.push( server_status::LISTEN_TIMEOUT );
+        server_status_recorder.push( server_status::LISTENING_TIMEOUT );
         closesocket(server_listening_socket);
         WSACleanup();
         return;
     }
-    else if( select_result == SOCKET_ERROR )
+    else if( select_result == SOCKET_ERROR )    // error occurs
     {
     #ifdef _WIN32
+        server_status_recorder.push( server_status::ERROR_OCCURS );
         wchar_t* error_info = nullptr;
         FormatMessageW(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
@@ -245,4 +251,24 @@ void Server_Socket::read_from(const int peer_socket, char* data_buffer, int data
 server_status Server_Socket::get_current_server_status()
 {
     return server_status_recorder.back();
+}
+
+void Server_Socket::add_socket_to_read_fds( SOCKET socket )
+{
+    read_fds.fd_array[ read_fds.fd_count++ ] = socket;
+}
+
+void Server_Socket::add_socket_to_write_fds( SOCKET socket )
+{
+    write_fds.fd_array[ write_fds.fd_count++ ] = socket;
+}
+
+void Server_Socket::remove_socket_from_read_fds( SOCKET socket )
+{
+    
+}   
+
+void Server_Socket::remove_socket_from_write_fds( SOCKET socket )
+{
+
 }
