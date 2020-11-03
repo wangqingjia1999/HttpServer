@@ -52,8 +52,16 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
-    add_socket_to_read_fds( server_listening_socket );
+    server_status_recorder.push( server_status::LISTENING );
 
+    add_socket_to_read_fds( server_listening_socket );
+    
+    /**
+     * The parameter read_fds identifies the sockets that are to be checked for readability. 
+     * If the socket is currently in the listen state, it will be marked as readable if 
+     * an incoming connection request has been received such that an accept is guaranteed 
+     * to complete without blocking.
+     */
     int select_result = select(
         0,
         &read_fds,
@@ -64,13 +72,13 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     if( select_result > 0 )
     {
-        int accept_result = accept(
+        SOCKET accept_result = accept(
             server_listening_socket,
             nullptr,
             nullptr
         );
 
-        std::cout << "Server: I accepts one " << std::endl;
+        std::cout << "Server: I accepts one connection" << std::endl;
         
         if( accept_result == INVALID_SOCKET )
         {

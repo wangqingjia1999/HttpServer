@@ -48,11 +48,11 @@ TEST(socket_interface_tests, client_sends_request_while_server_response)
 
     thread_pool->post_task(
         [&](){
-            EXPECT_NO_THROW(  
+            EXPECT_NO_THROW(
                 server_socket->listen_at(
                     "127.0.0.1",
                     2333,
-                    1 * milliseconds
+                    1 * seconds
                 );
             );
         }
@@ -60,14 +60,23 @@ TEST(socket_interface_tests, client_sends_request_while_server_response)
     // BUG: client cannot connects to server,
     // I guess that the client begins to connect before the server starts listening.
     // Namely, tricky multithreading problem.
+    // listen() is non-blocking, maybe I should redesign the logic of server socket.
     thread_pool->post_task(
         [&](){
-            EXPECT_NO_THROW(
-                client_socket->connect_to(
-                    "127.0.0.1",
-                    2333
-                );
-            );
+            while( true )
+            {
+                if( server_socket->get_current_server_status() == server_status::LISTENING )
+                {
+                    EXPECT_NO_THROW(
+                        client_socket->connect_to(
+                            "127.0.0.1",
+                            2333
+                        );
+                    );
+                    break;
+                }                
+                std::cout << "Server is not listening with status: " << (int)server_socket->get_current_server_status() << std::endl;
+            }
         }
     );
 
