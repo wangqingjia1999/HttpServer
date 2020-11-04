@@ -50,21 +50,23 @@ void Client_Socket::connect_to( const std::string ip, const int port )
     #endif
     }
 
-    // Add read/write
-
-    closesocket(client_socket);
-    WSACleanup();
-    return;
-
 #endif
 }
 
 void Client_Socket::write_to(const int peer_socket, const char* data_buffer, int data_length)
 {
-
+    std::string send_buffer = "Hello from client";
+    send(client_socket, send_buffer.c_str(), send_buffer.size(), 0);
 }
 
 void Client_Socket::read_from(const int peer_socket, char* data_buffer, int data_length)
 {
     
+}
+
+void Client_Socket::close_connection()
+{
+    closesocket(client_socket);
+    WSACleanup();
+    return;
 }

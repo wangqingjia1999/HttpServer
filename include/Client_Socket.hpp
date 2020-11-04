@@ -20,6 +20,8 @@ public:
      */
     void connect_to(const std::string ip, const int port);
 
+    void close_connection();
+
     virtual void write_to(const int peer_socket, const char* data_buffer, int data_length) override;
 
     virtual void read_from(const int peer_socket, char* data_buffer, int data_length) override;

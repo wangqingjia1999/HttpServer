@@ -3,6 +3,11 @@
 #include <stdexcept>
 #include <iostream>
 
+Server_Socket::Server_Socket()
+{
+    set_server_status( Server_Status::CLOSED );
+}
+
 void Server_Socket::listen_at( const std::string ip, const int port, const long timeout_microseconds ) 
 {
     // If user sets timeout
@@ -52,9 +57,12 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     int listen_result = listen(server_listening_socket, 1024);
 
-    server_status_recorder.push( server_status::LISTENING );
+    set_server_status( Server_Status::LISTENING );
 
+    FD_ZERO(&read_fds);
+    FD_ZERO(&write_fds);
     add_socket_to_read_fds( server_listening_socket );
+    add_socket_to_write_fds( server_listening_socket );
     
     /**
      * The parameter read_fds identifies the sockets that are to be checked for readability. 
@@ -69,17 +77,17 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         nullptr,
         &listen_time_out_duration
     );
-
+    
     if( select_result > 0 )
     {
+        std::cout << "Server: I accepts one connection" << std::endl;
+
         SOCKET accept_result = accept(
             server_listening_socket,
             nullptr,
             nullptr
         );
 
-        std::cout << "Server: I accepts one connection" << std::endl;
-        
         if( accept_result == INVALID_SOCKET )
         {
             WSACleanup();
@@ -88,7 +96,7 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     }
     else if( select_result == 0 )   // timeout
     {
-        server_status_recorder.push( server_status::LISTENING_TIMEOUT );
+        set_server_status( Server_Status::CLOSED );
         closesocket(server_listening_socket);
         WSACleanup();
         return;
@@ -96,7 +104,7 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     else if( select_result == SOCKET_ERROR )    // error occurs
     {
     #ifdef _WIN32
-        server_status_recorder.push( server_status::ERROR_OCCURS );
+        set_server_status( Server_Status::CLOSED );
         wchar_t* error_info = nullptr;
         FormatMessageW(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
@@ -113,9 +121,7 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
     #endif
     }
-    
-    closesocket(server_listening_socket);
-    WSACleanup();
+
     return;
 
 #elif __linux__
@@ -256,19 +262,19 @@ void Server_Socket::read_from(const int peer_socket, char* data_buffer, int data
     return;
 }
 
-server_status Server_Socket::get_current_server_status()
+Server_Status Server_Socket::get_current_server_status()
 {
-    return server_status_recorder.back();
+    return server_status;
 }
 
 void Server_Socket::add_socket_to_read_fds( SOCKET socket )
 {
-    read_fds.fd_array[ read_fds.fd_count++ ] = socket;
+    FD_SET(socket, &read_fds);
 }
 
 void Server_Socket::add_socket_to_write_fds( SOCKET socket )
 {
-    write_fds.fd_array[ write_fds.fd_count++ ] = socket;
+    FD_SET(socket, &write_fds);
 }
 
 void Server_Socket::remove_socket_from_read_fds( SOCKET socket )
@@ -279,4 +285,16 @@ void Server_Socket::remove_socket_from_read_fds( SOCKET socket )
 void Server_Socket::remove_socket_from_write_fds( SOCKET socket )
 {
 
+}
+
+void Server_Socket::set_server_status( Server_Status new_status )
+{
+    std::unique_lock< std::mutex > lock( server_status_mutex );
+    server_status = new_status;
+}
+
+void Server_Socket::stop_listening()
+{
+    closesocket(server_listening_socket);
+    WSACleanup();
 }
