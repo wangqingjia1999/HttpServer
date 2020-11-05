@@ -10,18 +10,13 @@ Server_Socket::Server_Socket()
 
 void Server_Socket::listen_at( const std::string ip, const int port, const long timeout_microseconds ) 
 {
-    // If user sets timeout
-    if(timeout_microseconds != -1)
-    {
-        listen_time_out_duration.tv_usec = timeout_microseconds;
-    }
-
 #ifdef _WIN32
     WSADATA wsa_data = {0};
     // Request WinSock version 2.2 
     auto result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
     if(result != NO_ERROR)
     {
+        print_socket_error();
         WSACleanup();
         throw std::runtime_error("Can not initialize WSADATA");
     }
@@ -34,13 +29,14 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     if(server_listening_socket == INVALID_SOCKET)
     {
+        print_socket_error();
         WSACleanup();
         throw std::runtime_error("Can not create a new socket");
     }
 
     sockaddr_in socket_address;
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.S_un.S_addr = inet_addr( ip.c_str() );
+    socket_address.sin_addr.S_un.S_addr = htonl( INADDR_LOOPBACK );
     socket_address.sin_port = htons(port);
 
     int bind_result = bind(
@@ -49,77 +45,44 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         sizeof(socket_address)
     );
 
-    if(bind_result == INVALID_SOCKET)
+    if( bind_result == INVALID_SOCKET )
     {
+        print_socket_error();
         WSACleanup();
         throw std::runtime_error("Can not bind a socket");
     }
 
-    int listen_result = listen(server_listening_socket, 1024);
-
-    set_server_status( Server_Status::LISTENING );
-
-    FD_ZERO(&read_fds);
-    FD_ZERO(&write_fds);
-    add_socket_to_read_fds( server_listening_socket );
-    add_socket_to_write_fds( server_listening_socket );
-    
-    /**
-     * The parameter read_fds identifies the sockets that are to be checked for readability. 
-     * If the socket is currently in the listen state, it will be marked as readable if 
-     * an incoming connection request has been received such that an accept is guaranteed 
-     * to complete without blocking.
-     */
-    int select_result = select(
-        0,
-        &read_fds,
-        &write_fds,
-        nullptr,
-        &listen_time_out_duration
-    );
-    
-    if( select_result > 0 )
+    while( true )
     {
-        std::cout << "Server: I accepts one connection" << std::endl;
+        if( !is_server_listening() )
+            break;
 
-        SOCKET accept_result = accept(
-            server_listening_socket,
-            nullptr,
-            nullptr
-        );
+        int listen_result = listen( server_listening_socket, 1024 );
 
-        if( accept_result == INVALID_SOCKET )
+        set_server_status( Server_Status::LISTENING );
+
+        if( listen_result > 0 )
         {
-            WSACleanup();
-            throw std::runtime_error("Can not accept socket");
-        }     
-    }
-    else if( select_result == 0 )   // timeout
-    {
-        set_server_status( Server_Status::CLOSED );
-        closesocket(server_listening_socket);
-        WSACleanup();
-        return;
-    }
-    else if( select_result == SOCKET_ERROR )    // error occurs
-    {
-    #ifdef _WIN32
-        set_server_status( Server_Status::CLOSED );
-        wchar_t* error_info = nullptr;
-        FormatMessageW(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-            nullptr, 
-            WSAGetLastError(),
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPWSTR)&error_info, 
-            0, 
-            nullptr
-        );
-        closesocket(server_listening_socket);
-        WSACleanup();
-        std::wstring error_string(error_info);
-        throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
-    #endif
+            std::cout << "There is a socket trying to connect to me" << std::endl;
+
+            SOCKET client_socket = accept(
+                server_listening_socket,
+                nullptr,
+                nullptr
+            );
+
+            if( client_socket == INVALID_SOCKET )
+            {
+                print_socket_error();
+                WSACleanup();
+                throw std::runtime_error("Can not accept socket");
+            }
+            else
+            {
+                std::cout << "I accept one socket" << std::endl;
+            }
+        }
+
     }
 
     return;
@@ -244,6 +207,7 @@ void Server_Socket::write_to(const int peer_socket, const char* data_buffer, int
 
     if(write_result == SOCKET_ERROR)
     {
+        print_socket_error();
         throw std::runtime_error("Can not send to peer socket");
     }
 
@@ -256,6 +220,7 @@ void Server_Socket::read_from(const int peer_socket, char* data_buffer, int data
 
     if(read_result == SOCKET_ERROR)
     {
+        print_socket_error();
         throw std::runtime_error("Can not read from peer socket");
     }
 
@@ -267,26 +232,6 @@ Server_Status Server_Socket::get_current_server_status()
     return server_status;
 }
 
-void Server_Socket::add_socket_to_read_fds( SOCKET socket )
-{
-    FD_SET(socket, &read_fds);
-}
-
-void Server_Socket::add_socket_to_write_fds( SOCKET socket )
-{
-    FD_SET(socket, &write_fds);
-}
-
-void Server_Socket::remove_socket_from_read_fds( SOCKET socket )
-{
-    
-}   
-
-void Server_Socket::remove_socket_from_write_fds( SOCKET socket )
-{
-
-}
-
 void Server_Socket::set_server_status( Server_Status new_status )
 {
     std::unique_lock< std::mutex > lock( server_status_mutex );
@@ -295,6 +240,25 @@ void Server_Socket::set_server_status( Server_Status new_status )
 
 void Server_Socket::stop_listening()
 {
-    closesocket(server_listening_socket);
-    WSACleanup();
+    // TODO:
+    // Why these code do not executed?
+    std::cout << "Prepared to stop listening" << std::endl;
+    std::unique_lock< std::mutex > lock( is_listening_mutex );
+    is_listening = false;
+}
+
+void Server_Socket::print_socket_error()
+{
+    wchar_t *s = NULL;
+    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+                NULL, WSAGetLastError(),
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPWSTR)&s, 0, NULL);
+    fprintf(stderr, "%S\n", s);
+    LocalFree(s);
+}
+
+bool Server_Socket::is_server_listening()
+{
+    return is_listening;
 }

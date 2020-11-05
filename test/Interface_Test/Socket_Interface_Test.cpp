@@ -23,11 +23,22 @@ TEST(socket_interface_tests, polymorphism_tests)
 TEST(socket_interface_tests, server_listens_at_no_exception_test)
 {
     auto server_socket = std::make_shared< Server_Socket >();
+    auto thread_pool = std::make_unique< Thread_Pool >();
+    
+    std::string ip = "127.0.0.1";
+    int port = 23332;
 
-    std::string ip = "0.0.0.0";
-    int port = 2333;
+    thread_pool->post_task(
+        [&](){
+            EXPECT_NO_THROW( server_socket->listen_at(ip, port, 1 * milliseconds) );
+        }
+    );
 
-    EXPECT_NO_THROW( server_socket->listen_at(ip, port, 1 * milliseconds) );
+    thread_pool->post_task(
+        [&](){
+            server_socket->stop_listening();
+        }
+    );
 
     EXPECT_EQ( server_socket->get_current_server_status(), Server_Status::CLOSED );
 }
@@ -51,27 +62,20 @@ TEST(socket_interface_tests, client_sends_request_while_server_response)
             EXPECT_NO_THROW(
                 server_socket->listen_at(
                     "127.0.0.1",
-                    2333,
-                    1 * seconds
+                    2333
                 );
             );
         }
     );
 
-    // BUG: client still cannot connects to server,
-    // I guess that the client begins to connect before the server starts listening.
-    // Namely, tricky multithreading problem.
     thread_pool->post_task(
         [&](){
-            if( server_socket->get_current_server_status() == Server_Status::LISTENING )
-            {
-                EXPECT_NO_THROW(
-                    client_socket->connect_to(
-                        "127.0.0.1",
-                        2333
-                    );
+            EXPECT_NO_THROW(
+                client_socket->connect_to(
+                    "127.0.0.1",
+                    2333
                 );
-            }                
+            );
         }
     );
 

@@ -28,27 +28,33 @@ void Client_Socket::connect_to( const std::string ip, const int port )
     client_socket_info.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
     client_socket_info.sin_port = htons(port);
 
-    auto connect_result = connect(client_socket, (sockaddr*)&client_socket_info, sizeof(client_socket_info));
-
-    if(connect_result == INVALID_SOCKET)
+    while( true )
     {
-    #ifdef _WIN32
-        wchar_t* error_info = nullptr;
-        FormatMessageW(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-            nullptr, 
-            WSAGetLastError(),
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPWSTR)&error_info, 
-            0, 
-            nullptr
-        );
-        closesocket(client_socket);
-        WSACleanup();
-        std::wstring error_string(error_info);
-        throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
-    #endif
+        auto connect_result = connect(client_socket, (sockaddr*)&client_socket_info, sizeof(client_socket_info));
+
+        std::cout << "I try to connect" << std::endl;
+        
+        if(connect_result == INVALID_SOCKET)
+        {
+        #ifdef _WIN32
+            wchar_t* error_info = nullptr;
+            FormatMessageW(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+                nullptr, 
+                WSAGetLastError(),
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPWSTR)&error_info, 
+                0, 
+                nullptr
+            );
+            closesocket(client_socket);
+            WSACleanup();
+            std::wstring error_string(error_info);
+            throw std::runtime_error( std::string( error_string.begin(), error_string.end() ) );
+        #endif
+        }
     }
+    
 
 #endif
 }
