@@ -30,7 +30,7 @@ TEST(socket_interface_tests, server_listens_at_no_exception_test)
 
     thread_pool->post_task(
         [&](){
-            EXPECT_NO_THROW( server_socket->listen_at(ip, port, 1 * milliseconds) );
+            EXPECT_NO_THROW( server_socket->listen_at(ip, port) );
         }
     );
 

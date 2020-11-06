@@ -74,6 +74,11 @@ add_library(Response STATIC
     Response.cpp
 )
 
+add_library(Status_Handler STATIC
+    ../include/Status_Handler.hpp
+    Status_Handler.cpp
+)
+
 add_library(Mysql_Handler STATIC
     ../include/Mysql_Handler.hpp
     Mysql_Handler.cpp

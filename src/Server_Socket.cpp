@@ -52,11 +52,8 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
         throw std::runtime_error("Can not bind a socket");
     }
 
-    while( true )
+    while( is_server_listening() )
     {
-        if( !is_server_listening() )
-            break;
-
         int listen_result = listen( server_listening_socket, 1024 );
 
         set_server_status( Server_Status::LISTENING );
@@ -82,7 +79,6 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
                 std::cout << "I accept one socket" << std::endl;
             }
         }
-
     }
 
     return;

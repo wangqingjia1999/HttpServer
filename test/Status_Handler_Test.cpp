@@ -37,7 +37,7 @@ TEST(status_handler_tests, status_code_200_test)
     std::string expected_response_string = {
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 0\r\n"
-	"Date: \r\n"
+	    "Date: \r\n"
         "\r\n"
     };
 
@@ -118,6 +118,20 @@ TEST(status_handler_tests, status_code_206_test)
     
     std::string expected_response_string = {
         "HTTP/1.1 206 Partial Content\r\n"
+        "\r\n"
+    };
+    
+    ASSERT_EQ(response->get_response_message(), expected_response_string);
+}
+
+TEST(status_handler_tests, status_code_301_test)
+{
+    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
+    Status_Handler::handle_status_code(response, 301);
+    
+    // https://en.wikipedia.org/wiki/HTTP_301
+    std::string expected_response_string = {
+        "HTTP/1.1 301 Moved Permanently"
         "\r\n"
     };
     

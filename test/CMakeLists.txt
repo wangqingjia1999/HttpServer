@@ -126,7 +126,6 @@ add_executable(Status_Handler_Test Status_Handler_Test.cpp)
 target_link_libraries(Status_Handler_Test PUBLIC
     gtest_main
     Http_Server
-        
 )
 
 # thread pool test
