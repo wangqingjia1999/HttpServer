@@ -5,7 +5,8 @@
 
 Server_Socket::Server_Socket()
 {
-    set_server_status( Server_Status::CLOSED );
+    set_server_status( Server_Status::LISTENING );
+    is_listening = true;
 }
 
 void Server_Socket::listen_at( const std::string ip, const int port, const long timeout_microseconds ) 
@@ -54,6 +55,7 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     while( is_server_listening() )
     {
+
         int listen_result = listen( server_listening_socket, 1024 );
 
         set_server_status( Server_Status::LISTENING );
@@ -230,16 +232,11 @@ Server_Status Server_Socket::get_current_server_status()
 
 void Server_Socket::set_server_status( Server_Status new_status )
 {
-    std::unique_lock< std::mutex > lock( server_status_mutex );
     server_status = new_status;
 }
 
 void Server_Socket::stop_listening()
 {
-    // TODO:
-    // Why these code do not executed?
-    std::cout << "Prepared to stop listening" << std::endl;
-    std::unique_lock< std::mutex > lock( is_listening_mutex );
     is_listening = false;
 }
 

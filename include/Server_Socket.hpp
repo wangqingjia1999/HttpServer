@@ -24,6 +24,8 @@ class Server_Socket : public ISocket
 {
 public:
     Server_Socket();
+    Server_Socket(const Server_Socket&) = delete;
+    Server_Socket& operator=(const Server_Socket&) = delete;
 
     /**
      * @brief  Listen at given ip:port.
@@ -46,11 +48,8 @@ private:
     void set_server_status( Server_Status new_status );
     void print_socket_error();
 private:
-    Server_Status server_status;
-    std::mutex server_status_mutex;
-
-    std::mutex is_listening_mutex;
-    bool is_listening = true;
+    std::atomic< Server_Status > server_status;
+    std::atomic< bool > is_listening;
 
 #ifdef _WIN32
     SOCKET server_listening_socket = INVALID_SOCKET;

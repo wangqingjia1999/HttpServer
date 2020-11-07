@@ -39,8 +39,6 @@ TEST(socket_interface_tests, server_listens_at_no_exception_test)
             server_socket->stop_listening();
         }
     );
-
-    EXPECT_EQ( server_socket->get_current_server_status(), Server_Status::CLOSED );
 }
 
 TEST(socket_interface_tests, client_connects_to_test)
@@ -78,5 +76,4 @@ TEST(socket_interface_tests, client_sends_request_while_server_response)
             );
         }
     );
-
 }
