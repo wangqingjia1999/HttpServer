@@ -21,6 +21,11 @@ namespace Status_Handler
 
             case 101:   // Switching Protocol
             {
+                /**
+                 * https://stackoverflow.com/a/61122084/11850070
+                 */
+                response->add_header("Connection", "upgrade");
+                response->add_header("Upgrade", "HTTP/2.0");
                 
                 break;
             }
@@ -28,18 +33,17 @@ namespace Status_Handler
             /**
              * 2xx: successfuly
              */
-            case 200:   //
+            case 200:   // OK
             {
                 response->add_header("Content-Length", response->get_body_length());
                 if(!response->get_content_type().empty())
-                {
                     response->add_header("Content-Type", response->get_content_type());
-                }
+
                 if(!response->get_body_length().empty())
-                {
                     response->add_header("Content-Length", response->get_body_length());
-                }
-		response->add_header("Date", Timer::get_current_http_time());
+                    
+		        response->add_header("Date", Timer::get_current_http_time());
+                
                 break;
             }
 

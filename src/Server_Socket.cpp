@@ -55,7 +55,6 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
 
     while( is_server_listening() )
     {
-
         int listen_result = listen( server_listening_socket, 1024 );
 
         set_server_status( Server_Status::LISTENING );

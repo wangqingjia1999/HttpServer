@@ -7,6 +7,10 @@
 #include <memory>
 #include <iostream>
 
+/**
+ * Incomplete code, just ignore these lines.
+ */
+
 // Time units for testing
 const u_int64 microseconds = 1;
 const u_int64 milliseconds = 1000 * microseconds;
@@ -28,6 +32,7 @@ TEST(socket_interface_tests, server_listens_at_no_exception_test)
     std::string ip = "127.0.0.1";
     int port = 23332;
 
+    // I should split thread pool module to a dedicated library.
     thread_pool->post_task(
         [&](){
             EXPECT_NO_THROW( server_socket->listen_at(ip, port) );

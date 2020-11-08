@@ -5,5 +5,5 @@
 int main()
 {
     Server server;
-    server.listen_at("192.168.72.128", 2333);
+    server.listen_at("127.0.0.0", 2333);
 }

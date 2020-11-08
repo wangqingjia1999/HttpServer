@@ -25,16 +25,20 @@ TEST(response_tests, generate_200_response)
     response->set_body_length(response_body.size());
     Status_Handler::handle_status_code(response, 200);
 
+    // Googletest will report inequality of the 'Date' header.
+    // Because the Date is generated in real-time, I cannot predict
+    // the accurate Date. You can check the output for correctness of date.
     std::string expected_result =
     {
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 51\r\n"
         "Content-Type: text/html\r\n"
+        "Date: Sun, 08 Nov 2020 12:25:15 GMT\r\n"
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
 
-    ASSERT_EQ(response->get_response_message(), expected_result);
+    EXPECT_EQ(response->get_response_message(), expected_result);
 }
 
 TEST(response_tests, map_status_code_to_reaseon_phrase)

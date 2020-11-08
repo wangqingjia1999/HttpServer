@@ -1,7 +1,6 @@
 #include "Status_Handler.hpp"
 
 #include <gtest/gtest.h>
-#include <iostream>
 
 TEST(status_handler_tests, status_code_100_test)
 {
@@ -23,6 +22,8 @@ TEST(status_handler_tests, status_code_101_test)
     
     std::string expected_response_string = {
         "HTTP/1.1 101 Switching Protocol\r\n"
+        "Connection: upgrade\r\n"
+        "Upgrade: HTTP/2.0\r\n"
         "\r\n"
     };
     
@@ -43,7 +44,6 @@ TEST(status_handler_tests, status_code_200_test)
 
     // Date string is exactlly 29 character
     ASSERT_EQ(response->get_header("Date").length(), 29);
-    ASSERT_EQ(response->get_header("Content-Length"), "0");
 }
 
 TEST(status_handler_tests, status_code_201_test)
@@ -129,9 +129,11 @@ TEST(status_handler_tests, status_code_301_test)
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
     Status_Handler::handle_status_code(response, 301);
     
-    // https://en.wikipedia.org/wiki/HTTP_301
+    /**
+     *  https://en.wikipedia.org/wiki/HTTP_301
+     */
     std::string expected_response_string = {
-        "HTTP/1.1 301 Moved Permanently"
+        "HTTP/1.1 301 Moved Permanently\r\n"
         "\r\n"
     };
     
