@@ -18,15 +18,33 @@ namespace
 
 namespace Logger
 {
-    void record(const std::string& message_string)
+    void record(const std::string& message_string, const Logger_Level logger_level)
     {
-        std::ofstream log_file_object(get_log_file_absolute_path().c_str(), std::ios::app);
-        log_file_object << message_string << '\n';
+        switch(logger_level)
+        {
+            case Logger_Level::NORMAL:
+            {
+                std::ofstream log_file_object(get_log_file_absolute_path().c_str(), std::ios::app);
+                log_file_object << message_string << '\n';  
+            }
+
+            case Logger_Level::WARNING:
+            {
+                // warning logging
+            }
+
+            case Logger_Level::ERROR:
+            {
+                // error logging
+            }
+
+        }
+        
     }
 
     void record_error(const std::string& error_message)
     {
-        record("Error: can not " + error_message);
+        // TODO:
     }
 
     void clear_up_log()
