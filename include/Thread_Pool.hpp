@@ -1,8 +1,6 @@
 #ifndef THREAD_POOL_HPP
 #define THREAD_POOL_HPP
 
-#include "Server.hpp"
-
 #include <memory>
 #include <functional>
 #include <mutex>

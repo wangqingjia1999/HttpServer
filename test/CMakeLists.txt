@@ -68,7 +68,6 @@ add_executable(Server_Test Server_Test.cpp)
 target_link_libraries(Server_Test PUBLIC
     gtest_main 
     Http_Server
-    
 )
 
 # Client test 

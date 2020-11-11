@@ -106,13 +106,13 @@ namespace Message
         auto request_line_end_delimiter = impl_->raw_request.find("\r\n");
         if (request_line_end_delimiter == std::string::npos)
         {
-            Logger::record("Error: parse request line");
+            logger.record_error_message("Error: parse request line");
             return false;
         }
         std::string request_line = impl_->raw_request.substr(0, request_line_end_delimiter);
         if (!parse_request_line(request_line))
         {
-            Logger::record("Error: parse request line");
+            logger.record_error_message("Error: parse request line");
             return false;
         }
 
@@ -120,7 +120,7 @@ namespace Message
         auto headers_end_delimiter = impl_->raw_request.find("\r\n\r\n");
         if (headers_end_delimiter == std::string::npos)
         {
-            Logger::record("Error: parse headers");
+            logger.record_error_message("Error: parse headers");
             return false;
         }
 
@@ -137,7 +137,7 @@ namespace Message
         impl_->headers = impl_->raw_request.substr(headers_begin_position, headers_size);
         if (!parse_headers(impl_->headers))
         {
-            Logger::record("Error: parse headers");
+            logger.record_error_message("Error: parse headers");
             return false;
         }
         

@@ -324,7 +324,7 @@ namespace Message
 		// store generated message to member variable
 		if (!set_response_message(response.str()))
 		{
-			Logger::record("Error: set response message");
+			logger.record_error_message("Fail to set response message");
 			return;
 		}
 	}

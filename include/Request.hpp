@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include "URI.hpp"
+#include "Logger.hpp"
 
 #include <memory>
 #include <sstream>
@@ -161,6 +162,8 @@ namespace Message
 		std::string get_port();
 
 	private:
+		Logger logger;
+
 		struct Impl;
 		std::unique_ptr< Impl > impl_;
 	};

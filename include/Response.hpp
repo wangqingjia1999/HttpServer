@@ -2,6 +2,7 @@
 #define RESPONSE_HPP
 
 #include "Request.hpp"
+#include "Logger.hpp"
 
 #include <string>
 #include <regex>
@@ -210,6 +211,8 @@ namespace Message
 		void clear_up_header_fields();
 
 	private:
+		Logger logger;
+		
 		struct Impl;
 		std::unique_ptr< Impl > impl_;
 	};
