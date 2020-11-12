@@ -184,6 +184,7 @@ namespace Message
 
 	std::string Message::Response::get_body_length()
 	{
+		impl_->body_length = impl_->body.size();
 		return std::to_string(impl_->body_length);
 	}
 
@@ -314,11 +315,8 @@ namespace Message
 		{
 			response << "\r\n" << impl_->body;
 
-			auto body_end_delimiter_position = impl_->body.find("\r\n");
-			if(body_end_delimiter_position == std::string::npos)
-			{
-				response << "\r\n";
-			}
+			// Do not put '\r\n' at the end of the http message-body.
+			// see: https://stackoverflow.com/a/13821352/11850070			
 		}
 		
 		// store generated message to member variable

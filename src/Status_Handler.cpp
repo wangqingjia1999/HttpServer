@@ -36,12 +36,7 @@ namespace Status_Handler
             case 200:   // OK
             {
                 response->add_header("Content-Length", response->get_body_length());
-                if(!response->get_content_type().empty())
-                    response->add_header("Content-Type", response->get_content_type());
-
-                if(!response->get_body_length().empty())
-                    response->add_header("Content-Length", response->get_body_length());
-                    
+                response->add_header("Content-Type", response->get_content_type());
 		        response->add_header("Date", Timer::get_current_http_time());
                 
                 break;
@@ -129,7 +124,7 @@ namespace Status_Handler
                 response->set_body("<html> Bad Request :< </html>");
                 response->add_header("Content-Type", response->get_content_type());
                 response->add_header("Content-Length", response->get_body_length());
-		response->add_header("Date", Timer::get_current_http_time());
+		        response->add_header("Date", Timer::get_current_http_time());
                 break;
             }
 
@@ -150,7 +145,28 @@ namespace Status_Handler
 
             case 404:   // 
             {
-                
+                response->set_body(
+                    "<html>"
+                        "<head>"
+                            "<title>"
+                                "404 Not Found"
+                            "</title>"
+                        "</head>"
+                        "<body>"
+                            "<center>"
+                                "<h1>404 Not Found</h1>"
+                            "</center>"
+                            "<center>"
+                                "Bitate/0.0.1"
+                            "</center>"
+                        "</body>"
+                    "</html>"
+                );
+
+                response->add_header("Content-Length", response->get_body_length());
+                response->add_header("Content-Type", "text/html");
+		        response->add_header("Date", Timer::get_current_http_time());
+
                 break;
             }
 

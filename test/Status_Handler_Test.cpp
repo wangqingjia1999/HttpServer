@@ -145,13 +145,31 @@ TEST(status_handler_tests, status_code_404_test)
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
     Status_Handler::handle_status_code(response, 404);
     
-    /**
-     *  https://en.wikipedia.org/wiki/HTTP_404
-     */
     std::string expected_response_string = {
-        "HTTP/1.1 301 Moved Permanently\r\n"
+        "HTTP/1.1 404 Not Found\r\n"
+        "Content-Length: 135\r\n"
+        "Content-Type: text/html\r\n"
+        "Date: Thu, 12 Nov 2020 13:41:37 GMT\r\n"
         "\r\n"
+        "<html>"
+            "<head>"
+                "<title>"
+                    "404 Not Found"
+                "</title>"
+            "</head>"
+            "<body>"
+                "<center>"
+                    "<h1>404 Not Found</h1>"
+                "</center>"
+                "<center>"
+                    "Bitate/0.0.1"
+                "</center>"
+            "</body>"
+        "</html>"
     };
     
-    ASSERT_EQ(response->get_response_message(), expected_response_string);
+    EXPECT_EQ( 
+       response->get_response_message().size(), 
+       expected_response_string.size()
+    );
 }
