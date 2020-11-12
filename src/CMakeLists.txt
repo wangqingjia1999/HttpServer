@@ -20,6 +20,7 @@ set(HeaderFiles
     ../include/Status_Handler.hpp
     ../include/Thread_Pool.hpp
     ../include/Timer.hpp
+    ../include/Server_Socket.hpp
 )
 
 set(SourceFiles
@@ -38,6 +39,7 @@ set(SourceFiles
     Status_Handler.cpp
     Thread_Pool.cpp
     Timer.cpp
+    Server_Socket.cpp
 )
 
 add_library(${this} STATIC

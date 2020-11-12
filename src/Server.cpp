@@ -16,24 +16,31 @@ bool Server::is_websocket_opening_handshake(std::shared_ptr< Message::Request >&
     return false;
 }
 
-bool Server::listen_at(const std::string& host, const int port)
+void Server::listen_at(const std::string& host, const int port)
 {
     server_socket.listen_at(host, port);
-    return true; // TODO
+
+    for(;;)
+    {
+        // if a new client connects.
+        if( server_socket.has_client_connection() )
+        {
+            // handle request
+            request_core_handler( server_socket.read_from() );
+
+            response->generate_response();
+        
+            // send response
+            server_socket.write_to( get_raw_response() );
+            
+            continue;
+        }
+    }
 }
 
-void Server::send_response(const int client_socket_fd, const std::string& buffer)
+bool Server::parse_request(const std::string& raw_request_string)
 {
-    server_socket.write_to(client_socket_fd, buffer.c_str(), buffer.size());
-}
-
-void Server::receive_request(const int client_socket_fd)
-{
-    server_socket.read_from(client_socket_fd, receive_buffer, receive_buffer_length);
-}
-
-bool Server::parse_request()
-{
+    request->set_raw_request(raw_request_string);
     return request->parse_raw_request();
 }
 
@@ -45,16 +52,6 @@ std::string Server::get_raw_request()
 std::string Server::get_raw_response()
 {
     return response->get_response_message();
-}
-
-int Server::get_client_fd()
-{
-    return client_socket_fd;
-}
-
-int Server::get_server_fd()
-{
-    return server_socket_fd;
 }
 
 void Server::set_raw_request(const std::string& raw_request)
@@ -92,17 +89,13 @@ bool Server::handle_post_request()
             }
         }
     }
-
-    // add data to mysql
-    // ...
-    
     return true;
 }
 
-void Server::request_core_handler()
+void Server::request_core_handler(const std::string& raw_request_string)
 {
     // Parse request
-    if(!parse_request())
+    if(!parse_request(raw_request_string))
     {
         // 400 Bad Request
         thread_pool->post_task( [this]{ logger.record_error_message("parse request"); } );

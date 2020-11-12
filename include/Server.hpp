@@ -14,6 +14,7 @@
 #include <queue>
 #include <mutex>
 #include <thread>
+#include <iostream>
 #include <condition_variable>
 
 #ifdef __linux__
@@ -41,28 +42,15 @@ public:
 	 * @brief  Create a socket to listen to clients.
 	 * @param  host  Host name. e.g. "localhost".
 	 * @param  port  Port number. e.g. 80.
-	 * @return  True if successfully lisen at specific host:port.
 	 */
-	bool listen_at(const std::string& host, const int port); 
-
-	/**
-	 * @brief  Send generated response to client.
-	 * @param  client_socket_fd  File descriptor of client socket.
-	 * @param  buffer  Data to be sent.
-	 */
-	void send_response(const int clietn_socket_fd, const std::string& buffer);
-
-	/**
-	 * @brief  Receive request from client.
-	 * @param  client_socket_fd  File descriptor of accepted socket
-	 */
-	void receive_request(const int client_socket_fd);
+	void listen_at(const std::string& host, const int port); 
 	
 	/**
 	 * @brief  Parse raw request.
+	 * @param  raw_request_string  Raw request string receive from client.
 	 * @return  Ture if successfully parse request.
 	 */
-	bool parse_request();
+	bool parse_request(const std::string& raw_request_string);
 
 	/**
 	 * @brief  Handle POST request.
@@ -81,20 +69,6 @@ public:
 	 * @return  Raw response string.
 	 */
 	std::string get_raw_response();
-
-	/**
-	 * @brief  Get client socket file descriptor.
-	 * @return  Client socket file descriptor if succeed,
-	 * 			otherwise, return -1.
-	 */
-	int get_client_fd();
-
-	/**
-	 * @brief  Get server socket file descriptor.
-	 * @return  Server socket file descriptor if succeed,
-	 * 			otherwise, return -1.
-	 */
-	int get_server_fd();
 	
 	/**
 	 * @brief  Set raw request string.
@@ -106,7 +80,7 @@ public:
 	 * 
 	 * This is currently the core function to handler either static or dynamic request.
 	 */
-	void request_core_handler();
+	void request_core_handler(const std::string& raw_request_string);
 
 private:
 	/**
@@ -123,17 +97,13 @@ private:
 
 	Logger logger;
 
-	int client_socket_fd;
-    
-	int server_socket_fd;
-
     // Receive buffer
     static const int receive_buffer_length = 1024;
     char receive_buffer[receive_buffer_length] = { 0 };
 
     // Send buffer
     static const size_t SEND_BUFFER_LENGTH = 1024;
-    std::string send_buffer = "";
+    std::string send_buffer;
 
     // Response object for generating response
     std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();

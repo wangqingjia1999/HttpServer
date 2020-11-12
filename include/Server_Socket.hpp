@@ -1,7 +1,6 @@
 #ifndef SERVER_SOCKET_HPP
 #define SERVER_SOCKET_HPP
 
-#include "ISocket.hpp"
 #include "Timer.hpp"
 
 #include <chrono>
@@ -16,43 +15,37 @@
     #include <WS2tcpip.h>
 #endif
 
-enum class Server_Status {
-    CLOSED,
-    LISTENING
-};
-class Server_Socket : public ISocket
+class Server_Socket
 {
 public:
     Server_Socket();
+
     Server_Socket(const Server_Socket&) = delete;
     Server_Socket& operator=(const Server_Socket&) = delete;
 
+    Server_Socket(const Server_Socket&&) = delete;
+    Server_Socket& operator=(const Server_Socket&&) = delete;
+    
     /**
      * @brief  Listen at given ip:port.
      * @param  ip  Ip address string.
      * @param  port  Port number.
-     * @param  timeout_microseconds  Listen for timeout_microseconds microseconds.
      */
-    void listen_at( const std::string ip, const int port, const long timeout_microseconds = -1 );
-    
-    void stop_listening();
+    void listen_at(const std::string ip, const int port);
 
-    virtual void write_to(const int peer_socket, const char* data_buffer, int data_length) override;
+    bool has_client_connection();
 
-    virtual void read_from(const int peer_socket, char* data_buffer, int data_length) override;
-    
-    Server_Status get_current_server_status();
-    
+    void write_to(const std::string& data);
+
+    std::string read_from(); 
+
 private:
-    bool is_server_listening();
-    void set_server_status( Server_Status new_status );
     void print_socket_error();
 private:
-    std::atomic< Server_Status > server_status;
-    std::atomic< bool > is_listening;
-
+    int listen_result = 0;
 #ifdef _WIN32
     SOCKET server_listening_socket = INVALID_SOCKET;
+    SOCKET client_socket = INVALID_SOCKET;
 
 #elif __linux__
     

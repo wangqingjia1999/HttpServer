@@ -5,11 +5,9 @@
 
 Server_Socket::Server_Socket()
 {
-    set_server_status( Server_Status::LISTENING );
-    is_listening = true;
 }
 
-void Server_Socket::listen_at( const std::string ip, const int port, const long timeout_microseconds ) 
+void Server_Socket::listen_at( const std::string ip, const int port) 
 {
 #ifdef _WIN32
     WSADATA wsa_data = {0};
@@ -18,8 +16,6 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     if(result != NO_ERROR)
     {
         print_socket_error();
-        WSACleanup();
-        throw std::runtime_error("Can not initialize WSADATA");
     }
 
     server_listening_socket = socket(
@@ -31,13 +27,11 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     if(server_listening_socket == INVALID_SOCKET)
     {
         print_socket_error();
-        WSACleanup();
-        throw std::runtime_error("Can not create a new socket");
     }
 
     sockaddr_in socket_address;
     socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.S_un.S_addr = htonl( INADDR_LOOPBACK );
+    socket_address.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
     socket_address.sin_port = htons(port);
 
     int bind_result = bind(
@@ -49,41 +43,10 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     if( bind_result == INVALID_SOCKET )
     {
         print_socket_error();
-        WSACleanup();
-        throw std::runtime_error("Can not bind a socket");
     }
 
-    while( is_server_listening() )
-    {
-        int listen_result = listen( server_listening_socket, 1024 );
-
-        set_server_status( Server_Status::LISTENING );
-
-        if( listen_result > 0 )
-        {
-            std::cout << "There is a socket trying to connect to me" << std::endl;
-
-            SOCKET client_socket = accept(
-                server_listening_socket,
-                nullptr,
-                nullptr
-            );
-
-            if( client_socket == INVALID_SOCKET )
-            {
-                print_socket_error();
-                WSACleanup();
-                throw std::runtime_error("Can not accept socket");
-            }
-            else
-            {
-                std::cout << "I accept one socket" << std::endl;
-            }
-        }
-    }
-
-    return;
-
+    listen_result = listen( server_listening_socket, 1024 );
+  
 #elif __linux__
     impl_->server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if(impl_->server_socket == -1)
@@ -195,48 +158,49 @@ void Server_Socket::listen_at( const std::string ip, const int port, const long 
     
     return;
 #endif
-}
-
-
-void Server_Socket::write_to(const int peer_socket, const char* data_buffer, int data_length)
-{
-    int write_result = send(peer_socket, data_buffer, data_length, 0);
-
-    if(write_result == SOCKET_ERROR)
-    {
-        print_socket_error();
-        throw std::runtime_error("Can not send to peer socket");
-    }
-
     return;
 }
 
-void Server_Socket::read_from(const int peer_socket, char* data_buffer, int data_length)
-{
-    int read_result = recv(peer_socket, data_buffer, data_length, 0);
 
-    if(read_result == SOCKET_ERROR)
-    {
+void Server_Socket::write_to(const std::string& data)
+{
+    int send_result = send(
+        client_socket,
+        data.c_str(),
+        data.size(),
+        0
+    );
+
+    if(send_result == SOCKET_ERROR)
         print_socket_error();
-        throw std::runtime_error("Can not read from peer socket");
-    }
-
-    return;
 }
 
-Server_Status Server_Socket::get_current_server_status()
+std::string Server_Socket::read_from()
 {
-    return server_status;
-}
+    const int data_buffer_size = 1024;
+    char data_buffer[data_buffer_size];
 
-void Server_Socket::set_server_status( Server_Status new_status )
-{
-    server_status = new_status;
-}
+    // local variable that stores the data in the form of std::string.
+    std::string data_string;
 
-void Server_Socket::stop_listening()
-{
-    is_listening = false;
+    int receive_result = 0;
+    do{
+        receive_result = recv(
+            client_socket,
+            data_buffer,
+            data_buffer_size,
+            0
+        );
+
+        if(receive_result == SOCKET_ERROR)
+            print_socket_error();
+
+        data_string += data_buffer;
+        
+        receive_result -= data_buffer_size;
+
+    } while( receive_result > 0 );
+    return data_string;
 }
 
 void Server_Socket::print_socket_error()
@@ -248,9 +212,35 @@ void Server_Socket::print_socket_error()
                 (LPWSTR)&s, 0, NULL);
     fprintf(stderr, "%S\n", s);
     LocalFree(s);
+    WSACleanup();
 }
 
-bool Server_Socket::is_server_listening()
+bool Server_Socket::has_client_connection()
 {
-    return is_listening;
+    if(listen_result == SOCKET_ERROR)
+    {
+        print_socket_error();
+    }
+    else
+    {
+        std::cout << "I'm listening right now" << std::endl;
+    }
+
+    client_socket = accept(
+        server_listening_socket,
+        nullptr,
+        nullptr
+    );
+
+    if( client_socket == INVALID_SOCKET )
+    {
+        print_socket_error();
+    }
+    else
+    {
+        std::cout << "I accept a socket" << std::endl;
+        return true;
+    }
+    
+    return false;
 }

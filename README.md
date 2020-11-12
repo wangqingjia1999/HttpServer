@@ -15,15 +15,12 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 ## Features
   * POST
   * GET
-  * Multithreading
-  * Logging
+  * Multithreaded Logging
 
 ## Requirements
-* Linux Server Edition
-* [Mysql Server]
+* Linux Or Windows 10
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
-* [Mysql connector for c++](https://dev.mysql.com/doc/connector-cpp/1.1/en/)
 
 ## How to build? 
 ```shell
@@ -32,10 +29,8 @@ cd HttpServer
 bash build.sh
 ```
 
-# Examples
 
-
-## References
+## Useful links that help me build this project
 * WebSocket
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 * URI
@@ -58,5 +53,6 @@ bash build.sh
   * [RawCap - windows command line tool to capture localhost/loopback IP packets](https://www.netresec.com/?page=RawCap)
   * [Database design website](https://dbdiagram.io)
   * [Wireshark - cross platform free software to capture IP packets](https://www.wireshark.org/)
+  * [HTTPie](https://github.com/httpie/httpie)
 * Books
   * [Http: The Definitive Guide (Definitive Guides) 1st Edition by David Gourley](https://www.amazon.com/HTTP-Definitive-Guide-Guides/dp/1565925092/ref=sr_1_1?dchild=1&keywords=http&qid=1591779734&sr=8-1)
