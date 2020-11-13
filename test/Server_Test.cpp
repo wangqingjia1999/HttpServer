@@ -10,6 +10,4 @@ int main()
     Server server;
 
     server.listen_at("127.0.0.1", 2333);
-
-    
 }

@@ -394,29 +394,54 @@ namespace Message
 
 		std::string current_working_directory = path_buffer;
 
+		if(current_working_directory.find("HttpServer") == std::string::npos)
+			return false;
+		else // prevent the cwd path from containing '\\build\\test\\debug' after _getcwd() system call.
+			current_working_directory = current_working_directory.substr( 0, current_working_directory.find("HttpServer") + 10 );
+
 		// if relative path only has '/', redirect it to index.html
 		if( (relative_path[0] == '/')  &&  (relative_path.size() == 1) )
 		{
+#ifdef __linux__
 			absolute_path = current_working_directory + "/public_html/index.html"; 
+#elif _WIN32
+			absolute_path = current_working_directory + "\\public_html\\index.html";
+#endif
 			return true;
 		}
 
-		absolute_path = current_working_directory + "/public_html" + relative_path;
-		
+		if( relative_path[0] == '/')
+		{
+			std::string relative_path_without_leading_forward_slash = relative_path.substr(1);
+#ifdef __linux__
+			absolute_path = current_working_directory + "/public_html/" + relative_path_without_leading_forward_slash;
+#elif _WIN32
+			absolute_path = current_working_directory + "\\public_html\\" + relative_path_without_leading_forward_slash;
+#endif
+		}
+		else
+		{
+#ifdef __linux__
+			absolute_path = current_working_directory + "/public_html/" + relative_path;
+#elif _WIN32
+			absolute_path = current_working_directory + "\\public_html\\" + relative_path;
+#endif
+		}
+
 		return true;
 	}
 
 	void Message::Response::parse_content_type(const std::string& request_uri)
 	{
-		std::smatch matchResult;
+		std::smatch match_result;
 
 		auto regex = std::regex("\\.([0-9a-zA-Z]+)$");
 
 		std::string file_extention;
 
-		if (std::regex_search(request_uri, matchResult, regex))
+		if (std::regex_search(request_uri, match_result, regex))
 		{
-			file_extention = matchResult[1].str();
+			file_extention = match_result[1].str();
 		}
 		else
 		{
