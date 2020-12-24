@@ -6,15 +6,14 @@ if [ ! -d "${PWD}/googletest" ]
 then
     echo "Google test does not exist."
     echo "Clone google test framework from Github."
-    git clone https://github.com/google/googletest
+    git clone --depth=1 https://github.com/google/googletest 
 else 
     echo "Google test already exists :)"
 fi 
 
 # Install mysql and cpp connector
 sudo apt update
-sudo apt install mysql-server
-sudo apt install libmysqlcppconn-dev
+sudo apt install cmake
 
 # Create build directory and change directory to it.
 if [ -d "${PWD}/build" ] 
