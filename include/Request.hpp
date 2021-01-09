@@ -4,9 +4,9 @@
 #include "URI.hpp"
 #include "Logger.hpp"
 
+#include <map>
 #include <memory>
 #include <sstream>
-#include <map>
 #include <algorithm>
 
 namespace Message
@@ -43,10 +43,10 @@ namespace Message
 
 		/** 
 		 * @brief  Parse given headers string.
-		 * @param  headers  headers string.
+		 * @param  new_headers  headers string.
 		 * @return  True if parse successfully.
 		 */
-		bool parse_headers(const std::string& headers);
+		bool parse_headers(const std::string& new_headers);
 
 		/**
 		 * @brief  Parse raw request that has already set by set_raw_request()
@@ -61,33 +61,10 @@ namespace Message
 		 */
 		bool parse_uri(const std::string& URI);
 		
-		/**
-		 * @brief  Set raw request message to request object's member variable.
-		 * @param  raw_request_string  Given raw request message string.
-		 * @return  True if successfully set raw request.
-		 */
-		bool set_raw_request(std::string raw_request_string);
-
-		/**
-		 * @brief  Set method field.
-		 * @param  method  Method string. Default value is "GET".
-		 * @return  True if successfully set method string.
-		 */
-		bool set_method(const std::string method = "GET");
-
-		/**
-		 * @brief  Set http version field.
-		 * @param  http_version  Http version string. Default value is "HTTP/1.1"
-		 * @return  True if successfully set http version string.
-		 */
-		bool set_http_version(const std::string http_version = "HTTP/1.1");
-
-		/**
-		 * @brief  Set User-Agent header field.
-		 * @param  user_agent  User agent header field. Default value is "Bitate".
-		 * @return  True if successfully set User Agent field.
-		 */
-		bool set_user_agent(std::string user_agent = "Bitate");
+		void set_raw_request(std::string raw_request_string);
+		void set_method(const std::string new_method = "GET");
+		void set_http_version(const std::string new_http_version = "HTTP/1.1");
+		void set_user_agent(std::string new_user_agent = "Bitate");
 
 		/**
 		 * @brief  Get request method string.
@@ -164,8 +141,32 @@ namespace Message
 	private:
 		Logger logger;
 
-		struct Impl;
-		std::unique_ptr< Impl > impl_;
+		std::shared_ptr< URI > uri = std::make_shared< URI > ();
+        
+        // Generated/Received raw request string
+        std::string raw_request;
+
+        // Request method. e.g. GET, POST
+        std::string method;
+        
+        // default http_version
+        std::string http_version = "HTTP/1.1";
+
+        // Store the generated/received raw headers
+        std::string headers;
+
+        /**
+         * For search bar: /?Search=This+is+just+a+demo
+         * For normal get: /index.html
+         * For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
+         */
+        std::string request_uri;
+
+        // Contain the header {key: value} pairs
+        std::map< std::string, std::string> headers_map;
+
+        // request body string
+        std::string body;
 	};
 }
 

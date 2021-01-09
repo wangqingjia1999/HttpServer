@@ -4,19 +4,19 @@
 
 TEST(CharacterSetTests, ConstructorOneArgument)
 {
-	URI::Character_Set charset('a');
+	Character_Set charset('a');
 	ASSERT_TRUE(charset.is_contains('a'));
 
-	URI::Character_Set charset1('$');
+	Character_Set charset1('$');
 	ASSERT_TRUE(charset1.is_contains('$'));
 
-	URI::Character_Set charset2('*');
+	Character_Set charset2('*');
 	ASSERT_TRUE(charset2.is_contains('*'));
 }
 
 TEST(CharacterSetTests, ConstructorTwoArgument)
 {
-	URI::Character_Set charset('a', 'z');
+	Character_Set charset('a', 'z');
 	ASSERT_TRUE(charset.is_contains('b'));
 	ASSERT_TRUE(charset.is_contains('f'));
 	ASSERT_TRUE(charset.is_contains('g'));
@@ -30,7 +30,7 @@ TEST(CharacterSetTests, ConstructorTwoArgument)
 
 TEST(CharacterSetTests, ConstructorManyArguments)
 {
-	URI::Character_Set charList
+	Character_Set charList
 	{
 	'a','b','d','e','@','$','%'
 	};

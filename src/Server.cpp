@@ -64,7 +64,7 @@ bool Server::handle_post_request()
     /**
      * e.g. request->get_body() is "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer"
      */
-    URI::Percent_Encoding percent_encoding;
+    Percent_Encoding percent_encoding;
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
      */

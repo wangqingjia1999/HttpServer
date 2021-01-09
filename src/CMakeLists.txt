@@ -1,9 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-include_directories("C:/Program Files/MySQL/Connector C++ 8.0/include/mysqlx")
-# Or use double backward-slash for path
-# include_directories("C:\\Program Files\\MySQL\\Connector C++ 8.0\\include")
-
 set(HeaderFiles
     ../include/Character_Set.hpp
     ../include/Client.hpp
@@ -56,6 +52,16 @@ add_library(Socket_Interface STATIC
     Client_Socket.cpp
 )
 
+add_library(Character_Set STATIC
+    ../include/Character_Set.hpp
+    Character_Set.cpp
+)
+
+add_library(Percent_Encoding STATIC
+    ../include/Percent_Encoding.hpp
+    Percent_Encoding.cpp
+)
+
 add_library(Thread_Pool STATIC
     ../include/Thread_Pool.hpp
     Thread_Pool.cpp
@@ -80,12 +86,3 @@ add_library(Status_Handler STATIC
     ../include/Status_Handler.hpp
     Status_Handler.cpp
 )
-
-add_library(Mysql_Handler STATIC
-    ../include/Mysql_Handler.hpp
-    Mysql_Handler.cpp
-)
-target_link_libraries(Mysql_Handler PUBLIC
-    "C:/Program Files/MySQL/Connector C++ 8.0/lib64/vs14/mysqlcppconn8-static.lib"
-) 
-

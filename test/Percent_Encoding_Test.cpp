@@ -6,7 +6,7 @@
 
 TEST(DecodeTests, ASCIICharacterSet)
 {
-	URI::Percent_Encoding percentEncode;
+	Percent_Encoding percentEncode;
 
 	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
 	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
@@ -31,7 +31,7 @@ TEST(DecodeTests, ASCIICharacterSet)
 
 TEST(EncodeTests, ASCIICharacterSet)
 {
-	URI::Percent_Encoding percentEncode;
+	Percent_Encoding percentEncode;
 
 	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
 	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";

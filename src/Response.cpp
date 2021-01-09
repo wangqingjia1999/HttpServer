@@ -118,7 +118,7 @@ namespace Message
 		// Generated response message string
 		std::string response_message;
 
-		URI::URI uri;
+		URI uri;
 	};
 	
 	Message::Response::~Response() noexcept = default;

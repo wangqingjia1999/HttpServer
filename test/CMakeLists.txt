@@ -23,21 +23,20 @@ add_executable(${this} ${source_files})
 target_link_libraries(${this} PUBLIC
     gtest_main 
     Http_Server
-    
 )
 
 # Character_Set test 
 add_executable(Character_Set_Test Character_Set_Test.cpp)
 target_link_libraries(Character_Set_Test PUBLIC
     gtest_main 
-    Http_Server
+    Character_Set
 )
 
 # Percent-Encoding test 
 add_executable(Percent_Encoding_Test Percent_Encoding_Test.cpp)
 target_link_libraries(Percent_Encoding_Test PUBLIC
     gtest_main 
-    Http_Server
+    Percent_Encoding
 )
 
 # URI test 
@@ -52,7 +51,6 @@ add_executable(Request_Test Request_Test.cpp)
 target_link_libraries(Request_Test PUBLIC
     gtest_main 
     Http_Server
-    
 )
 
 # Response test 

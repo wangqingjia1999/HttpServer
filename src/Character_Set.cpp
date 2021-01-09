@@ -1,19 +1,19 @@
 #include "Character_Set.hpp"
 
-URI::Character_Set::~Character_Set()
+Character_Set::~Character_Set()
 {
 }
 
-URI::Character_Set::Character_Set()
+Character_Set::Character_Set()
 {
 }
 
-URI::Character_Set::Character_Set(char c)
+Character_Set::Character_Set(char c)
 {
 	characterSet.insert(c);
 }
 
-URI::Character_Set::Character_Set(std::initializer_list<const Character_Set> characterSets)
+Character_Set::Character_Set(std::initializer_list<const Character_Set> characterSets)
 {
 	for (auto singleCharacterSet = characterSets.begin(); singleCharacterSet != characterSets.end(); ++singleCharacterSet)
 	{
@@ -21,7 +21,7 @@ URI::Character_Set::Character_Set(std::initializer_list<const Character_Set> cha
 	}
 }
 
-URI::Character_Set::Character_Set(char first, char last)
+Character_Set::Character_Set(char first, char last)
 {
 	// if first char greater than last char
 	// swap position
@@ -37,7 +37,7 @@ URI::Character_Set::Character_Set(char first, char last)
 	}
 }
 
-bool URI::Character_Set::is_contains(char c) const
+bool Character_Set::is_contains(char c) const
 {
 	if (characterSet.find(c) != characterSet.cend())
 	{

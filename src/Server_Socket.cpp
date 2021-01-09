@@ -1,8 +1,5 @@
 #include "Server_Socket.hpp"
 
-#include <stdexcept>
-#include <iostream>
-
 Server_Socket::Server_Socket()
 {
 }
@@ -48,8 +45,8 @@ void Server_Socket::listen_at( const std::string ip, const int port)
     listen_result = listen( server_listening_socket, 1024 );
   
 #elif __linux__
-    impl_->server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if(impl_->server_socket == -1)
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if(server_socket == -1)
     {
         return false;
     }
@@ -61,92 +58,92 @@ void Server_Socket::listen_at( const std::string ip, const int port)
     ipv4_address.sin_port = htons(port);
     int ipv4_address_length = sizeof(ipv4_address);
 
-    int bind_result = bind(impl_->server_socket, (struct sockaddr*)&ipv4_address, ipv4_address_length);
+    int bind_result = bind(server_socket, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
         return false;
     }
 
-    int listen_result = listen(impl_->server_socket, 4096);
+    int listen_result = listen(server_socket, 4096);
     if(listen_result == -1)
     {
         return false;
     }    
     
-    impl_->add_epoll_wait_read_event(impl_->server_socket);
+    add_epoll_wait_read_event(server_socket);
 
     // server core loop
     for (;;)
     {
-        int triggered_fd_numbers = epoll_wait(impl_->epfd, impl_->epoll_events_result, 1024, -1);
+        int triggered_fd_numbers = epoll_wait(epfd, epoll_events_result, 1024, -1);
         switch (triggered_fd_numbers)
         {
         case 0:
-            impl_->thread_pool->post_task( []{ Logger::record_error("epoll wait, because wait time out"); } );
+            thread_pool->post_task( []{ Logger::record_error("epoll wait, because wait time out"); } );
             break;
         case -1:
-            impl_->thread_pool->post_task( []{ Logger::record_error("epoll wait"); } );
+            thread_pool->post_task( []{ Logger::record_error("epoll wait"); } );
             break;
         default:
             {
                 int i;
                 for(i = 0; i < triggered_fd_numbers; ++i)
                 {
-                    int triggered_socket_fd = impl_->epoll_events_result[i].data.fd;
-                    uint32_t arrived_socket_event = impl_->epoll_events_result[i].events;
+                    int triggered_socket_fd = epoll_events_result[i].data.fd;
+                    uint32_t arrived_socket_event = epoll_events_result[i].events;
                     
                     // The listening socket is ready; this means a new peer/client is connecting.
-                    if( (triggered_socket_fd == impl_->server_socket) && (arrived_socket_event & EPOLLIN))
+                    if( (triggered_socket_fd == server_socket) && (arrived_socket_event & EPOLLIN))
                     {
                         struct sockaddr_in client_socket_address;
                         socklen_t client_socket_length = sizeof(client_socket_address);
 
-                        impl_->client_socket = accept(
-                            impl_->server_socket, 
+                        client_socket = accept(
+                            server_socket, 
                             (struct sockaddr*)&client_socket_address, 
                             &client_socket_length 
                         );
 
-                        if(impl_->client_socket < 0)
+                        if(client_socket < 0)
                         {
-                            impl_->thread_pool->post_task( []{ Logger::record_error("accept client socket"); } );
+                            thread_pool->post_task( []{ Logger::record_error("accept client socket"); } );
                             continue;
                         }
                         
                         // add new client socket into epoll wait-read list.
-                        impl_->add_epoll_wait_read_event(impl_->client_socket);
+                        add_epoll_wait_read_event(client_socket);
                         continue;
                     }
-                    else if (triggered_socket_fd != impl_->server_socket)
+                    else if (triggered_socket_fd != server_socket)
                     {
                         if(arrived_socket_event & EPOLLIN)  // if ready for reading/receiving
                         {
                             // receive request
-                            impl_->thread_pool->post_task(
+                            thread_pool->post_task(
                                 [this, triggered_socket_fd]{
                                     this->receive_request(triggered_socket_fd);
                                 }
                             );
                             
                             // parse and generate request
-                            impl_->thread_pool->post_task(
+                            thread_pool->post_task(
                                 [this]{
                                     this->request_core_handler();
                                 }
                             );
 
-                            impl_->add_epoll_wait_write_event(triggered_socket_fd);
+                            add_epoll_wait_write_event(triggered_socket_fd);
                             continue;
                         }
                         else if (arrived_socket_event & EPOLLOUT) // if ready for writing/sending
                         {
-                            impl_->thread_pool->post_task(
+                            thread_pool->post_task(
                                 [this, triggered_socket_fd]{
-                                    this->send_response(triggered_socket_fd, impl_->response->get_response_message());
+                                    this->send_response(triggered_socket_fd, response->get_response_message());
                                 }
                             );
 
-                            impl_->add_epoll_wait_read_event(triggered_socket_fd);
+                            add_epoll_wait_read_event(triggered_socket_fd);
                             continue;
                         }
                     }

@@ -1,186 +1,125 @@
 #include "Percent_Encoding.hpp"
-#include "Character_Set.hpp"
-#include <sstream>
-#include <map>
 
-namespace
+Percent_Encoding::~Percent_Encoding()
 {
-	// gen-delims characters
-	const URI::Character_Set GEN_DELIMS
-	{
-		':', '/', '?' , '#' , '[' , ']' , '@',
-	};
 
-	// sub-delims characters
-	const URI::Character_Set SUB_DELIMS
-	{
-		'!', '$', '&', '\'', '(', ')',
-		'*', '+', ',', ';', '=',
-	};
-
-	const URI::Character_Set RESERVED
-	{
-		GEN_DELIMS,
-		SUB_DELIMS,
-	};
-
-	/**
-	 * Experimental solution:
-	 * URI producers and normalizers should use uppercase hexadecimal digits
-	 * for all percent-encodings.
-	 */
-	const std::map<int, char> hexMap
-	{
-		{0,'0'},
-		{1,'1'},
-		{2,'2'},
-		{3,'3'},
-		{4,'4'},
-		{5,'5'},
-		{6,'6'},
-		{7,'7'},
-		{8,'8'},
-		{9,'9'},
-		{10,'A'},
-		{11,'B'},
-		{12,'C'},
-		{13,'D'},
-		{14,'E'},
-		{15,'F'},
-	};
-
-	char convertDecimalToHexoCharacter(int n)
-	{
-		return hexMap.find(n)->second;
-	}
 }
 
-namespace URI
+Percent_Encoding::Percent_Encoding() 
+	: decoded_character(0), 
+	  remaining_characters(0)
 {
-	struct URI::Percent_Encoding::Impl
-	{
-		int decodedCharacter = 0;
+}
 
-		int remainingCharacters = 0;
-	};
-	URI::Percent_Encoding::~Percent_Encoding()
+std::string Percent_Encoding::encode(const std::string& unencoded_string)
+{
+	/**
+	 * Under normal circumstances, the only time to encode is during the process
+	 * of assembling the URI from its components.
+	 * '%' is the indicator of percent-encoding.
+	 * 
+	 * Two steps to encode:
+	 * 	1. Convert the character string into a sequence of bytes using the UTF-8 encoding;
+	 * 	2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is 
+	 * 	   the hexadecimal value of the byte
+	 */
+	std::string encoded_string;
+	for (size_t i = 0; i < unencoded_string.size(); ++i)
 	{
+		// only encode reserved characters
+		if (RESERVED.is_contains(unencoded_string[i]))
+		{
+			int second = unencoded_string[i] % 16;
+			int first = (unencoded_string[i] - second) / 16;
+
+			encoded_string.push_back('%');
+			encoded_string.push_back(convert_decimal_to_hexo_character(first));
+			encoded_string.push_back(convert_decimal_to_hexo_character(second));
+		}
+		else
+		{
+			encoded_string.push_back(unencoded_string[i]);
+		}
+	}
+	return  encoded_string;
+}
+
+
+std::string Percent_Encoding::decode(const std::string& encoded_string)
+{
+	// When a URI is dereferenced/decode, the components and subcomponents
+	// must be parsed and separated before the decoding.
+	// Otherwise, the data may be mistaken from component delimiters.
+
+	// The uppercase hexadecimal digits 'A' through 'F' are equivalent to
+	// the lowercase digits 'a' through 'f', respectively.
+	if (encoded_string.find('%') == std::string::npos)
+	{
+		return encoded_string;
 	}
 
-	URI::Percent_Encoding::Percent_Encoding() : impl_(new Impl)
-	{
-	}
-
-	std::string URI::Percent_Encoding::encode(const std::string& unencoded_string)
+	std::string decoded_uri_string;
+	for (size_t i = 0; i < encoded_string.size(); ++i)
 	{
 		/**
-		 * Under normal circumstances, the only time to encode is during the process
-		 * of assembling the URI from its components.
-		 * '%' is the indicator of percent-encoding.
+		 * Each character is in the form of: %[1][2]
+		 * We do this:  [1]*16 + [2]
+		 * Use this method, we get the decimal number,
+		 * then directly converting it to char.
 		 * 
-		 * Two steps to encode:
-		 * 	1. Convert the character string into a sequence of bytes using the UTF-8 encoding;
-		 * 	2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is 
-		 * 	   the hexadecimal value of the byte
+		 * TODO:  Add to_upper_case().
 		 */
-		std::string encoded_string;
-		for (size_t i = 0; i < unencoded_string.size(); ++i)
+		if (encoded_string[i] == '%')
 		{
-			// only encode reserved characters
-			if (RESERVED.is_contains(unencoded_string[i]))
+			char first = encoded_string[i + 1];
+			char second = encoded_string[i + 2];
+			i = i + 2;
+			if (first >= 'A')
 			{
-				int second = unencoded_string[i] % 16;
-				int first = (unencoded_string[i] - second) / 16;
+				first = first - 'A' + 10;
+			}
+			else if (first >= '0')
+			{
+				first = first - '0';
+			}
 
-				encoded_string.push_back('%');
-				encoded_string.push_back(convertDecimalToHexoCharacter(first));
-				encoded_string.push_back(convertDecimalToHexoCharacter(second));
-			}
-			else
+			if (second >= 'A')
 			{
-				encoded_string.push_back(unencoded_string[i]);
+				second = second - 'A' + 10;
 			}
+			else if (second >= '0')
+			{
+				second = second - '0';
+			}
+
+			// decimal number
+			int decimal = first * 16 + second;
+			char decodedChar = char(first * 16 + second);
+
+			// add to decoded string
+			decoded_uri_string.push_back(decodedChar);
+			decodedChar = '\0';
 		}
-		return  encoded_string;
+		else
+		{
+			decoded_uri_string.push_back(encoded_string[i]);
+		}
 	}
 
-	
-	std::string URI::Percent_Encoding::decode(const std::string& encoded_string)
-	{
-		// When a URI is dereferenced/decode, the components and subcomponents
-		// must be parsed and separated before the decoding.
-		// Otherwise, the data may be mistaken from component delimiters.
+	return decoded_uri_string;
+}
 
-		// The uppercase hexadecimal digits 'A' through 'F' are equivalent to
-		// the lowercase digits 'a' through 'f', respectively.
-		if (encoded_string.find('%') == std::string::npos)
-		{
-			return encoded_string;
-		}
+bool Percent_Encoding::is_finished()
+{
+	return remaining_characters == 0;
+}
 
-		std::string decoded_uri_string;
-		for (size_t i = 0; i < encoded_string.size(); ++i)
-		{
-			/**
-			 * Each character is in the form of: %[1][2]
-			 * We do this:  [1]*16 + [2]
-			 * Use this method, we get the decimal number,
-			 * then directly converting it to char.
-			 * 
-			 * TODO:  Add to_upper_case().
-			 */
-			if (encoded_string[i] == '%')
-			{
-				char first = encoded_string[i + 1];
-				char second = encoded_string[i + 2];
-				i = i + 2;
-				if (first >= 'A')
-				{
-					first = first - 'A' + 10;
-				}
-				else if (first >= '0')
-				{
-					first = first - '0';
-				}
+char Percent_Encoding::get_decoded_character()
+{
+	return char(decoded_character);
+}
 
-				if (second >= 'A')
-				{
-					second = second - 'A' + 10;
-				}
-				else if (second >= '0')
-				{
-					second = second - '0';
-				}
-
-				// decimal number
-				int decimal = first * 16 + second;
-				char decodedChar = char(first * 16 + second);
-
-				// add to decoded string
-				decoded_uri_string.push_back(decodedChar);
-				decodedChar = '\0';
-			}
-			else
-			{
-				decoded_uri_string.push_back(encoded_string[i]);
-			}
-		}
-
-		return decoded_uri_string;
-	}
-
-	bool URI::Percent_Encoding::is_finished()
-	{
-		if (impl_->remainingCharacters == 0)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	char URI::Percent_Encoding::get_decoded_character()
-	{
-		return char(impl_->decodedCharacter);
-	}
-
+char Percent_Encoding::convert_decimal_to_hexo_character(int n)
+{
+	return hexMap.find(n)->second;
 }

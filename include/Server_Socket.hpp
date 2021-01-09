@@ -3,9 +3,13 @@
 
 #include "Timer.hpp"
 
-#include <chrono>
+
 #include <queue>
 #include <mutex>
+#include <chrono>
+#include <iostream>
+#include <stdexcept>
+
 
 #ifdef __linux__
     // TODO: linux platform
