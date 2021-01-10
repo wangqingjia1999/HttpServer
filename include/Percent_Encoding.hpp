@@ -25,32 +25,52 @@ public:
 public:
 
 	/**
-	 * @brief  Encode raw unencoded string.
-	 * @param  unencoded_string  Raw unencoded string.
-	 * @return  Encoded string.
+	 * Encode raw unencoded string.
+	 * 
+	 * @param[in]  unencoded_string  
+	 * 		Raw unencoded string.
+	 * 
+	 * @return  
+	 * 		Encoded string.
 	 */
 	std::string encode(const std::string& unencoded_string);
 
 	/**
-	 * @brief  Decode the given encoded_string.
-	 * @param  encoded_string  String has been encoded.
-	 * @return  Decoded string.
+	 * Decode the given encoded_string.
+	 * 
+	 * @param[in]  encoded_string  
+	 * 		String that has been encoded.
+	 * 
+	 * @return  
+	 * 		Decoded string.
 	 */
 	std::string decode(const std::string& encoded_string);
 
 	/**
-	 * @brief  Is finished processing?
-	 * @return  True if it is finished.
+	 * Is finished processing?
+	 * 
+	 * @return  
+	 * 		True if it is finished.
 	 */
 	bool is_finished();
 
 	/**
-	 * @brief  Get decoded character.
-	 * @return  Decoded character.
+	 * Get decoded character.
+	 * 
+	 * @return  
+	 * 		Decoded character.
 	 */
 	char get_decoded_character();
 
 private:
+	/**
+	 * Convert decimal integer to corresponding hexadecimal character.
+	 * 
+	 * @param[in] n 
+	 * 		Given decimal integer.
+	 * @return 
+	 * 		Hexadecimal character [1-F]
+	 */
 	char convert_decimal_to_hexo_character(int n);
 
 private:
@@ -82,7 +102,7 @@ private:
 	 * URI producers and normalizers should use uppercase hexadecimal digits
 	 * for all percent-encodings.
 	 */
-	const std::map<int, char> hexMap
+	const std::map<int, char> hex_mapper
 	{
 		{0,'0'},
 		{1,'1'},

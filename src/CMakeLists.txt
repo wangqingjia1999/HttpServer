@@ -61,6 +61,9 @@ add_library(Percent_Encoding STATIC
     ../include/Percent_Encoding.hpp
     Percent_Encoding.cpp
 )
+target_link_libraries(Percent_Encoding PUBLIC
+    Character_Set
+)
 
 add_library(Thread_Pool STATIC
     ../include/Thread_Pool.hpp

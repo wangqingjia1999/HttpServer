@@ -121,5 +121,5 @@ char Percent_Encoding::get_decoded_character()
 
 char Percent_Encoding::convert_decimal_to_hexo_character(int n)
 {
-	return hexMap.find(n)->second;
+	return hex_mapper.find(n)->second;
 }
