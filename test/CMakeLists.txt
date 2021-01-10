@@ -4,8 +4,6 @@ set(this Http_Server_All_Test)
 
 enable_testing()
 
-add_subdirectory(Interface_Test)
-
 set(source_files
     URI_Test.cpp
     Server_Test.cpp
@@ -139,3 +137,12 @@ target_link_libraries(Timer_Test PUBLIC
     Timer
 )
 
+# Server Socket test
+add_executable(Server_Socket_Test
+    Server_Socket_Test.cpp
+)
+target_link_libraries(Server_Socket_Test PUBLIC
+    Server_Socket_Lib
+    Client_Socket_Lib
+    gtest_main
+)

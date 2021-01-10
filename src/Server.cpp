@@ -20,22 +20,22 @@ void Server::listen_at(const std::string& host, const int port)
 {
     server_socket.listen_at(host, port);
 
-    for(;;)
-    {
-        // if a new client connects.
-        if( server_socket.has_client_connection() )
-        {
-            // handle request
-            request_core_handler( server_socket.read_from() );
+    // for(;;)
+    // {
+    //     // if a new client connects.
+    //     if( server_socket.has_client_connection() )
+    //     {
+    //         // handle request
+    //         request_core_handler( server_socket.read_from() );
 
-            response->generate_response();
+    //         response->generate_response();
         
-            // send response
-            server_socket.write_to( get_raw_response() );
+    //         // send response
+    //         server_socket.write_to( get_raw_response() );
             
-            continue;
-        }
-    }
+    //         continue;
+    //     }
+    // }
 }
 
 bool Server::parse_request(const std::string& raw_request_string)

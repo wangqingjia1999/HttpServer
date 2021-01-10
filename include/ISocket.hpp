@@ -11,25 +11,37 @@ class ISocket
 {
 public:
     /**
-     * @brief  Virtual deconstructor to ensure proper cleanup.
+     * Virtual deconstructor to ensure proper cleanup.
      */
     virtual ~ISocket() {};
 
     /**
-     * @brief  Write/Send data to peer_socket.
-     * @param  peer_socket  Peer's socket.
-     * @param  data  Data to be wrote/sent.
-     * @param  data_length  Length, in bytes, of the data in data_buffer.
+     * Write/Send data to peer_socket.
+     * 
+     * @param[in]  peer_socket  
+     *      Peer's socket.
+     * 
+     * @param[in]  data
+     *      Data to be wrote/sent.
+     * 
+     * @param[in]  data_length  
+     *      Length, in bytes, of the data in data_buffer.
      */
-    virtual void write_to(const int peer_socket, const char* data_buffer, int data_length) = 0;
+    virtual size_t write_to(const int peer_socket, const char* data_buffer, const int data_size) = 0;
     
     /**
-     * @brief  Read data from peer_socket.
-     * @param  peer_socket  Peer's socket. 
-     * @param  data  Data to be read.
-     * @param  data_length  Length, in bytes, of the data in data_buffer.
+     * Read data from peer_socket.
+     * 
+     * @param[in]  peer_socket  
+     *      Peer's socket. 
+     * 
+     * @param[in]  data  
+     *      Data to be read.
+     * 
+     * @param[in]  data_length  
+     *      Length, in bytes, of the data in data_buffer.
      */
-    virtual void read_from(const int peer_socket, char* data_buffer, int data_length) = 0;
+    virtual size_t read_from(const int peer_socket, char* data_buffer, const int data_size) = 0;
 };
 
 
