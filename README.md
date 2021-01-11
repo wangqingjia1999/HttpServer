@@ -10,17 +10,25 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   * [Requirements](#requirements)
   * [How to build?](#how-to-build)
   * [Examples](#examples)
-  
+
 
 ## Features
-  * POST
-  * GET
-  * Multithreaded Logging
+* HTTP Methods
+  - [x] POST
+  - [x] GET
+  - [] PUT
+  - [] PATCH
+  - [] DELETE
+
+- [] HTTPS
+- [] DNS
+
 
 ## Requirements
 * Linux Or Windows 10
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
+
 
 ## How to build? 
 ```shell

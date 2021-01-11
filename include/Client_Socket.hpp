@@ -31,6 +31,8 @@ public:
 
     void close_connection();
 
+    int get_client_fd() const;
+
     virtual size_t write_to(const int peer_socket, const char* data_buffer, const int data_size) override;
 
     virtual size_t read_from(const int peer_socket, char* data_buffer, const int data_size) override;

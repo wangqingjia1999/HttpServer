@@ -11,6 +11,8 @@ Server_Socket::Server_Socket()
 
 Server_Socket::~Server_Socket()
 {
+    if(close(listen_fd))
+        fprintf(stderr, "Failed to close server listening fd, please kill it manually.");
     if(close(epfd))
         fprintf(stderr, "Failed to close epoll file descriptor.\n");
 }
@@ -59,33 +61,42 @@ void Server_Socket::listen_at( const std::string ip, const int port)
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
     {
-        // log error
+        perror("socket");
         return;
     }
 
     struct sockaddr_in ipv4_address;
+    
     memset(&ipv4_address, 0 , sizeof(ipv4_address));
+    
     ipv4_address.sin_family = AF_INET;
-    ipv4_address.sin_addr.s_addr = inet_addr(ip.c_str());
+    
+    if(ip == "localhost" || ip == "0.0.0.0")
+        ipv4_address.sin_addr.s_addr = INADDR_ANY;
+    else
+        ipv4_address.sin_addr.s_addr = inet_addr(ip.c_str());
+    
     ipv4_address.sin_port = htons(port);
+    
     int ipv4_address_length = sizeof(ipv4_address);
 
     int bind_result = bind(listen_fd, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
         // log bind error
+        perror("bind");
         return;
     }
 
-    listen_fd = listen(listen_fd, 4096);
-    if(listen_fd == -1)
+    int listen_result = listen(listen_fd, 4096);
+    if(listen_result == -1)
     {
         // log bind error  
         perror("listen");
         return;
     }    
     
-    printf("I'm listening");
+    std::cout << "I'm listening" << std::endl;
 
     server_epoll_event.data.fd = listen_fd;
     server_epoll_event.events = EPOLLIN;
@@ -95,12 +106,12 @@ void Server_Socket::listen_at( const std::string ip, const int port)
 
     epoll_event triggered_events[TRIGGERED_EVENTS_MAX_SIZE];
     
-    int number_of_triggered_events = epoll_wait(epfd, triggered_events, TRIGGERED_EVENTS_MAX_SIZE, -1);
+    int number_of_triggered_events;
 
     // server main loop
     for (;;)
     {
-        switch(number_of_triggered_events)
+        switch(number_of_triggered_events = epoll_wait(epfd, triggered_events, TRIGGERED_EVENTS_MAX_SIZE, -1))
         {
             case -1:
                 perror("epoll");
@@ -119,11 +130,12 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                         int client_fd = accept(listen_fd, (sockaddr*)&client_socket, &client_socket_length);
                         if(client_fd < 0)
                         {
-                            fprintf(stderr, "Accept error!");
-                            continue;
+                            perror("accept");
+                            close(listen_fd);
+                            return;
                         }
 
-                        printf("Accept client from : [%s] [%d]\n", inet_ntoa(client_socket.sin_addr), htons(client_socket.sin_port));
+                        std::cout << "Accept client from: " << inet_ntoa(client_socket.sin_addr) << ":" << htons(client_socket.sin_port) << std::endl;
                         
                         server_epoll_event.events = EPOLLIN;
                         server_epoll_event.data.fd = client_fd;
@@ -136,7 +148,7 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                             ssize_t read_result = read(triggered_events[i].data.fd, receive_buffer, RECEIVE_BUFFER_SIZE - 1);
                             if(read_result > 0)
                             {
-                                printf("Read from client : %s \n", receive_buffer);
+                                std::cout << "Read from client: " << receive_buffer << std::endl;
                                 server_epoll_event.events = EPOLLOUT;
                                 server_epoll_event.data.fd = triggered_events[i].data.fd;
                                 epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_events->data.fd, &server_epoll_event);

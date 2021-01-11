@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.8)
-
 set(this Http_Server_All_Test)
 
 enable_testing()
+
+add_subdirectory(server_client_test)
 
 set(source_files
     URI_Test.cpp
@@ -146,3 +146,4 @@ target_link_libraries(Server_Socket_Test PUBLIC
     Client_Socket_Lib
     gtest_main
 )
+

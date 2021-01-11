@@ -11,7 +11,7 @@ Client_Socket::Client_Socket()
 
 Client_Socket::~Client_Socket()
 {
-
+    close_connection();
 }
 
 void Client_Socket::connect_to( const std::string ip, const int port )
@@ -79,17 +79,15 @@ void Client_Socket::connect_to( const std::string ip, const int port )
     server_socket.sin_family = AF_INET;
     server_socket.sin_addr.s_addr = inet_addr(ip.c_str());
     server_socket.sin_port = htons(port);
-
+ 
     int connect_result = connect(client_fd, (sockaddr*)&server_socket, sizeof(server_socket));
-
     if(connect_result == -1)
     {
         perror("connect");
-        close(client_fd);
         return;
     }
 
-    printf("Client: connects to server");
+    printf("Client: successfully connects to server");
 #endif
 }
 
@@ -109,7 +107,13 @@ void Client_Socket::close_connection()
     closesocket(client_fd);
     WSACleanup();
 #elif __linux__
-
+    if(close(client_fd))
+        fprintf(stderr, "Cannot tear down client socket fd.");
 #endif
     return;
+}
+
+int Client_Socket::get_client_fd() const
+{
+    return client_fd;
 }
