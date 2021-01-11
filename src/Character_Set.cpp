@@ -23,14 +23,13 @@ Character_Set::Character_Set(std::initializer_list<const Character_Set> characte
 
 Character_Set::Character_Set(char first, char last)
 {
-	// if first char greater than last char
-	// swap position
+	// If first char greater than last char swap position
 	if (first > last)
 	{
 		std::swap(first, last);
 	}
 	
-	// insert each char into characterSet
+	// Insert each char into characterSet
 	for (char c = first; c < last + 1; ++c)
 	{
 		characterSet.insert(c);

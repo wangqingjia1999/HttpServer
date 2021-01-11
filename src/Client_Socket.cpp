@@ -87,18 +87,48 @@ void Client_Socket::connect_to( const std::string ip, const int port )
         return;
     }
 
-    printf("Client: successfully connects to server");
+    printf("Client: successfully connects to server\n");
 #endif
 }
 
-size_t Client_Socket::write_to(const int peer_socket, const char* data_buffer, const int data_size)
+bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
-    return send(peer_socket, data_buffer, data_size, 0);
+    char local_send_buffer[8192];
+    for(int i = 0; i < data_size; ++i)
+        local_send_buffer[i] = (char)data[i];
+
+    int send_result = send(peer_fd, local_send_buffer, data_size, 0);
+    if(send_result == -1)
+    {
+        perror("send");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
-size_t Client_Socket::read_from(const int peer_socket, char* data_buffer, const int data_size)
+std::vector<uint8_t>* Client_Socket::read_from(const int peer_fd)
 {
-    return recv(peer_socket, data_buffer, data_size, 0);
+    char local_receive_buffer[8192] = { 0 };
+    
+    ssize_t receive_result = recv(peer_fd, local_receive_buffer, sizeof(local_receive_buffer), 0);
+    if(receive_result == -1)
+    {
+        perror("recv");
+        return {};
+    }
+
+    for(int i = 0; i < sizeof(local_receive_buffer); ++i)
+        receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
+
+    std::string receive_buffer_string;
+    for(const auto& byte : receive_buffer)
+        receive_buffer_string += (char)byte;
+    std::cout << receive_buffer_string;
+
+    return &receive_buffer;
 }
 
 void Client_Socket::close_connection()
@@ -116,4 +146,10 @@ void Client_Socket::close_connection()
 int Client_Socket::get_client_fd() const
 {
     return client_fd;
+}
+
+void Client_Socket::fill_send_buffer(const std::string& data_string)
+{
+    for(int i = 0; i < data_string.size(); ++i)
+        send_buffer.push_back( (uint8_t)data_string[i] );
 }

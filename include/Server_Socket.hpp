@@ -6,6 +6,7 @@
 
 #include <queue>
 #include <mutex>
+#include <vector>
 #include <chrono>
 #include <cstring>
 #include <iostream>
@@ -39,9 +40,8 @@ public:
     
     // overrides
 public:
-    size_t write_to(const int peer_socket, const char* data_buffer, const int data_size) override;
-
-    size_t read_from(const int peer_socket, char* data_buffer,  const int data_size) override;
+    bool write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size) override;
+    std::vector<uint8_t>* read_from(const int peer_fd) override;
 
 public:
     /**
@@ -51,15 +51,21 @@ public:
      */
     void listen_at(const std::string ip, const int port);
 
+    std::vector<uint8_t>* get_receive_buffer();
+
+    void fill_send_buffer(const std::string& data_string);
+    void fill_send_buffer(const std::vector<uint8_t>& data_stream);
+
+    void print_receive_buffer();
+    
 private:
     void print_socket_error();
+
 private:
     int listen_fd;
-#define RECEIVE_BUFFER_SIZE 1024
-    char receive_buffer[RECEIVE_BUFFER_SIZE];
 
-#define SEND_BUFFER_SIZE 1024
-    char send_buffer[SEND_BUFFER_SIZE];
+    std::vector<uint8_t> receive_buffer;
+    std::vector<uint8_t> send_buffer;
 
 #ifdef _WIN32
     SOCKET server_listening_socket;

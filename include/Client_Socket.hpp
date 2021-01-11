@@ -4,6 +4,7 @@
 #include "ISocket.hpp"
 
 #include <vector>
+#include <string>
 
 #ifdef _WIN32
     #pragma comment(lib, "Ws2_32.lib")
@@ -21,6 +22,11 @@ public:
     Client_Socket();
     ~Client_Socket();
 
+public:    
+    virtual std::vector<uint8_t>* read_from(const int peer_fd) override;
+
+    virtual bool write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size) override;
+
 public:
     /**
      * @brief  Connect to server with the identity of ip:port.
@@ -33,11 +39,13 @@ public:
 
     int get_client_fd() const;
 
-    virtual size_t write_to(const int peer_socket, const char* data_buffer, const int data_size) override;
+    void fill_send_buffer(const std::string& data_string);
 
-    virtual size_t read_from(const int peer_socket, char* data_buffer, const int data_size) override;
 private:
     int client_fd;
+    std::vector<uint8_t> receive_buffer;
+    std::vector<uint8_t> send_buffer;
+
 #ifdef _WIN32
     SOCKET client_socket;
 #endif

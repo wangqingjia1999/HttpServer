@@ -16,32 +16,26 @@ public:
     virtual ~ISocket() {};
 
     /**
-     * Write/Send data to peer_socket.
+     * Read from peer.
      * 
-     * @param[in]  peer_socket  
-     *      Peer's socket.
-     * 
-     * @param[in]  data
-     *      Data to be wrote/sent.
-     * 
-     * @param[in]  data_length  
-     *      Length, in bytes, of the data in data_buffer.
+     * @return
+     *      Reference to data.
      */
-    virtual size_t write_to(const int peer_socket, const char* data_buffer, const int data_size) = 0;
+    virtual std::vector<uint8_t>* read_from(const int peer_fd) = 0;
     
     /**
-     * Read data from peer_socket.
+     * Write to peer
      * 
-     * @param[in]  peer_socket  
-     *      Peer's socket. 
+     * @param[in] data
+     *      Data to be sent.
      * 
-     * @param[in]  data  
-     *      Data to be read.
+     * @param[in] data_size
+     *      Data size in byte.
      * 
-     * @param[in]  data_length  
-     *      Length, in bytes, of the data in data_buffer.
+     * @return 
+     *      True if succeeds.
      */
-    virtual size_t read_from(const int peer_socket, char* data_buffer, const int data_size) = 0;
+    virtual bool write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size) = 0;
 };
 
 
