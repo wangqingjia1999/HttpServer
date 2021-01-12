@@ -53,11 +53,13 @@ public:
 
     std::vector<uint8_t>* get_receive_buffer();
 
+    std::vector<uint8_t>* get_send_buffer();
+
     void fill_send_buffer(const std::string& data_string);
     void fill_send_buffer(const std::vector<uint8_t>& data_stream);
 
     void print_receive_buffer();
-    
+
 private:
     void print_socket_error();
 

@@ -93,7 +93,7 @@ void Client_Socket::connect_to( const std::string ip, const int port )
 
 bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
-    char local_send_buffer[8192];
+    char local_send_buffer[8192] = { 0 };
     for(int i = 0; i < data_size; ++i)
         local_send_buffer[i] = (char)data[i];
 

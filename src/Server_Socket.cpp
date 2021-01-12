@@ -142,7 +142,7 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                          * Newly added client sockets should be monitored
                          * in edge-triggered or level-triggered way?
                          */
-                        server_epoll_event.events = EPOLLIN;
+                        server_epoll_event.events = EPOLLIN | EPOLLET;
                         server_epoll_event.data.fd = client_fd;
                         epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &server_epoll_event);
                     }
@@ -164,9 +164,11 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                             
                             if( !write_to(triggered_events[i].data.fd, send_buffer, send_buffer.size()) )
                             {
-                                std::cout << "Cannot send data to client ";
+                                std::cout << "Cannot send data to client " << std::endl;
                                 epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_events[i].data.fd, NULL);
-                            }   
+                            }       
+
+                            std::cout << "Successfully send data to client." << std::endl;
 
                             server_epoll_event.events = EPOLLIN;
                             server_epoll_event.data.fd = triggered_events[i].data.fd;
@@ -189,18 +191,20 @@ void Server_Socket::listen_at( const std::string ip, const int port)
 
 bool Server_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
-    char send_buffer[data_size] = { 0 };
+    char local_send_buffer[8192] = { 0 };
     for(int i = 0; i < data_size; ++i)
-        send_buffer[i] = data[i];
+        local_send_buffer[i] = (char)data[i];
 
-    ssize_t send_result = send(peer_fd, send_buffer, data_size, 0);
+    int send_result = send(peer_fd, local_send_buffer, data_size, 0);
     if(send_result == -1)
     {
         perror("send");
         return false;
     }
-    
-    return true;
+    else
+    {
+        return true;
+    }
 }
 
 std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
@@ -220,7 +224,7 @@ std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
         return {};
     }
 
-    for(int i = 0; i < sizeof(local_receive_buffer); ++i)
+    for(int i = 0; i < receive_result; ++i)
         receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
 
     return &receive_buffer;
@@ -247,12 +251,17 @@ std::vector<uint8_t>* Server_Socket::get_receive_buffer()
     return &receive_buffer;
 }
 
+std::vector<uint8_t>* Server_Socket::get_send_buffer()
+{
+    return &send_buffer;
+}
+
 void Server_Socket::print_receive_buffer()
 {
     std::string receive_buffer_string;
     for(const auto& byte : receive_buffer)
-        receive_buffer_string += byte;
-    std::cout << receive_buffer_string;
+        receive_buffer_string += (char)byte;
+    std::cout << receive_buffer_string << std::endl;
 }
 
 void Server_Socket::fill_send_buffer(const std::string& data_string)
