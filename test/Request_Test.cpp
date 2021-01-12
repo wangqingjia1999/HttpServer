@@ -5,21 +5,21 @@
 TEST(RequestTests, defaultMethodGET)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.set_method());
+	request.set_method();
 	ASSERT_EQ(request.get_request_method(), "GET");
 }
 
 TEST(RequestTests, defaultHttpVersion)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.set_http_version());
+	request.set_http_version();
 	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 }
 
 TEST(RequestTests, defaultUserAgent)
 {
 	Message::Request request;
-	ASSERT_TRUE(request.set_user_agent());
+	request.set_user_agent();
 	ASSERT_EQ(request.get_header("User-Agent"), "Bitate");
 }
 
@@ -27,10 +27,10 @@ TEST(RequestTests, generateRequestFromUri)
 {
 	Message::Request request;
 	
-	ASSERT_TRUE(request.parse_uri("http://localhost:2333/"));
-	ASSERT_TRUE(request.set_method());
-	ASSERT_TRUE(request.set_http_version());
-	ASSERT_TRUE(request.set_user_agent());
+	request.parse_uri("http://localhost:2333/");
+	request.set_method();
+	request.set_http_version();
+	request.set_user_agent();
 
 	std::string raw_request = 
 	{
@@ -64,7 +64,7 @@ TEST(RequestTests, parseRawGetRequest)
 		"Accept-Language: en,zh-CN;q=0.9,zh;q=0.8\r\n"
 		"\r\n"
 		);
-	ASSERT_TRUE(request.set_raw_request(raw_request));
+	request.set_raw_request(raw_request);
 	ASSERT_TRUE(request.parse_raw_request());
 
 	// test request line
@@ -112,7 +112,7 @@ TEST(request_tests, post_request_test)
 		"Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer"
 	};
 
-	ASSERT_TRUE(request.set_raw_request(raw_post_request_message));
+	request.set_raw_request(raw_post_request_message);
 	ASSERT_TRUE(request.parse_raw_request());
 
 	// test request line

@@ -22,6 +22,7 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 - [] HTTPS
 - [] DNS
+- [] WebSocket
 
 
 ## Requirements

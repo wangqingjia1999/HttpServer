@@ -16,7 +16,7 @@ TEST(websocket_tests, parse_websocket_request_test)
 		"Cache-Control: max-age=0\r\n"
 		"\r\n"
 	);
-    ASSERT_TRUE(request->set_raw_request(raw_request));
+    request->set_raw_request(raw_request);
     WebSocket websocket(request, response);
 
     ASSERT_FALSE(websocket.parse_websocket_request());
@@ -41,7 +41,7 @@ TEST(websocket_tests, generate_websocket_response_test)
         "Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\n"
         "\r\n"
     };
-    ASSERT_TRUE(request->set_raw_request(raw_request));
+    request->set_raw_request(raw_request);
 	ASSERT_TRUE(request->parse_raw_request());
 	WebSocket websocket(request, response);
 
