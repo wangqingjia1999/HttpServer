@@ -96,7 +96,7 @@ void Server_Socket::listen_at( const std::string ip, const int port)
         return;
     }    
     
-    std::cout << "I'm listening" << std::endl;
+    printf("---Server is listening---\n");
 
     server_epoll_event.data.fd = listen_fd;
     server_epoll_event.events = EPOLLIN;
@@ -123,7 +123,7 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                 for(; i < number_of_triggered_events; ++i)
                 {
                     // New client arrives
-                    if(triggered_events[i].data.fd == listen_fd && (triggered_events[i].events & EPOLLIN))
+                    if((triggered_events[i].data.fd == listen_fd) && (triggered_events[i].events & EPOLLIN))
                     {
                         sockaddr_in client_socket;
                         socklen_t client_socket_length = sizeof(client_socket);
@@ -136,54 +136,43 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                             return;
                         }
 
-                        std::cout << "Accept client from: " << inet_ntoa(client_socket.sin_addr) << ":" << htons(client_socket.sin_port) << std::endl;
+                        printf("Accept client: %s:%d\n", inet_ntoa(client_socket.sin_addr), htons(client_socket.sin_port));
                         
                         /**
                          * Newly added client sockets should be monitored
                          * in edge-triggered or level-triggered way?
                          */
-                        server_epoll_event.events = EPOLLIN | EPOLLET;
+                        server_epoll_event.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
                         server_epoll_event.data.fd = client_fd;
                         epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &server_epoll_event);
                     }
-                    else if(triggered_events[i].data.fd != listen_fd) // if the connection has been established
+                    
+                    // Ready for reading
+                    if((triggered_events[i].data.fd != listen_fd) && (triggered_events[i].events & EPOLLIN))
                     {
-                        if(triggered_events[i].events & EPOLLIN)      // Ready for reading
+                        // It peer shudown, skip this event
+                        if(triggered_events[i].events & EPOLLRDHUP)
                         {
-                            read_from(triggered_events[i].data.fd);
-                            print_receive_buffer();
-
-                            server_epoll_event.events = EPOLLOUT;
-                            server_epoll_event.data.fd = triggered_events[i].data.fd;
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_events->data.fd, &server_epoll_event);
+                            epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_events[i].data.fd, nullptr);
+                            printf("Peer shutdown\n");
+                            continue;
                         }
-                        else if(triggered_events[i].events & EPOLLOUT)  // Ready for writing
-                        {
-                            std::string message = "HTTP/1.0  OK 200 \r\n\r\n<html><h1>Bitate Server</h1></html>";
-                            fill_send_buffer(message);
-                            
-                            if( !write_to(triggered_events[i].data.fd, send_buffer, send_buffer.size()) )
-                            {
-                                std::cout << "Cannot send data to client " << std::endl;
-                                epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_events[i].data.fd, NULL);
-                            }       
 
-                            std::cout << "Successfully send data to client." << std::endl;
+                        read_from(triggered_events[i].data.fd);
+                        
+                        fill_send_buffer("Hello client, I'm server :-)\n");
 
-                            server_epoll_event.events = EPOLLIN;
-                            server_epoll_event.data.fd = triggered_events[i].data.fd;
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, triggered_events[i].data.fd, NULL);
-                        }
-                        else
+        
+                        if(!write_to(triggered_events[i].data.fd, send_buffer, send_buffer.size()))
                         {
-                            printf("Undefined epoll behaviour.");
+                            perror("send");
                         }
                     }
                 }
             }
             break;
-        }    
-    }
+        }   // end of swtich()
+    }   // end of for(;;)
 
 #endif
     return;
@@ -191,24 +180,29 @@ void Server_Socket::listen_at( const std::string ip, const int port)
 
 bool Server_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
+    if(!send_buffer.empty())
+        send_buffer.clear();
+
     char local_send_buffer[8192] = { 0 };
     for(int i = 0; i < data_size; ++i)
         local_send_buffer[i] = (char)data[i];
 
     int send_result = send(peer_fd, local_send_buffer, data_size, 0);
-    if(send_result == -1)
+    if(send_result < 0)
     {
         perror("send");
         return false;
     }
-    else
-    {
-        return true;
-    }
+
+    printf("Send: %s", local_send_buffer);
+    return true;
 }
 
 std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
 {
+    if(!receive_buffer.empty())
+        receive_buffer.clear();
+
     /**
      * Most web browsers set the maximum of HTTP request to 8192 bytes.
      * That's why the buffer size is magic 8192.
@@ -226,6 +220,8 @@ std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
 
     for(int i = 0; i < receive_result; ++i)
         receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
+
+    print_receive_buffer();
 
     return &receive_buffer;
 }
@@ -261,11 +257,15 @@ void Server_Socket::print_receive_buffer()
     std::string receive_buffer_string;
     for(const auto& byte : receive_buffer)
         receive_buffer_string += (char)byte;
-    std::cout << receive_buffer_string << std::endl;
+    
+    printf("Receive: %s\n", receive_buffer_string.c_str());
 }
 
 void Server_Socket::fill_send_buffer(const std::string& data_string)
 {
+    if(!send_buffer.empty())
+        send_buffer.clear();
+
     for(int i = 0; i < data_string.size(); ++i)
         send_buffer.push_back( data_string[i] );
 }

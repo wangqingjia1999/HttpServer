@@ -44,7 +44,7 @@ void Client_Socket::connect_to( const std::string ip, const int port )
     server_socket.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
     server_socket.sin_port = htons(port);
     
-    std::cout << "I'm trying to connect" << std::endl;
+    printf("Connecting~");
     
     auto connect_result = connect(client_fd, (sockaddr*)&server_socket, sizeof(server_socket));
     
@@ -93,6 +93,9 @@ void Client_Socket::connect_to( const std::string ip, const int port )
 
 bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
+    if(!send_buffer.empty())
+        send_buffer.clear();
+    
     char local_send_buffer[8192] = { 0 };
     for(int i = 0; i < data_size; ++i)
         local_send_buffer[i] = (char)data[i];
@@ -111,6 +114,9 @@ bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data
 
 std::vector<uint8_t>* Client_Socket::read_from(const int peer_fd)
 {
+    if(!receive_buffer.empty())
+        receive_buffer.clear();
+
     char local_receive_buffer[8192] = { 0 };
     
     ssize_t receive_result = recv(peer_fd, local_receive_buffer, sizeof(local_receive_buffer), 0);
@@ -126,7 +132,7 @@ std::vector<uint8_t>* Client_Socket::read_from(const int peer_fd)
     std::string receive_buffer_string;
     for(const auto& byte : receive_buffer)
         receive_buffer_string += (char)byte;
-    std::cout << receive_buffer_string;
+    printf("Receive: %s\n", receive_buffer_string.c_str());
 
     return &receive_buffer;
 }
@@ -152,4 +158,28 @@ void Client_Socket::fill_send_buffer(const std::string& data_string)
 {
     for(int i = 0; i < data_string.size(); ++i)
         send_buffer.push_back( (uint8_t)data_string[i] );
+}
+
+std::vector<uint8_t>* Client_Socket::get_send_buffer()
+{
+    return &send_buffer;
+}
+
+std::vector<uint8_t>* Client_Socket::get_receive_buffer()
+{
+    return &receive_buffer;
+}
+
+bool Client_Socket::write_to()
+{
+    return write_to(
+        client_fd,
+        send_buffer,
+        send_buffer.size()
+    );
+}
+
+std::vector<uint8_t>* Client_Socket::read_from()
+{
+    return read_from(client_fd);
 }

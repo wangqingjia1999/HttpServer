@@ -38,9 +38,29 @@ public:
     void close_connection();
 
     int get_client_fd() const;
-
+    
     void fill_send_buffer(const std::string& data_string);
 
+    std::vector<uint8_t>* get_send_buffer();
+    std::vector<uint8_t>* get_receive_buffer();
+    
+    
+    /**
+     * Write to server after successfully connecting to it.
+     * 
+     * @return 
+     *      True if succeeds.
+     */
+    bool write_to();
+
+    /**
+     * Read from server.
+     * 
+     * @return 
+     *      A pointer to socket's internal receive buffer.
+     */
+    std::vector<uint8_t>* read_from();
+    
 private:
     int client_fd;
     std::vector<uint8_t> receive_buffer;
