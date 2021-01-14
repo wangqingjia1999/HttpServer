@@ -23,5 +23,4 @@ int main()
         client_socket.write_to();
         client_socket.read_from();        
     }
-    
 }

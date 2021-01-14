@@ -213,10 +213,34 @@ namespace Message
 		void clear_up_header_fields();
 
 	private:
-		Logger logger;
+		std::shared_ptr< URI > uri;
+		std::shared_ptr< Logger > logger;
 		
-		struct Impl;
-		std::unique_ptr< Impl > impl_;
+		// Status code of response
+		int status_code;
+
+		// Default protocol version
+		std::string protocol_version;
+		
+		// Reason phrase for specific status code.
+		std::string reason_phrase;
+		
+		// Header fields
+		std::map < std::string, std::string > headers;
+		
+		// Body of response message
+		std::string body;
+		
+		// Length of body of response message
+		std::streamoff body_length;
+
+		// Content type
+		std::string content_type;
+
+		int content_length;
+
+		// Generated response message string
+		std::string response_message;
 	};
 }
 

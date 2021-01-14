@@ -4,6 +4,11 @@ Server::~Server()
 {
 }
 Server::Server()
+    : logger(new Logger()),
+      thread_pool(std::make_shared<Thread_Pool>()),
+      request(std::make_shared<Message::Request>()),
+      response(std::make_shared<Message::Response>()),
+      server_socket(new Server_Socket)
 {
 }
 
@@ -18,24 +23,7 @@ bool Server::is_websocket_opening_handshake(std::shared_ptr< Message::Request >&
 
 void Server::listen_at(const std::string& host, const int port)
 {
-    server_socket.listen_at(host, port);
-
-    // for(;;)
-    // {
-    //     // if a new client connects.
-    //     if( server_socket.has_client_connection() )
-    //     {
-    //         // handle request
-    //         request_core_handler( server_socket.read_from() );
-
-    //         response->generate_response();
-        
-    //         // send response
-    //         server_socket.write_to( get_raw_response() );
-            
-    //         continue;
-    //     }
-    // }
+    server_socket->listen_at(host, port);
 }
 
 bool Server::parse_request(const std::string& raw_request_string)

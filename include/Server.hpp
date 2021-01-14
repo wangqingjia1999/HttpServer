@@ -93,29 +93,13 @@ private:
     bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request);
 
 private:
-	Server_Socket server_socket;
+	std::shared_ptr< Logger > logger;
+	std::shared_ptr< Thread_Pool > thread_pool;
+	std::shared_ptr< Message::Request > request;
+	std::shared_ptr< Message::Response > response;
+	std::unique_ptr< Server_Socket > server_socket;
 
-	Logger logger;
-
-    // Receive buffer
-    static const int receive_buffer_length = 1024;
-    char receive_buffer[receive_buffer_length] = { 0 };
-
-    // Send buffer
-    static const size_t SEND_BUFFER_LENGTH = 1024;
-    std::string send_buffer;
-
-    // Response object for generating response
-    std::shared_ptr< Message::Response> response = std::make_shared< Message::Response >();
-
-    // Server side request object that is responsible for parseing coming request.
-    std::shared_ptr< Message::Request> request = std::make_shared< Message::Request >();
-
-    // Data obtained from POST request, I just store those name:value pairs into a map :).
-    std::map< std::string, std::string > post_data_map;
-
-    // Thread pool to avoid the unnecessary creation and deletion of multiple threads.
-    std::shared_ptr< Thread_Pool > thread_pool = std::make_shared< Thread_Pool >();
+	std::map< std::string, std::string > post_data_map;
 };
 
 #endif
