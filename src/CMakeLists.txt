@@ -81,7 +81,7 @@ add_library(Logger STATIC
     Logger.cpp
 )
 
-add_library(Response STATIC
+add_library(Response_Lib STATIC
     ../include/Response.hpp
     Response.cpp
 )

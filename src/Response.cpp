@@ -92,7 +92,6 @@ namespace Message
 
 	Message::Response::Response()
 		: uri(std::make_shared< URI > ()),
-		  logger(std::make_shared< Logger > ()),
 		  status_code(0),
 		  protocol_version("HTTP/1.1"),
 		  content_length(0)
@@ -101,16 +100,22 @@ namespace Message
 
 	Message::Response::Response(const Response& other)
     {
-        *this = other;
+		uri = std::make_shared< URI > (*(other.uri));
+		status_code = other.status_code;
+		reason_phrase = other.reason_phrase;
+		headers = other.headers;
+		body = other.body;
+		body_length = other.body_length;
+		content_type = other.content_type;
+		content_length = other.content_length;
+		response_message = other.response_message;
     }
 
 	Response& Message::Response::operator=(const Response& other)
 	{
 		if(this != &other)
 		{
-			// The following code is the deep copy???
 			uri = std::make_shared< URI > (*(other.uri));
-			logger = std::make_shared< Logger > (*(other.logger));
 			status_code = other.status_code;
 			reason_phrase = other.reason_phrase;
 			headers = other.headers;
@@ -123,33 +128,30 @@ namespace Message
 		return *this;
 	}
 
-	Message::Response::Response(Response&& other) noexcept = default;
-	Response& Message::Response::operator=(Response&& ) noexcept = default;
-
 	int Message::Response::get_status_code()
 	{
-		return simple_serverstatus_code;
+		return status_code;
 	}
 
 	std::string Message::Response::get_protocol_version()
 	{
-		return simple_serverprotocol_version;
+		return protocol_version;
 	}
 
 	std::string Message::Response::get_reason_phrase()
 	{
-		return simple_serverreason_phrase;
+		return reason_phrase;
 	}
 
 	std::string Message::Response::get_body()
 	{
-		return simple_serverbody;
+		return body;
 	}
 
 	std::string Message::Response::get_header(const std::string& header_name)
 	{
-		auto iterator = simple_serverheaders.find(header_name);
-		if (iterator != simple_serverheaders.end())
+		auto iterator = headers.find(header_name);
+		if (iterator != headers.end())
 		{
 			return iterator->second.c_str();
 		}
@@ -166,53 +168,52 @@ namespace Message
 
 	std::string Message::Response::get_body_length()
 	{
-		simple_serverbody_length = simple_serverbody.size();
-		return std::to_string(simple_serverbody_length);
+		body_length = body.size();
+		return std::to_string(body_length);
 	}
 
 	std::string Message::Response::get_response_message()
 	{
-		return simple_serverresponse_message;
+		return response_message;
 	}
 
 	size_t Message::Response::get_response_length()
 	{
-		return simple_serverresponse_message.size();
+		return response_message.size();
 	}
 
 	std::string Message::Response::get_content_type()
 	{
-		return simple_servercontent_type;
+		return content_type;
 	}
 
-	bool Message::Response::set_status(int status_code)
+	bool Message::Response::set_status(int new_status_code)
 	{
-		simple_serverstatus_code = status_code;
-		simple_serverreason_phrase = status_code_map[status_code];
+		status_code = new_status_code;
+		reason_phrase = status_code_map[new_status_code];
 		return true;
 	}
 
-	bool Message::Response::set_protocol_version(const std::string protocol_version)
+	bool Message::Response::set_protocol_version(const std::string new_protocol_version)
 	{
-		simple_serverprotocol_version = protocol_version;
+		protocol_version = new_protocol_version;
 		return true;
 	}
 	
-	bool Message::Response::set_body(const std::string& response_body)
+	bool Message::Response::set_body(const std::string& new_response_body)
 	{
-		if (!simple_serverbody.empty())
-		{
-			simple_serverbody.clear();
-		}
-		simple_serverbody = response_body;
+		if (!body.empty())
+			body.clear();
+
+		body = new_response_body;
 		return true;
 	}
 
-	bool Message::Response::set_body_length(const std::streamoff body_length)
+	bool Message::Response::set_body_length(const std::streamoff new_body_length)
 	{
-		if (simple_serverbody_length != -1)
+		if (new_body_length != -1)
 		{
-			simple_serverbody_length = body_length;
+			body_length = new_body_length;
 			return true;
 		}
 		else
@@ -221,9 +222,9 @@ namespace Message
 		}
 	}
 
-	void Message::Response::set_content_type(const std::string& content_type)
+	void Message::Response::set_content_type(const std::string& new_content_type)
 	{
-		simple_servercontent_type = content_type;
+		content_type = content_type;
 		return;
 	}
 
@@ -235,40 +236,40 @@ namespace Message
 		}
 
 		// insert new or update existing header
-		simple_serverheaders[name] = value;
+		headers[name] = value;
 		return true;
 	}
 
-	bool Message::Response::set_content_length(const std::streamoff& content_length)
+	bool Message::Response::set_content_length(const size_t& new_content_length)
 	{
-		if (content_length < 0)
+		if (new_content_length < 0)
 		{
 			return false;
 		}
 		else
 		{
-			simple_servercontent_length = std::to_string(content_length);
-			add_header("Content-Length", std::to_string(content_length));
+			content_length = new_content_length;
+			add_header("Content-Length", std::to_string(new_content_length));
 			return true;
 		}
 	}
 
-	bool Message::Response::set_response_message(const std::string& response)
+	bool Message::Response::set_response_message(const std::string& new_response_message_string)
 	{
-		simple_serverresponse_message.clear();
-		simple_serverresponse_message = std::move(response);
+		response_message.clear();
+		response_message = std::move(new_response_message_string);
 		return true;
 	}
 
-	bool Message::Response::set_reason_phrase(const int status_code)
+	bool Message::Response::set_reason_phrase(const int new_status_code)
 	{
-		auto header_position = status_code_map.find(status_code);
+		auto header_position = status_code_map.find(new_status_code);
 		if(header_position == status_code_map.cend())
 		{
 			return false;
 		}
 
-		simple_serverreason_phrase = header_position->second;
+		reason_phrase = header_position->second;
 		return true;
 	}
 	
@@ -277,10 +278,10 @@ namespace Message
 		std::ostringstream response;
 
 		// Set first line of response string.
-		response << simple_serverprotocol_version << " " << std::to_string(simple_serverstatus_code) << " " << simple_serverreason_phrase << "\r\n";
+		response << protocol_version << " " << std::to_string(status_code) << " " << reason_phrase << "\r\n";
 
 		// Iterate headers map and add to respoinse string.
-		for (auto position = simple_serverheaders.cbegin(); position != simple_serverheaders.cend(); ++position)
+		for (auto position = headers.cbegin(); position != headers.cend(); ++position)
 		{
 			std::string name = position->first.c_str();
 			std::string value = position->second.c_str();
@@ -289,22 +290,21 @@ namespace Message
 		}
 
 		// Set body content.
-		if (simple_serverbody.empty())
+		if (body.empty())
 		{
 			response << "\r\n";
 		}
 		else
 		{
-			response << "\r\n" << simple_serverbody;
+			response << "\r\n" << body;
 
 			// Do not put '\r\n' at the end of the http message-body.
 			// see: https://stackoverflow.com/a/13821352/11850070			
 		}
 		
-		// store generated message to member variable
 		if (!set_response_message(response.str()))
 		{
-			logger.record_error_message("Fail to set response message");
+			// FIXME: logger "failed to set response message
 			return;
 		}
 	}
@@ -432,72 +432,72 @@ namespace Message
 
 		if ( file_extention == "txt")
 		{
-			simple_servercontent_type = "text/plain";
+			content_type = "text/plain";
 			return;
 		}
 		else if (file_extention == "html" || file_extention == "htm")
 		{
-			simple_servercontent_type = "text/html";
+			content_type = "text/html";
 			return;
 		}
 		else if (file_extention == "css")
 		{
-			simple_servercontent_type = "text/css";
+			content_type = "text/css";
 			return;
 		}
 		else if (file_extention == "jpeg" || file_extention == "jpg")
 		{
-			simple_servercontent_type = "image/jpg";
+			content_type = "image/jpg";
 			return;
 		}
 		else if (file_extention == "png")
 		{
-			simple_servercontent_type = "image/png";
+			content_type = "image/png";
 			return;
 		}
 		else if (file_extention == "gif")
 		{
-			simple_servercontent_type = "image/gif";
+			content_type = "image/gif";
 			return;
 		}
 		else if (file_extention == "svg")
 		{
-			simple_servercontent_type = "image/svg+xml";
+			content_type = "image/svg+xml";
 			return;
 		}
 		else if (file_extention == "ico")
 		{
-			simple_servercontent_type = "image/x-icon";
+			content_type = "image/x-icon";
 			return;
 		}
 		else if (file_extention == "json")
 		{
-			simple_servercontent_type = "application/json";
+			content_type = "application/json";
 			return;
 		}
 		else if (file_extention == "pdf")
 		{
-			simple_servercontent_type = "application/pdf";
+			content_type = "application/pdf";
 			return;
 		}
 		else if (file_extention == "js")
 		{
-			simple_servercontent_type = "application/javascript";
+			content_type = "application/javascript";
 			return;
 		}
 		else if (file_extention == "wasm")
 		{
-			simple_servercontent_type = "application/wasm";
+			content_type = "application/wasm";
 			return;
 		}
 		else if (file_extention == "xml")
 		{
-			simple_servercontent_type = "application/xml";
+			content_type = "application/xml";
 			return;
 		}
 		else if (file_extention == "xhtml")
 		{
-			simple_servercontent_type = "application/xhtml+xml";
+			content_type = "application/xhtml+xml";
 			return;
 		}
 
@@ -533,8 +533,8 @@ namespace Message
 
 	bool Message::Response::has_header(const std::string& name)
 	{
-		auto iterator = simple_serverheaders.find(name);
-		if (iterator == simple_serverheaders.end())
+		auto iterator = headers.find(name);
+		if (iterator == headers.end())
 		{
 			return false;
 		}
@@ -544,7 +544,7 @@ namespace Message
 
 	void Message::Response::clear_up_header_fields()
 	{
-		simple_serverheaders.clear();
+		headers.clear();
 	}
 	
 }

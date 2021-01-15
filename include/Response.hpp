@@ -2,7 +2,6 @@
 #define RESPONSE_HPP
 
 #include "Request.hpp"
-#include "Logger.hpp"
 
 #include <string>
 #include <regex>
@@ -31,8 +30,8 @@ namespace Message
 		Response(const Response&);
 		Response& operator=(const Response&);
 		
-		Response(Response&&) noexcept;
-		Response& operator=(Response&&) noexcept;
+		Response(Response&&) noexcept = delete;
+		Response& operator=(Response&&) noexcept = delete;
 
 	public:
 		/**
@@ -109,28 +108,28 @@ namespace Message
 		 * @param  status_code  Response status code
 		 * @return  True if set successfully.
 		 */
-		bool set_status(const int status_code);
+		bool set_status(const int new_status_code);
 		
 		/**
 		 * @brief  Set HTTP protocol version.
 		 * @param  protocol_version  Protocol version.
 		 * @return  True if set successfully.
 		 */
-		bool set_protocol_version(const std::string protocol_version);
+		bool set_protocol_version(const std::string new_protocol_version);
 		
 		/**
 		 * @brief  Set response body.
 		 * @param  response_body  Response body string.
 		 * @return  True if set successfully.
 		 */
-		bool set_body(const std::string& response_body);
+		bool set_body(const std::string& new_response_body);
 		
 		/**
 		 * @brief  Set response body length.
 		 * @param  body_length  Length of response body.
 		 * @return  True if set successfully.
 		 */
-		bool set_body_length(const std::streamoff body_length);
+		bool set_body_length(const std::streamoff new_body_length);
 		
 		/**
 		 * @brief  Add header.
@@ -145,34 +144,34 @@ namespace Message
 		 * @param  content_length  Length of response body.
 		 * @return  True if set successfully.
 		 */
-		bool set_content_length(const std::streamoff& content_length);
+		bool set_content_length(const size_t& new_content_length);
 		
 		/**
 		 * @brief  Set content type.
 		 * @param  content_type  Content type.
 		 */
-		void set_content_type(const std::string& content_type);
+		void set_content_type(const std::string& new_content_type);
 
 		/**
 		 * @brief  Map given URI to local file system.
 		 * @param  request_uri  Request URI taken from request message
 		 * @return  True if successfully set content.
 		 */
-		bool set_content(const std::string& request_uri);
+		bool set_content(const std::string& new_request_uri);
 
 		/**
 		 * @brief  Set the complete response message.
 		 * @param  response  Complete response message.
 		 * @return  True if set successfully.
 		 */
-		bool set_response_message(const std::string& response);
+		bool set_response_message(const std::string& new_response_message_string);
 		
 		/**
 		 * @brief  Set reason phrase.
 		 * @param  status_code  Status code integer.
 		 * @return  True if set reason phrase successfully.
 		 */
-		bool set_reason_phrase(const int stauts_code);
+		bool set_reason_phrase(const int new_stauts_code);
 
 		/**
 		 * @brief  Assemble response string from member variables.
@@ -214,7 +213,6 @@ namespace Message
 
 	private:
 		std::shared_ptr< URI > uri;
-		std::shared_ptr< Logger > logger;
 		
 		// Status code of response
 		int status_code;
@@ -237,7 +235,7 @@ namespace Message
 		// Content type
 		std::string content_type;
 
-		int content_length;
+		size_t content_length;
 
 		// Generated response message string
 		std::string response_message;

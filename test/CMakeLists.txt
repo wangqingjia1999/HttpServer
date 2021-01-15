@@ -55,8 +55,7 @@ target_link_libraries(Request_Test PUBLIC
 add_executable(Response_Test Response_Test.cpp)
 target_link_libraries(Response_Test PUBLIC
     gtest_main 
-    Http_Server
-    
+    Response_Lib
 )
 
 # Server test 

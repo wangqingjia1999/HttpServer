@@ -18,12 +18,9 @@ namespace Message
     }
     Request& Message::Request::operator=(const Request& other)
     {
-        // TODO:
         return *this;
     }
     
-    Message::Request::Request(Request&&) noexcept = default;
-    Request& Message::Request::operator=(Request&& ) noexcept = default;
 
     // public methods
     void Message::Request::set_raw_request(std::string raw_request_string)

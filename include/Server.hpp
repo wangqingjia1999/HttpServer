@@ -25,7 +25,6 @@
 
 #endif
 
-
 class Server
 {
 public:
@@ -39,56 +38,79 @@ public:
 	Server& operator=(Server&&) = delete;
 
 	/**
-	 * @brief  Create a socket to listen to clients.
-	 * @param  host  Host name. e.g. "localhost".
-	 * @param  port  Port number. e.g. 80.
+	 * Create a socket to listen to clients.
+	 * 
+	 * @param  host  
+	 * 		Host name. e.g. "localhost".
+	 * 
+	 * @param  port  
+	 * 		Port number. e.g. 80.
 	 */
 	void listen_at(const std::string& host, const int port); 
 	
 	/**
-	 * @brief  Parse raw request.
-	 * @param  raw_request_string  Raw request string receive from client.
-	 * @return  Ture if successfully parse request.
+	 * Parse raw request.
+	 * 
+	 * @param  raw_request_string  
+	 * 		Raw request string receive from client.
+	 * 
+	 * @return  
+	 * 		Ture if successfully parse request.
 	 */
 	bool parse_request(const std::string& raw_request_string);
 
 	/**
-	 * @brief  Handle POST request.
-	 * @return  True if successfully handle it.
+	 * Handle POST request.
+	 * 
+	 * @return  
+	 * 		True if successfully handle it.
 	 */
 	bool handle_post_request();
 
 	/**
-	 * @brief  Get raw request string.
-	 * @return  Raw request string.
+	 * Get raw request string.
+	 * 
+	 * @return  
+	 * 		Raw request string.
 	 */
 	std::string get_raw_request();
 
 	/**
-	 * @brief  Get raw response string.
-	 * @return  Raw response string.
+	 * Get raw response string.
+	 * 
+	 * @return  
+	 * 		Raw response string.
 	 */
 	std::string get_raw_response();
 	
 	/**
-	 * @brief  Set raw request string.
+	 * Set raw request string.
+	 * 
+	 * @param[in] raw_request_string
+	 * 		Raw request string.
 	 */
-	void set_raw_request(const std::string& raw_request);
+	void set_raw_request(const std::string& raw_request_string);
 
 	/**
-	 * @brief  Handle/Process given request to fetch/get either static or dynamic resources.  
+	 * Handle/Process given request to fetch/get either static or dynamic resources.  
 	 * 
-	 * This is currently the core function to handler either static or dynamic request.
+	 * @param[in] raw_request_string
+	 * 		Raw request string.
+	 * 
+	 * @note This is currently the core function to handler either static or dynamic request.
 	 */
 	void request_core_handler(const std::string& raw_request_string);
 
 private:
 	/**
-     * @brief  Whether the request is a WebSocket openning handshake request.
-     * @param  request  Request object that has been parsed successfully.
-     * @return  True if it is WebSocket openning handshake request.
+     * Whether the request is a WebSocket openning handshake request.
      * 
-     * Note: this is in experimental, I'm not ensure it's satety :)
+	 * @param[in]  request  Request object that has been parsed successfully.
+     * 
+	 * @return  
+	 * 		True if it is WebSocket openning handshake request.
+     * 
+     * @note: this is in experimental, I'm not ensure it's satety :)
      */
     bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request);
 

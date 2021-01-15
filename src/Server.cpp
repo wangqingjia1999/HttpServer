@@ -86,7 +86,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
     if(!parse_request(raw_request_string))
     {
         // 400 Bad Request
-        thread_pool->post_task( [this]{ logger.record_error_message("parse request"); } );
+        // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse request"); } );
         Status_Handler::handle_status_code(response, 400);
         return;
     }
@@ -107,7 +107,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
         else
         {
             // bad request
-            thread_pool->post_task( [this]{ logger.record_error_message("parse POST request"); } );
+            // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse POST request"); } );
             Status_Handler::handle_status_code(response, 400);
         }
     }
@@ -121,7 +121,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
         WebSocket websocket(request, response);
         if(!websocket.parse_websocket_request())
         {
-            thread_pool->post_task( [this]{ logger.record_error_message("parse WebSocket request"); } );
+            // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse WebSocket request"); } );
             return;
         }
         response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
@@ -137,7 +137,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
     {
         // 404 Not Found
         Status_Handler::handle_status_code(response, 404);
-        thread_pool->post_task( [this]{ logger.record_error_message("handle requested resources"); } );
+        // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("handle requested resources"); } );
         return;
     }
 
