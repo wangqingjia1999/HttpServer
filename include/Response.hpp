@@ -12,12 +12,7 @@
 #include <fstream>
 #include <memory>
 
-#ifdef __linux__
-	#include <unistd.h>
-#elif _WIN32
-	
-#endif
-
+#include <unistd.h>
 
 namespace Message
 {

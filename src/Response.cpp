@@ -4,9 +4,8 @@
 #include "Mysql_Handler.hpp"
 
 #include <memory>
-#ifdef _WIN32
-	#include <direct.h>
-#endif
+
+
 namespace
 {
 	// only response has status code.
@@ -365,11 +364,7 @@ namespace Message
 	bool Message::Response::convert_path_to_absolute(const std::string& relative_path,  std::string& absolute_path)
 	{ 
 		char path_buffer[1024];
-#ifdef __linux__
 		if(getcwd(path_buffer, 1024) == nullptr)
-#elif _WIN32
-		if(_getcwd(path_buffer, 1024) == nullptr)
-#endif
 		{
 			return false;
 		}
@@ -384,30 +379,18 @@ namespace Message
 		// if relative path only has '/', redirect it to index.html
 		if( (relative_path[0] == '/')  &&  (relative_path.size() == 1) )
 		{
-#ifdef __linux__
 			absolute_path = current_working_directory + "/public_html/index.html"; 
-#elif _WIN32
-			absolute_path = current_working_directory + "\\public_html\\index.html";
-#endif
 			return true;
 		}
 
 		if( relative_path[0] == '/')
 		{
 			std::string relative_path_without_leading_forward_slash = relative_path.substr(1);
-#ifdef __linux__
 			absolute_path = current_working_directory + "/public_html/" + relative_path_without_leading_forward_slash;
-#elif _WIN32
-			absolute_path = current_working_directory + "\\public_html\\" + relative_path_without_leading_forward_slash;
-#endif
 		}
 		else
 		{
-#ifdef __linux__
 			absolute_path = current_working_directory + "/public_html/" + relative_path;
-#elif _WIN32
-			absolute_path = current_working_directory + "\\public_html\\" + relative_path;
-#endif
 		}
 
 		return true;

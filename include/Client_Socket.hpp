@@ -6,15 +6,10 @@
 #include <vector>
 #include <string>
 
-#ifdef _WIN32
-    #pragma comment(lib, "Ws2_32.lib")
-    #include <WinSock2.h>
-#elif __linux__
-    #include <unistd.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-#endif
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 class Client_Socket : public ISocket
 {
@@ -65,10 +60,6 @@ private:
     int client_fd;
     std::vector<uint8_t> receive_buffer;
     std::vector<uint8_t> send_buffer;
-
-#ifdef _WIN32
-    SOCKET client_socket;
-#endif
 };
 
 

@@ -9,24 +9,28 @@
 #include <vector>
 #include <chrono>
 #include <cstring>
-#include <iostream>
 #include <stdexcept>
 
-#ifdef __linux__
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <sys/types.h>
-    #include <sys/epoll.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <netinet/ip.h>
-#elif _WIN32
-    #pragma comment(lib, "Ws2_32.lib")
-    #include <WinSock2.h>
-    #include <WS2tcpip.h>
-#endif
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
 
-class Server_Socket : public ISocket
+/**
+ * States of server socket.
+ */
+enum class Server_Socket_State 
+{
+    ERROR,          // Ready for sending responses
+    WRITABLE,       // Ready for accepting requests
+    READABLE,       // Error occurs
+    UNINITIALIZED,  // Uninitialized 
+};
+
+class Server_Socket // FIXME: after finishing implementation, I will define the interface for ISocket
 {
 public:
     Server_Socket();
@@ -40,16 +44,51 @@ public:
     
     // overrides
 public:
-    bool write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size) override;
-    std::vector<uint8_t>* read_from(const int peer_fd) override;
+    /**
+     * Universal interface for sending data.
+     */
+    bool write_to(const std::string& data_string);
+
+    /**
+     * Internal implementation for sending data.
+     */
+    bool write_to(const std::vector<uint8_t>& data, const int data_size);
+    
+    std::vector<uint8_t>* read_from(const int peer_fd);
 
 public:
     /**
-     * @brief  Listen at given ip:port.
-     * @param  ip  Ip address string.
-     * @param  port  Port number.
+     * Initialize server socket.
+     * 
+     * @param[in] ip
+     *      Ip address to bind to.
+     * 
+     * @param[in] port
+     *      Port number.
+     * 
+     * @return 
+     *      True if succeeds. 
      */
-    void listen_at(const std::string ip, const int port);
+    bool initialize_server_socket(const std::string ip, const int port);
+
+    /**
+     * Listen at given ip:port.
+     * 
+     * @param  ip  
+     *      Ip address string.
+     * @param  port  
+     *      Port number.
+     * 
+     * @retval Server_Socket_State::WRITABLE
+     *      Ready for sending responses
+     * 
+     * @retval Server_Socket_State::READABLE
+     *      Ready for receiving requests
+     * 
+     * @retval Server_Socket_State::ERROR
+     *      Error occurs
+     */
+    Server_Socket_State listen_at(const std::string ip, const int port);
 
     std::vector<uint8_t>* get_receive_buffer();
     std::vector<uint8_t>* get_send_buffer();
@@ -58,23 +97,24 @@ public:
     void fill_send_buffer(const std::vector<uint8_t>& data_stream);
 
     void print_receive_buffer();
-private:
-    void print_socket_error();
+
+public:
+    static std::string generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream);
 
 private:
+    Server_Socket_State server_socket_state;
     int listen_fd;
 
-    std::vector<uint8_t> receive_buffer;
-    std::vector<uint8_t> send_buffer;
+    std::vector< uint8_t > receive_buffer;
+    std::vector< uint8_t > send_buffer;
 
-#ifdef _WIN32
-    SOCKET server_listening_socket;
-    SOCKET client_socket;
-#elif __linux__
     int epfd;
-    epoll_event server_epoll_event;
-#endif
+    epoll_event* triggered_events;
 
+    // Contains all the file descriptors that 
+    // are waiting for writing to
+    std::queue< int > send_fd_queue;
+    bool has_finished_initialization;
 };
 
 #endif

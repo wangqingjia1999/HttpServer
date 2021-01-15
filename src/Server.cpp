@@ -23,7 +23,52 @@ bool Server::is_websocket_opening_handshake(std::shared_ptr< Message::Request >&
 
 void Server::listen_at(const std::string& host, const int port)
 {
-    server_socket->listen_at(host, port);
+    Server_Socket_State server_socket_state;
+    for(;;)
+    {
+        server_socket_state = server_socket->listen_at(host, port);
+        switch(server_socket_state)
+        {
+            case Server_Socket_State::UNINITIALIZED:
+            {
+                continue;
+            }
+                
+
+            case Server_Socket_State::READABLE:
+            {   
+                request_core_handler(  
+                    Server_Socket::generate_string_from_byte_stream(
+                        *(server_socket->get_receive_buffer())
+                    )
+                );
+                
+                if(!server_socket->write_to(response->get_response_message()))
+                {
+                    // TODO: log sending error
+                    printf("Error in sending response");
+                }
+                break;
+            }
+                
+            case Server_Socket_State::WRITABLE:
+            {
+                break;
+            }
+                
+            
+            case Server_Socket_State::ERROR:
+            {
+                break;
+            }
+                
+            
+            default:
+            {
+                break;
+            }   
+        }
+    }
 }
 
 bool Server::parse_request(const std::string& raw_request_string)

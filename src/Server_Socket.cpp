@@ -1,10 +1,24 @@
 #include "Server_Socket.hpp"
 
-Server_Socket::Server_Socket()
-    : listen_fd(-1),
-      epfd(-1)
+namespace
 {
-    epfd = epoll_create(1024);
+    constexpr size_t TRIGGERED_EVENTS_MAX_SIZE = 1024;
+
+    constexpr size_t EPOLL_INTEREST_LIST_SIZE = 1024;
+
+    constexpr size_t MAXIMUM_LISTENING_PENDING_QUEUE = 1024;
+
+    constexpr size_t MAXIMUM_BUFFER_SIZE = 8192;
+}
+
+Server_Socket::Server_Socket()
+    : server_socket_state(Server_Socket_State::UNINITIALIZED),
+      listen_fd(-1),
+      epfd(-1),
+      triggered_events(new epoll_event()),
+      has_finished_initialization(false)
+{
+    epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(epfd < 0)
         fprintf(stderr, "Failed to create epoll file descriptor.\n");
 }
@@ -17,106 +31,70 @@ Server_Socket::~Server_Socket()
         fprintf(stderr, "Failed to close epoll file descriptor.\n");
 }
 
-void Server_Socket::listen_at( const std::string ip, const int port) 
+bool Server_Socket::initialize_server_socket(const std::string ip, const int port)
 {
-#ifdef _WIN32
-    WSADATA wsa_data = {0};
-    // Request WinSock version 2.2 
-    auto result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-    if(result != NO_ERROR)
-    {
-        print_socket_error();
-    }
-
-    server_listening_socket = socket(
-        AF_INET,
-        SOCK_STREAM,
-        IPPROTO_TCP
-    );
-
-    if(server_listening_socket == INVALID_SOCKET)
-    {
-        print_socket_error();
-    }
-
-    sockaddr_in socket_address;
-    socket_address.sin_family = AF_INET;
-    socket_address.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
-    socket_address.sin_port = htons(port);
-
-    int bind_result = bind(
-        server_listening_socket, 
-        (sockaddr*)&socket_address, 
-        sizeof(socket_address)
-    );
-
-    if( bind_result == INVALID_SOCKET )
-    {
-        print_socket_error();
-    }
-
-    listen_fd = listen( server_listening_socket, 1024 );
-  
-#elif __linux__
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
     {
+        // TODO: log it
         perror("socket");
-        return;
+        return false;
     }
 
     struct sockaddr_in ipv4_address;
-    
     memset(&ipv4_address, 0 , sizeof(ipv4_address));
-    
     ipv4_address.sin_family = AF_INET;
-    
     if(ip == "localhost" || ip == "0.0.0.0")
         ipv4_address.sin_addr.s_addr = INADDR_ANY;
     else
         ipv4_address.sin_addr.s_addr = inet_addr(ip.c_str());
-    
     ipv4_address.sin_port = htons(port);
-    
     int ipv4_address_length = sizeof(ipv4_address);
 
     int bind_result = bind(listen_fd, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
-        // log bind error
+        // TODO: log it
         perror("bind");
-        return;
+        return false;
     }
 
-    int listen_result = listen(listen_fd, 4096);
+    int listen_result = listen(listen_fd, MAXIMUM_LISTENING_PENDING_QUEUE);
     if(listen_result == -1)
     {
-        // log bind error  
+        // TODO: log it
         perror("listen");
-        return;
-    }    
+        return false;
+    }
     
     printf("---Server is listening---\n");
 
-    server_epoll_event.data.fd = listen_fd;
-    server_epoll_event.events = EPOLLIN;
-    epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &server_epoll_event);
-
-    constexpr int TRIGGERED_EVENTS_MAX_SIZE = 1024;
-
-    epoll_event triggered_events[TRIGGERED_EVENTS_MAX_SIZE];
+    epoll_event epoll_event_helper;
+    epoll_event_helper.data.fd = listen_fd;
+    epoll_event_helper.events = EPOLLIN | EPOLLET;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &epoll_event_helper);
     
-    int number_of_triggered_events;
+    has_finished_initialization = true;
+    return true;
+}
 
-    // server main loop
+Server_Socket_State Server_Socket::listen_at(const std::string ip, const int port)
+{
+    if(!has_finished_initialization)
+        initialize_server_socket(ip, port);
+
+    int number_of_triggered_events;
     for (;;)
     {
         switch(number_of_triggered_events = epoll_wait(epfd, triggered_events, TRIGGERED_EVENTS_MAX_SIZE, -1))
         {
             case -1:
+            {
+                // TODO: log it
                 perror("epoll");
-                break;
-
+                return Server_Socket_State::ERROR;
+            }
+            
             default:
             {
                 int i = 0;
@@ -131,20 +109,18 @@ void Server_Socket::listen_at( const std::string ip, const int port)
                         int client_fd = accept(listen_fd, (sockaddr*)&client_socket, &client_socket_length);
                         if(client_fd < 0)
                         {
+                            // TODO: log it
                             perror("accept");
                             close(listen_fd);
-                            return;
+                            return Server_Socket_State::ERROR;
                         }
 
                         printf("Accept client: %s:%d\n", inet_ntoa(client_socket.sin_addr), htons(client_socket.sin_port));
-                        
-                        /**
-                         * Newly added client sockets should be monitored
-                         * in edge-triggered or level-triggered way?
-                         */
-                        server_epoll_event.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
-                        server_epoll_event.data.fd = client_fd;
-                        epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &server_epoll_event);
+
+                        epoll_event epoll_event_helper;
+                        epoll_event_helper.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
+                        epoll_event_helper.data.fd = client_fd;
+                        epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &epoll_event_helper);
                     }
                     
                     // Ready for reading
@@ -160,39 +136,45 @@ void Server_Socket::listen_at( const std::string ip, const int port)
 
                         read_from(triggered_events[i].data.fd);
                         
-                        fill_send_buffer("Hello client, I'm server :-)\n");
+                        send_fd_queue.push(triggered_events[i].data.fd);
 
-        
-                        if(!write_to(triggered_events[i].data.fd, send_buffer, send_buffer.size()))
-                        {
-                            perror("send");
-                        }
+                        return Server_Socket_State::READABLE;
                     }
                 }
             }
             break;
         }   // end of swtich()
     }   // end of for(;;)
-
-#endif
-    return;
 }
 
-bool Server_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
+bool Server_Socket::write_to(const std::string& data_string)
+{
+    if(send_fd_queue.empty())
+        return false;
+
+    fill_send_buffer(data_string);
+
+    return write_to(send_buffer, data_string.size());
+}
+
+bool Server_Socket::write_to(const std::vector<uint8_t>& data, const int data_size)
 {
     if(!send_buffer.empty())
-        send_buffer.clear();
+    send_buffer.clear();
 
-    char local_send_buffer[8192] = { 0 };
+    send_buffer = data;
+
+    char local_send_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
     for(int i = 0; i < data_size; ++i)
         local_send_buffer[i] = (char)data[i];
 
-    int send_result = send(peer_fd, local_send_buffer, data_size, 0);
+    int send_result = send(send_fd_queue.front(), local_send_buffer, data_size, 0);
     if(send_result < 0)
     {
         perror("send");
         return false;
     }
+    send_fd_queue.pop();
 
     printf("Send: %s", local_send_buffer);
     return true;
@@ -203,13 +185,7 @@ std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
     if(!receive_buffer.empty())
         receive_buffer.clear();
 
-    /**
-     * Most web browsers set the maximum of HTTP request to 8192 bytes.
-     * That's why the buffer size is magic 8192.
-     * 
-     * TODO: What if the data to be received exceed 8192 bytes?
-     */
-    char local_receive_buffer[8192] = { 0 };
+    char local_receive_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
     ssize_t receive_result = recv(peer_fd, &local_receive_buffer, sizeof(local_receive_buffer), 0);
     
     if(receive_result == -1)
@@ -224,22 +200,6 @@ std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
     print_receive_buffer();
 
     return &receive_buffer;
-}
-
-void Server_Socket::print_socket_error()
-{
-#ifdef _WIN32
-    wchar_t *s = NULL;
-    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-                NULL, WSAGetLastError(),
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                (LPWSTR)&s, 0, NULL);
-    fprintf(stderr, "%S\n", s);
-    LocalFree(s);
-    WSACleanup();
-#elif __linux__
-
-#endif
 }
 
 std::vector<uint8_t>* Server_Socket::get_receive_buffer()
@@ -273,4 +233,13 @@ void Server_Socket::fill_send_buffer(const std::string& data_string)
 void Server_Socket::fill_send_buffer(const std::vector<uint8_t>& data_stream)
 {   
     send_buffer = data_stream;
+}
+
+std::string Server_Socket::generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream)
+{
+    std::string result_string;
+    for(const auto& byte : byte_stream)
+        result_string += static_cast<char>(byte);
+    
+    return result_string;
 }

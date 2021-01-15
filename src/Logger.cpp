@@ -5,11 +5,8 @@
 #include <string>
 #include <fstream>
 
-#ifdef __linux__
-    #include <unistd.h>
-#elif _WIN32
-    #include <direct.h>
-#endif
+#include <unistd.h>
+
 
 namespace
 {
@@ -67,11 +64,7 @@ std::string Logger::get_log_file_absolute_path()
 {
     // Here path_buffer will contain the current working directory path (e.g. /home/bitate/HttpServer )
     char path_buffer[1024];
-#ifdef __linux__
     if(getcwd(path_buffer, 1024) == nullptr)
-#elif _WIN32
-    if(_getcwd(path_buffer, 1024) == nullptr)
-#endif
     {
         return {};
     }

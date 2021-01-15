@@ -38,7 +38,7 @@ set(SourceFiles
     Server_Socket.cpp
 )
 
-add_library(${this} STATIC
+add_library(Server_Lib STATIC
     ${HeaderFiles}
     ${SourceFiles}
 )

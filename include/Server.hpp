@@ -17,13 +17,9 @@
 #include <iostream>
 #include <condition_variable>
 
-#ifdef __linux__
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <arpa/inet.h>
-#elif _WIN32
-
-#endif
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 class Server
 {

@@ -3,20 +3,15 @@
 #include "Response.hpp"
 #include "URI.hpp"
 
-#ifdef __linux__
-    #include <sys/socket.h>
-    #include <netdb.h>
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <error.h>
-#elif _WIN32
-    // link with Ws2_32.lib
-    #pragma comment(lib,"Ws2_32.lib")
-    #include <WinSock2.h>
-#endif
-
 #include <memory>
 #include <string>
+
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <error.h>
+
 
 struct Client::Impl
 {
