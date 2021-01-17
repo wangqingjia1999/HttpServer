@@ -5,7 +5,7 @@
 #include <string>
 
 /**
- * Socket interface class.
+ * TODO: Socket interface class.
  */
 class ISocket
 {
