@@ -130,6 +130,7 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
                         if(triggered_events[i].events & EPOLLRDHUP)
                         {
                             epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_events[i].data.fd, nullptr);
+                            close(triggered_events[i].data.fd);
                             printf("Peer shutdown\n");
                             continue;
                         }
