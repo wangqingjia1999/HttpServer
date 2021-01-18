@@ -90,3 +90,7 @@ add_library(Status_Handler STATIC
     ../include/Status_Handler.hpp
     Status_Handler.cpp
 )
+
+add_library(server_configuration_lib
+    ServerConfiguration.cpp
+)

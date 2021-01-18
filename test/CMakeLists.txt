@@ -146,3 +146,10 @@ target_link_libraries(Server_Socket_Test PUBLIC
     gtest_main
 )
 
+add_executable(server_configuration_test
+    ServerConfigurationTest.cpp
+)
+target_link_libraries(server_configuration_test
+    server_configuration_lib
+    gtest_main
+)

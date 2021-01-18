@@ -12,5 +12,4 @@ googletest/
 
 log.txt
 
-# For linux add-on
-tags
+resource/
