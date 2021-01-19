@@ -1,13 +1,14 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Logger.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "Logger.hpp"
 #include "WebSocket.hpp"
 #include "Thread_Pool.hpp"
-#include "Status_Handler.hpp"
 #include "Server_Socket.hpp"
+#include "Status_Handler.hpp"
+#include "ServerConfiguration.hpp"
 
 #include <string>
 #include <memory>
@@ -116,6 +117,7 @@ private:
 	std::shared_ptr< Message::Request > request;
 	std::shared_ptr< Message::Response > response;
 	std::unique_ptr< Server_Socket > server_socket;
+	std::unique_ptr< ServerConfiguration > m_configuration;
 
 	std::map< std::string, std::string > post_data_map;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -13,8 +14,8 @@ public:
     ~ServerConfiguration();
 
 public:
-    std::string get_root_directory_path();
-    std::string get_resource_directory_path();
+    std::string get_root_directory_path() const;
+    std::string get_resource_directory_path() const;
 
     /**
      * Get server's root directory path. e.g. /home/usernam/HttpServer
@@ -30,7 +31,7 @@ public:
      * @return
      *      True if it has.
      */
-    bool has_configuration_file();
+    bool has_configuration_file() const;
 
     /**
      * Create a configuration file under root directory.
@@ -41,14 +42,17 @@ public:
     void create_configuration_file();
 
     /**
-     * Read the content of configuration file into member variables.
+     * Parse configuration file and fill into member variables.
      */
-    void read_configuration_file();
+    void parse_configuration_file();
 
     /**
-     * Parse given configuration and fill into member variables.
+     * Parse given configuration string.
+     * 
+     * @param[in] configuration
+     *      Configuration string.
      */
-    bool parse_configuration_file(const std::string& configuration);
+    void parse_configuration(const std::string& configuration);
 
 private:
     std::string m_root_directory_path;

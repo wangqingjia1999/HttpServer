@@ -1,5 +1,15 @@
 #include "ServerConfiguration.hpp"
 
+namespace
+{
+    std::string strip_leading_and_pending_spaces(std::string input_string)
+    {
+        std::size_t leading_space_index = input_string.find_first_not_of(' ');
+        std::size_t pending_space_index = input_string.find_last_not_of(' ');
+        return input_string.substr(leading_space_index, pending_space_index);
+    }
+}
+
 ServerConfiguration::ServerConfiguration()
     : m_root_directory_path(generate_root_directory_path()),
       m_resource_directory_path(m_root_directory_path + "resource/"),
@@ -8,14 +18,14 @@ ServerConfiguration::ServerConfiguration()
     if(!has_configuration_file())
         create_configuration_file();
     else
-        read_configuration_file();
+        parse_configuration_file();
 }
 
 ServerConfiguration::~ServerConfiguration()
 {
 }
  
-bool ServerConfiguration::has_configuration_file()
+bool ServerConfiguration::has_configuration_file() const
 {
     std::ifstream configuration_file_handler(m_configuration_file_path);
     return configuration_file_handler.is_open();
@@ -59,17 +69,17 @@ void ServerConfiguration::create_configuration_file()
     }
 }
 
-std::string ServerConfiguration::get_root_directory_path()
+std::string ServerConfiguration::get_root_directory_path() const
 {
     return m_root_directory_path;
 }
 
-std::string ServerConfiguration::get_resource_directory_path()
+std::string ServerConfiguration::get_resource_directory_path() const
 {
     return m_resource_directory_path;
 }
 
-void ServerConfiguration::read_configuration_file()
+void ServerConfiguration::parse_configuration_file()
 {
     if(!has_configuration_file())
         create_configuration_file();
@@ -83,28 +93,27 @@ void ServerConfiguration::read_configuration_file()
     
     std::stringstream configuration_buffer;
     configuration_buffer << configuration_file_handler.rdbuf();
-    if(!parse_configuration_file(configuration_buffer.str()))
-    {
-        // log: cannot parse configuration file
-        return;
-    }
+    parse_configuration(configuration_buffer.str());
 }
 
-bool ServerConfiguration::parse_configuration_file(const std::string& configuration)
+void ServerConfiguration::parse_configuration(const std::string& configuration)
 {
-    std::string root_directory_path_prefix = "root_directory_path: ";
-    if(configuration.find(root_directory_path_prefix) != std::string::npos)
-        m_root_directory_path = configuration.substr(
-            configuration.find(root_directory_path_prefix),
-            root_directory_path_prefix.size()
-        );
+    std::smatch matcher;
+    std::regex_search(
+        configuration, 
+        matcher, 
+        std::regex("root_directory_path:(.*?)\n")
+    );    
+    
+    if(!matcher.empty())
+        m_root_directory_path = strip_leading_and_pending_spaces(matcher[1]);
 
-    std::string resource_directory_path_prefix = "resource_directory_path: ";
-    if(configuration.find(resource_directory_path_prefix) != std::string::npos)
-        m_resource_directory_path = configuration.substr(
-            configuration.find(resource_directory_path_prefix),
-            resource_directory_path_prefix.size()
-        );
-
-    return true;
+    std::regex_search(
+        configuration,
+        matcher,
+        std::regex("resource_directory_path:(.*?)\n")
+    );
+    
+    if(!matcher.empty())
+        m_resource_directory_path = strip_leading_and_pending_spaces(matcher[1]);
 }

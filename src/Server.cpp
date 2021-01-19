@@ -8,7 +8,8 @@ Server::Server()
       thread_pool(std::make_shared<Thread_Pool>()),
       request(std::make_shared<Message::Request>()),
       response(std::make_shared<Message::Response>()),
-      server_socket(new Server_Socket)
+      server_socket(new Server_Socket()),
+      m_configuration(new ServerConfiguration())
 {
 }
 

@@ -16,13 +16,16 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 * HTTP Methods
   - [x] POST
   - [x] GET
-  - [] PUT
-  - [] PATCH
-  - [] DELETE
+  - [ ] PUT
+  - [ ] PATCH
+  - [ ] DELETE
 
-- [] HTTPS
-- [] DNS
-- [] WebSocket
+- [x] Customized Configuration
+
+- [ ] HTTPS
+- [ ] DNS
+- [ ] WebSocket
+
 
 
 ## Requirements
