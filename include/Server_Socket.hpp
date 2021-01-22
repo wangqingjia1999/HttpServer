@@ -111,8 +111,9 @@ private:
     int epfd;
     epoll_event* triggered_events;
 
-    // Contains all the file descriptors that 
-    // are waiting for writing to
+    /**
+     * Contains all the file descriptors that are waiting for writing to
+     */
     std::queue< int > send_fd_queue;
     bool has_finished_initialization;
 };

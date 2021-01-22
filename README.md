@@ -28,11 +28,10 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
 
 
 
-## Requirements
-* Linux Or Windows 10
+## Build Requirements
+* Linux
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
-
 
 ## How to build? 
 ```shell

@@ -1,5 +1,4 @@
 #!/bin/bash
-# Build dependencies
 
 # Clone googletest only if it does not exist
 if [ ! -d "${PWD}/googletest" ] 

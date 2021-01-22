@@ -17,6 +17,7 @@ set(HeaderFiles
     ../include/Thread_Pool.hpp
     ../include/Timer.hpp
     ../include/Server_Socket.hpp
+    ../include/ServerConfiguration.hpp
 )
 
 set(SourceFiles
@@ -36,6 +37,7 @@ set(SourceFiles
     Thread_Pool.cpp
     Timer.cpp
     Server_Socket.cpp
+    ServerConfiguration.cpp
 )
 
 add_library(Server_Lib STATIC

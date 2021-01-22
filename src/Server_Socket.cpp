@@ -2,12 +2,24 @@
 
 namespace
 {
+    /**
+     * Epoll triggered events max size
+     */
     constexpr size_t TRIGGERED_EVENTS_MAX_SIZE = 1024;
 
+    /**
+     * Epoll interest/event list size
+     */
     constexpr size_t EPOLL_INTEREST_LIST_SIZE = 1024;
 
-    constexpr size_t MAXIMUM_LISTENING_PENDING_QUEUE = 1024;
+    /**
+     * Maximum socket listening buffer size in byte
+     */
+    constexpr size_t MAXIMUM_LISTENING_PENDING_QUEUE = 4096;
 
+    /**
+     * Maximum sending/receiving buffer size in byte
+     */
     constexpr size_t MAXIMUM_BUFFER_SIZE = 8192;
 }
 
