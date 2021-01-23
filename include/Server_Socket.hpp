@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 #include <unistd.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/epoll.h>
@@ -47,15 +48,10 @@ public:
     /**
      * Universal interface for sending data.
      */
-    bool write_to(const std::string& data_string);
-
-    /**
-     * Internal implementation for sending data.
-     */
-    bool write_to(const std::vector<uint8_t>& data, const int data_size);
+    bool write_to(const int peer_fd, const std::string& data_string);
     
-    std::vector<uint8_t>* read_from(const int peer_fd);
-
+    std::string read_from(const int peer_fd);
+    std::string read_from();
 public:
     /**
      * Initialize server socket.
@@ -93,15 +89,16 @@ public:
     std::vector<uint8_t>* get_receive_buffer();
     std::vector<uint8_t>* get_send_buffer();
 
-    void fill_send_buffer(const std::string& data_string);
-    void fill_send_buffer(const std::vector<uint8_t>& data_stream);
-
     void print_receive_buffer();
 
+    bool set_socket_non_blocking(const int socket_fd);
+
+    int get_readable_fd() const;
 public:
     static std::string generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream);
 
 private:
+    int readable_fd;
     Server_Socket_State server_socket_state;
     int listen_fd;
 

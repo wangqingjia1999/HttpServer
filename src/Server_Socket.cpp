@@ -28,7 +28,8 @@ Server_Socket::Server_Socket()
       listen_fd(-1),
       epfd(-1),
       triggered_events(new epoll_event()),
-      has_finished_initialization(false)
+      has_finished_initialization(false),
+      readable_fd(-1)
 {
     epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(epfd < 0)
@@ -112,8 +113,11 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
                 int i = 0;
                 for(; i < number_of_triggered_events; ++i)
                 {
+                    int triggered_fd = triggered_events[i].data.fd;
+                    uint32_t triggered_event = triggered_events[i].events;
+
                     // New client arrives
-                    if((triggered_events[i].data.fd == listen_fd) && (triggered_events[i].events & EPOLLIN))
+                    if((triggered_fd == listen_fd) && (triggered_event & EPOLLIN))
                     {
                         sockaddr_in client_socket;
                         socklen_t client_socket_length = sizeof(client_socket);
@@ -129,28 +133,41 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
 
                         printf("Accept client: %s:%d\n", inet_ntoa(client_socket.sin_addr), htons(client_socket.sin_port));
 
-                        epoll_event epoll_event_helper;
-                        epoll_event_helper.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
-                        epoll_event_helper.data.fd = client_fd;
-                        epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &epoll_event_helper);
-                    }
-                    
-                    // Ready for reading
-                    if((triggered_events[i].data.fd != listen_fd) && (triggered_events[i].events & EPOLLIN))
-                    {
-                        // It peer shudown, skip this event
-                        if(triggered_events[i].events & EPOLLRDHUP)
+                        if(!set_socket_non_blocking(client_fd))
                         {
-                            epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_events[i].data.fd, nullptr);
-                            close(triggered_events[i].data.fd);
-                            printf("Peer shutdown\n");
+                            // log: can not set client socket to non-blocking
+                            printf("can not set socket to non-blocking\n");
                             continue;
                         }
-
-                        read_from(triggered_events[i].data.fd);
-                        
-                        send_fd_queue.push(triggered_events[i].data.fd);
-
+                        else
+                        {
+                            epoll_event epoll_event_helper;
+                            epoll_event_helper.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
+                            epoll_event_helper.data.fd = client_fd;
+                            epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &epoll_event_helper);
+                        }
+                    }
+                    
+                    // Peer Error
+                    if(triggered_event & EPOLLERR)
+                    {
+                        // close(triggered_fd);
+                        epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
+                        printf("peer error: %s\n", strerror(errno));
+                        return Server_Socket_State::ERROR;
+                    }
+                
+                    // Ready for reading
+                    if((triggered_fd != listen_fd) && (triggered_event & EPOLLIN))
+                    {
+                        // It peer shudown
+                        if(triggered_event & EPOLLRDHUP)
+                        {
+                            close(triggered_fd);
+                            printf("Trigger EPOLLRDHUP, fd %d shutdown \n", triggered_fd);
+                            continue;
+                        }
+                        readable_fd = triggered_fd;
                         return Server_Socket_State::READABLE;
                     }
                 }
@@ -160,59 +177,46 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
     }   // end of for(;;)
 }
 
-bool Server_Socket::write_to(const std::string& data_string)
+bool Server_Socket::write_to(const int peer_fd, const std::string& data_string)
 {
-    if(send_fd_queue.empty())
-        return false;
-
-    fill_send_buffer(data_string);
-
-    return write_to(send_buffer, data_string.size());
-}
-
-bool Server_Socket::write_to(const std::vector<uint8_t>& data, const int data_size)
-{
-    if(!send_buffer.empty())
-    send_buffer.clear();
-
-    send_buffer = data;
-
-    char local_send_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
-    for(int i = 0; i < data_size; ++i)
-        local_send_buffer[i] = (char)data[i];
-
-    int send_result = send(send_fd_queue.front(), local_send_buffer, data_size, 0);
+    int send_result = send(peer_fd, data_string.c_str(), data_string.size(), 0);
+    
     if(send_result < 0)
     {
         perror("send");
         return false;
     }
-    send_fd_queue.pop();
-
-    printf("Send: %s", local_send_buffer);
+    else if(send_result == 0)
+    {
+        printf("send return 0\n");
+        return false;
+    }
+    
     return true;
+}   
+
+std::string Server_Socket::read_from()
+{
+    return read_from();
 }
 
-std::vector<uint8_t>* Server_Socket::read_from(const int peer_fd)
+std::string Server_Socket::read_from(const int peer_fd)
 {
-    if(!receive_buffer.empty())
-        receive_buffer.clear();
-
     char local_receive_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
     ssize_t receive_result = recv(peer_fd, &local_receive_buffer, sizeof(local_receive_buffer), 0);
     
     if(receive_result == -1)
     {
         perror("recv");
-        return {};
+        return nullptr;
+    }
+    else if(receive_result == 0)
+    {   
+        printf("recv return 0\n");
+        return nullptr;
     }
 
-    for(int i = 0; i < receive_result; ++i)
-        receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
-
-    print_receive_buffer();
-
-    return &receive_buffer;
+    return std::string(local_receive_buffer);
 }
 
 std::vector<uint8_t>* Server_Socket::get_receive_buffer()
@@ -234,20 +238,6 @@ void Server_Socket::print_receive_buffer()
     printf("Receive: %s\n", receive_buffer_string.c_str());
 }
 
-void Server_Socket::fill_send_buffer(const std::string& data_string)
-{
-    if(!send_buffer.empty())
-        send_buffer.clear();
-
-    for(int i = 0; i < data_string.size(); ++i)
-        send_buffer.push_back( data_string[i] );
-}
-    
-void Server_Socket::fill_send_buffer(const std::vector<uint8_t>& data_stream)
-{   
-    send_buffer = data_stream;
-}
-
 std::string Server_Socket::generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream)
 {
     std::string result_string;
@@ -255,4 +245,22 @@ std::string Server_Socket::generate_string_from_byte_stream(const std::vector<ui
         result_string += static_cast<char>(byte);
     
     return result_string;
+}
+
+bool Server_Socket::set_socket_non_blocking(const int socket_fd)
+{
+    if(socket_fd < 0)
+        return false;
+
+    int file_status_flags = fcntl(socket_fd, F_GETFL, 0);
+    if(file_status_flags < 0)
+        return false;
+    
+    file_status_flags |= O_NONBLOCK;
+    return (fcntl(socket_fd, F_SETFL, file_status_flags) == 0);
+}
+
+int Server_Socket::get_readable_fd() const
+{
+    return readable_fd;
 }
