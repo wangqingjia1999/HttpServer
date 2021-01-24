@@ -13,6 +13,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <error.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/epoll.h>
@@ -31,7 +32,11 @@ enum class Server_Socket_State
     UNINITIALIZED,  // Uninitialized 
 };
 
-class Server_Socket // FIXME: after finishing implementation, I will define the interface for ISocket
+/**
+ * In:  response data in the form of std::string
+ * Out: request data in the form of std::string
+ */
+class Server_Socket
 {
 public:
     Server_Socket();
@@ -45,13 +50,11 @@ public:
     
     // overrides
 public:
-    /**
-     * Universal interface for sending data.
-     */
+    bool write_to(const std::string& data_string);
     bool write_to(const int peer_fd, const std::string& data_string);
-    
-    std::string read_from(const int peer_fd);
+
     std::string read_from();
+    std::string read_from(const int peer_fd);
 public:
     /**
      * Initialize server socket.

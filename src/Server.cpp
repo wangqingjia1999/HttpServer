@@ -38,31 +38,21 @@ void Server::listen_at(const std::string& host, const int port)
 
             case Server_Socket_State::READABLE:
             {   
-                request_core_handler(  
-                    server_socket->read_from(
-                        server_socket->get_readable_fd()
-                    )
-                );
+                request_core_handler( server_socket->read_from() );
                 
-                if(!server_socket->write_to(
-                        server_socket->get_readable_fd(),
-                        response->get_response_message()
-                    )
-                )
+                if(!server_socket->write_to( response->get_response_message() ))
                 {
-                    // TODO: log sending error
                     printf("Error in sending response");
                 }
+
                 break;
             }
                             
             case Server_Socket_State::ERROR:
             {
-                std::cout << "socket error" << std::endl;
                 break;
             }
                 
-            
             default:
             {
                 break;

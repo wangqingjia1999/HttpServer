@@ -1,15 +1,10 @@
-﻿# For IDEs
-.vs/
-.vscode/
-CmakeSettings.json
-
-# For build directory
-build/
+﻿.vs/
 out/
-
-# For third party library
+build/
+.vscode/
+resource/
 googletest/
 
-log.txt
-
-resource/
+*.cap
+*.txt
+CmakeSettings.json

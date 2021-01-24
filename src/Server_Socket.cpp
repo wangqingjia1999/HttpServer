@@ -49,8 +49,7 @@ bool Server_Socket::initialize_server_socket(const std::string ip, const int por
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
     {
-        // TODO: log it
-        perror("socket");
+        printf("cannot create socket: %s\n", strerror(errno));
         return false;
     }
 
@@ -103,8 +102,7 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
         {
             case -1:
             {
-                // TODO: log it
-                perror("epoll");
+                printf("epoll_ctl error: %s\n", strerror(errno));
                 return Server_Socket_State::ERROR;
             }
             
@@ -135,7 +133,6 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
 
                         if(!set_socket_non_blocking(client_fd))
                         {
-                            // log: can not set client socket to non-blocking
                             printf("can not set socket to non-blocking\n");
                             continue;
                         }
@@ -151,9 +148,12 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
                     // Peer Error
                     if(triggered_event & EPOLLERR)
                     {
-                        // close(triggered_fd);
-                        epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
-                        printf("peer error: %s\n", strerror(errno));
+                        printf("EPOLLERR: %s\n", strerror(errno));
+                        int epoll_ctl_result = epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
+                        if(epoll_ctl_result < 0)
+                            printf("after EPOLLERR we encounter: %s\n", strerror(errno));
+                        
+                        printf("after EPOLLERR we sucessfully delete it from epfd\n");
                         return Server_Socket_State::ERROR;
                     }
                 
@@ -164,7 +164,8 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
                         if(triggered_event & EPOLLRDHUP)
                         {
                             close(triggered_fd);
-                            printf("Trigger EPOLLRDHUP, fd %d shutdown \n", triggered_fd);
+                            epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
+                            printf("fd %d shutdown \n", triggered_fd);
                             continue;
                         }
                         readable_fd = triggered_fd;
@@ -175,6 +176,11 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
             break;
         }   // end of swtich()
     }   // end of for(;;)
+}
+
+bool Server_Socket::write_to(const std::string& data_string)
+{
+    return write_to(readable_fd, data_string);
 }
 
 bool Server_Socket::write_to(const int peer_fd, const std::string& data_string)
@@ -197,26 +203,40 @@ bool Server_Socket::write_to(const int peer_fd, const std::string& data_string)
 
 std::string Server_Socket::read_from()
 {
-    return read_from();
+    return read_from(readable_fd);
 }
 
 std::string Server_Socket::read_from(const int peer_fd)
 {
     char local_receive_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
-    ssize_t receive_result = recv(peer_fd, &local_receive_buffer, sizeof(local_receive_buffer), 0);
+    ssize_t receive_result = 0;
     
-    if(receive_result == -1)
+    std::string local_receive_buffer_string;
+    while( (receive_result = recv(peer_fd, &local_receive_buffer, MAXIMUM_BUFFER_SIZE, 0)) > 0)
+        local_receive_buffer_string += std::string(local_receive_buffer);
+
+    if(receive_result < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
     {
-        perror("recv");
-        return nullptr;
+        printf("No more data to read currently, try again later.\n");
+        printf("Receive: %s\n", local_receive_buffer_string.c_str());
+        return local_receive_buffer_string;
     }
-    else if(receive_result == 0)
-    {   
-        printf("recv return 0\n");
-        return nullptr;
+    
+    if(receive_result == 0)
+    {
+        epoll_ctl(epfd, EPOLL_CTL_DEL, peer_fd, nullptr);
+        close(peer_fd);
+        printf("Peer socket shutdown writing\n");
     }
 
-    return std::string(local_receive_buffer);
+    if(receive_result < 0)
+    {
+        printf("Peer socket has unexpected error in reading from.\n");
+        epoll_ctl(epfd, EPOLL_CTL_DEL, peer_fd, nullptr);
+        close(peer_fd);
+    }
+    
+    return local_receive_buffer_string;
 }
 
 std::vector<uint8_t>* Server_Socket::get_receive_buffer()
