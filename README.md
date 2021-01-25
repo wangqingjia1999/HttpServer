@@ -11,7 +11,6 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   * [How to build?](#how-to-build)
   * [Examples](#examples)
 
-
 ## Features
 * HTTP Methods
   - [x] POST
@@ -21,15 +20,13 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   - [ ] DELETE
 
 - [x] Customized Configuration
-
 - [ ] HTTPS
 - [ ] DNS
 - [ ] WebSocket
 
-
-
-## Build Requirements
-* Linux
+## Build Environment
+* Linux Operating System
+* GCC 9.3.0
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
 
@@ -39,7 +36,6 @@ git clone https://github.com/Bitate/HttpServer
 cd HttpServer
 bash build.sh
 ```
-
 
 ## Useful links that help me build this project
 * WebSocket

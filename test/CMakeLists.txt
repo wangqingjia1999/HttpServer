@@ -6,16 +6,21 @@ add_subdirectory(server_client_test)
 
 set(source_files
     UriTest.cpp
-    ServerTest.cpp
+    Utf8Test.cpp
+    Sha1Test.cpp
+    Base64Test.cpp
     ClientTest.cpp
+    LoggerTest.cpp
     RequestTest.cpp
     ResponseTest.cpp
-    CharacterSetTest.cpp
-    PercentEncodingTest.cpp
     WebSocketTest.cpp
+    ThreadPoolTest.cpp
+    ServerSocketTest.cpp
+    CharacterSetTest.cpp
+    StatusHandlerTest.cpp
+    PercentEncodingTest.cpp
+    ServerConfigurationTest.cpp
 )
-
-
 
 add_executable(all_tests ${source_files})
 target_link_libraries(all_tests PUBLIC

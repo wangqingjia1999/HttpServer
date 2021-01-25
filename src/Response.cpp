@@ -223,7 +223,7 @@ namespace Message
 
 	void Message::Response::set_content_type(const std::string& new_content_type)
 	{
-		content_type = content_type;
+		content_type = new_content_type;
 		return;
 	}
 

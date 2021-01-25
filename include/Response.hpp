@@ -2,14 +2,14 @@
 
 #include "Request.hpp"
 
-#include <string>
-#include <regex>
-#include <vector>
 #include <map>
 #include <set>
+#include <regex>
+#include <string>
+#include <vector>
+#include <memory>
 #include <sstream>
 #include <fstream>
-#include <memory>
 
 #include <unistd.h>
 
