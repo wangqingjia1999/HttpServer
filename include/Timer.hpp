@@ -1,5 +1,4 @@
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#pragma once
 
 #include <string>
 #include <chrono>
@@ -46,5 +45,3 @@ private:
     clock_type::time_point start_time;
  
 };
-#endif
-

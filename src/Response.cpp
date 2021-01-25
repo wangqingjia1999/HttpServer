@@ -1,7 +1,7 @@
 #include "Response.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
-#include "Mysql_Handler.hpp"
+#include "MysqlHandler.hpp"
 
 #include <memory>
 
@@ -54,7 +54,7 @@ namespace
 		{411,"Length Required"},
 		{412,"Precondition Failed"},
 		{413,"Payload Too Large"},
-		{414,"URI Too Long"},
+		{414,"Uri Too Long"},
 		{415,"Unsupported Media Type"},
 		{416,"Range Not Satisfiable"},
 		{417,"Expectation Failed"},
@@ -90,7 +90,7 @@ namespace Message
 	Message::Response::~Response() noexcept = default;
 
 	Message::Response::Response()
-		: uri(std::make_shared< URI > ()),
+		: uri(std::make_shared< Uri > ()),
 		  status_code(0),
 		  protocol_version("HTTP/1.1"),
 		  content_length(0)
@@ -99,7 +99,7 @@ namespace Message
 
 	Message::Response::Response(const Response& other)
     {
-		uri = std::make_shared< URI > (*(other.uri));
+		uri = std::make_shared< Uri > (*(other.uri));
 		status_code = other.status_code;
 		reason_phrase = other.reason_phrase;
 		headers = other.headers;
@@ -114,7 +114,7 @@ namespace Message
 	{
 		if(this != &other)
 		{
-			uri = std::make_shared< URI > (*(other.uri));
+			uri = std::make_shared< Uri > (*(other.uri));
 			status_code = other.status_code;
 			reason_phrase = other.reason_phrase;
 			headers = other.headers;

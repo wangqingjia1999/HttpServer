@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "URI.hpp"
+#include "Uri.hpp"
 
 #include <memory>
 #include <string>

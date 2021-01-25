@@ -1,13 +1,13 @@
 add_executable(simple_client
-    simple_client.cpp
+    SimpleClient.cpp
 )
 target_link_libraries(simple_client PUBLIC
-    Client_Socket_Lib
+    client_socket_lib
 )
 
 add_executable(simple_server
-    simple_server.cpp
+    SimpleServer.cpp
 )
 target_link_libraries(simple_server PUBLIC
-    Server_Lib
+    server_lib
 )

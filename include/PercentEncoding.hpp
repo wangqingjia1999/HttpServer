@@ -1,5 +1,4 @@
-#ifndef PERCENT_ENCODING_HPP
-#define PERCENT_ENCODING_HPP
+#pragma once
 
 #include <map>
 #include <string>
@@ -8,18 +7,18 @@
 
 #include "CharacterSet.hpp"
 
-class Percent_Encoding
+class PercentEncoding
 {
 	// Life-cycle management
 public:
-	~Percent_Encoding();
-	Percent_Encoding();
+	~PercentEncoding();
+	PercentEncoding();
 
-	Percent_Encoding(const Percent_Encoding&) = delete;
-	Percent_Encoding& operator=(const Percent_Encoding&) = delete;
+	PercentEncoding(const PercentEncoding&) = delete;
+	PercentEncoding& operator=(const PercentEncoding&) = delete;
 
-	Percent_Encoding(Percent_Encoding&&) = delete;
-	Percent_Encoding& operator=(Percent_Encoding&&) = delete;
+	PercentEncoding(PercentEncoding&&) = delete;
+	PercentEncoding& operator=(PercentEncoding&&) = delete;
 
 	// Member methods
 public:
@@ -61,5 +60,3 @@ private:
 	int decoded_character;
 	int remaining_characters;
 };
-
-#endif

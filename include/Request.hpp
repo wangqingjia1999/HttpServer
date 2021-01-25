@@ -1,7 +1,6 @@
-#ifndef REQUEST_HPP
-#define REQUEST_HPP
+#pragma once
 
-#include "URI.hpp"
+#include "Uri.hpp"
 #include "Logger.hpp"
 
 #include <map>
@@ -55,11 +54,11 @@ namespace Message
 		bool parse_raw_request();
 
 		/**
-		 * @brief  Parse URI.
-		 * @param  URI URI string.
-		 * @return  True if successfully parse the given URI string.
+		 * @brief  Parse Uri.
+		 * @param  Uri Uri string.
+		 * @return  True if successfully parse the given Uri string.
 		 */
-		bool parse_uri(const std::string& URI);
+		bool parse_uri(const std::string& Uri);
 		
 		void set_raw_request(std::string raw_request_string);
 		void set_method(const std::string new_method = "GET");
@@ -73,8 +72,8 @@ namespace Message
 		std::string get_request_method();
 
 		/**
-		 * @brief  Get request URI string.
-		 * @return  Request URI string.
+		 * @brief  Get request Uri string.
+		 * @return  Request Uri string.
 		 */
 		std::string get_request_uri();
 
@@ -141,7 +140,7 @@ namespace Message
 	private:
 		Logger logger;
 
-		std::shared_ptr< URI > uri = std::make_shared< URI > ();
+		std::shared_ptr< Uri > uri = std::make_shared< Uri > ();
         
         // Generated/Received raw request string
         std::string raw_request;
@@ -169,5 +168,3 @@ namespace Message
         std::string body;
 	};
 }
-
-#endif

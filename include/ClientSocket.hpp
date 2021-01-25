@@ -1,5 +1,4 @@
-#ifndef CLIENT_SOCKET_HPP
-#define CLIENT_SOCKET_HPP
+#pragma once
 
 #include "ISocket.hpp"
 
@@ -11,11 +10,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-class Client_Socket : public ISocket
+class ClientSocket : public ISocket
 {
 public:
-    Client_Socket();
-    ~Client_Socket();
+    ClientSocket();
+    ~ClientSocket();
 
 public:    
     virtual std::vector<uint8_t>* read_from(const int peer_fd) override;
@@ -61,6 +60,3 @@ private:
     std::vector<uint8_t> receive_buffer;
     std::vector<uint8_t> send_buffer;
 };
-
-
-#endif

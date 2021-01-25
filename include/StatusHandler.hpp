@@ -1,11 +1,10 @@
-#ifndef STATUS_HANDLER_HPP
-#define STATUS_HANDLER_HPP
+#pragma once
 
 #include <memory>
 
 #include "Response.hpp"
 
-namespace Status_Handler
+namespace StatusHandler
 {
     /**
 	 * @brief  Handle given status code.
@@ -15,4 +14,3 @@ namespace Status_Handler
 	void handle_status_code( std::shared_ptr< Message::Response >& response, const int status_code);
 
 }
-#endif

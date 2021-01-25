@@ -1,5 +1,4 @@
-#ifndef THREAD_POOL_HPP
-#define THREAD_POOL_HPP
+#pragma once
 
 #include <memory>
 #include <functional>
@@ -10,24 +9,21 @@
 #include <vector>
 #include <queue>
 
-class Thread_Pool
+class ThreadPool
 {
-    // Types
 public:
     using Task = std::function< void() >;
 
-    // Life-cycle management
 public:
-    ~Thread_Pool() noexcept;
-    Thread_Pool();
+    ~ThreadPool() noexcept;
+    ThreadPool();
 
-    Thread_Pool(const Thread_Pool&) = delete;
-    Thread_Pool& operator=(const Thread_Pool&) = delete;
+    ThreadPool(const ThreadPool&) = default;
+    ThreadPool& operator=(const ThreadPool&) = default;
     
-    Thread_Pool(Thread_Pool&&) = delete;
-    Thread_Pool& operator=(Thread_Pool&&) = delete;
+    ThreadPool(ThreadPool&&) = default;
+    ThreadPool& operator=(ThreadPool&&) = default;
 
-    // Public methods
 public:
     /**
      * @brief  Post task to task queue.
@@ -62,6 +58,7 @@ private:
      * it's better not to create new ones, or destroy old ones (by joining).
      */
     const int hardware_supported_threads = std::thread::hardware_concurrency();
+
     struct thread_entity
     {
         std::thread thread;
@@ -96,5 +93,3 @@ private:
     bool is_shutdown_thread_pool;
 
 };
-
-#endif

@@ -1,11 +1,11 @@
-﻿#include "URI.hpp"
+﻿#include "Uri.hpp"
 
 #include <gtest/gtest.h>
 
 
 TEST(UriTests, parseFromUrlString)
 {
-	URI uri;
+	Uri uri;
 	ASSERT_TRUE(uri.parse_from_string("https://www.github.com/Bitate/httpserver"));
 	ASSERT_EQ(uri.get_scheme(), "https");
 	ASSERT_EQ(uri.get_host(), "www.github.com");
@@ -32,7 +32,7 @@ TEST(UriTests, parseFromStringWithPathCornerCases)
 	size_t index = 0;
 	for (const auto& testVector : test_vectors)
 	{
-		URI uri;
+		Uri uri;
 		ASSERT_TRUE(uri.parse_from_string(testVector.pathIn)) << index;
 		ASSERT_EQ(uri.get_path(), testVector.pathOut) << index;
 		++index;
@@ -41,7 +41,7 @@ TEST(UriTests, parseFromStringWithPathCornerCases)
 
 TEST(UriTests, parseFromStringWithAPortNumber)
 {
-	URI uri;
+	Uri uri;
 	ASSERT_TRUE(uri.parse_from_string("http://www.example.com:8080/foo/bar"));
 	ASSERT_EQ(uri.get_host(), "www.example.com");
 	ASSERT_TRUE(uri.has_port());
@@ -50,7 +50,7 @@ TEST(UriTests, parseFromStringWithAPortNumber)
 
 TEST(UriTests, parseFromStringWithoutAPortNumber)
 {
-	URI uri;
+	Uri uri;
 	ASSERT_TRUE(uri.parse_from_string("http://www.example.com/foo/bar"));
 	ASSERT_EQ(uri.get_host(), "www.example.com");
 	ASSERT_FALSE(uri.has_port());
@@ -58,7 +58,7 @@ TEST(UriTests, parseFromStringWithoutAPortNumber)
 
 TEST(UriTests, parseFromStringTwiceFirstWithPortNumberThenWithout) 
 {
-	URI uri, uri2;
+	Uri uri, uri2;
 	ASSERT_TRUE(uri.parse_from_string("http://www.example.com:8080/foo/bar"));
 	ASSERT_TRUE(uri2.parse_from_string("http://www.example.com/foo/bar"));
 	ASSERT_TRUE(uri.has_port());
@@ -67,7 +67,7 @@ TEST(UriTests, parseFromStringTwiceFirstWithPortNumberThenWithout)
 
 TEST(UriTests, parseFromStringWithLargestValidPortNumber) 
 {
-	URI uri;
+	Uri uri;
 	ASSERT_TRUE(uri.parse_from_string("http://www.example.com:65535/foo/bar"));
 	ASSERT_TRUE(uri.has_port());
 	ASSERT_EQ(uri.get_port(), 65535);
@@ -76,13 +76,13 @@ TEST(UriTests, parseFromStringWithLargestValidPortNumber)
 
 TEST(UriTests, parseFromStringBadPortNumberStartsNumericEndsAlphabetic) 
 {
-   URI uri;
+   Uri uri;
    ASSERT_FALSE(uri.parse_from_string("http://www.example.com:8080spam/foo/bar"));
 }
 
 TEST(UriTests, parseFromStringBadPortNumberStartsAlphabeticEndsNumeric) 
 {
-   URI uri;
+   Uri uri;
    ASSERT_FALSE(uri.parse_from_string("http://www.example.com:spam8080/foo/bar"));
 }
 
@@ -90,7 +90,7 @@ TEST(UriTests, parseFromStringBadPortNumberStartsAlphabeticEndsNumeric)
 
 TEST(UriTests, parseFromStringBadPortNumberTooBig) 
 {
-   URI uri;
+   Uri uri;
    ASSERT_FALSE(uri.parse_from_string("http://www.example.com:65536/foo/bar"));
 
    ASSERT_FALSE(uri.parse_from_string("http://www.example.com:655360/foo/bar"));
@@ -100,28 +100,28 @@ TEST(UriTests, parseFromStringBadPortNumberTooBig)
 
 TEST(UriTests, parseFromStringBadPortNumberNegative) 
 {
-	URI uri;
+	Uri uri;
 	ASSERT_FALSE(uri.parse_from_string("http://www.example.com:-1234/foo/bar"));
 	ASSERT_FALSE(uri.has_port());
 }
 
 TEST(UriTests, parseFromStringBadPortNumberNegative1) 
 {
-	URI uri;
+	Uri uri;
 	ASSERT_FALSE(uri.parse_from_string("http://www.example.com:1-234/foo/bar"));
 	ASSERT_FALSE(uri.has_port());
 }
 
 TEST(UriTests, parseFromStringBadPortNumberNegative2) 
 {
-	URI uri;
+	Uri uri;
 	ASSERT_FALSE(uri.parse_from_string("http://www.example.com:1234-/foo/bar"));
 	ASSERT_FALSE(uri.has_port());
 }
 
 TEST(UriTests, parseFromStringEndsAfterAuthority) 
 {
-   URI uri;
+   Uri uri;
    ASSERT_TRUE(uri.parse_from_string("http://www.example.com"));
 }
 
@@ -142,7 +142,7 @@ TEST(UriTests, parseFromStringRelativeVsAbsolutePath)
    size_t index = 0;
    for (const auto& testVector : test_vectors) 
    {
-       URI uri;
+       Uri uri;
        ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
        ASSERT_EQ(testVector.is_relative_reference, uri.is_relative_reference()) << index;
        ++index;
@@ -158,19 +158,19 @@ TEST(UriTests, parseFromStringRelativeVsNonRelativePaths)
    };
    const std::vector< TestVector > test_vectors
    {
-       // URI string               // has_relative_path
+       // Uri string               // has_relative_path
        { "http://www.example.com/",   false },
        // BUG:
        { "http://www.example.com",    false },
        { "/",                         false },
        { "foo",                       true  },
-       //An empty URI string IS a valid "relative reference" with an empty path.
+       //An empty Uri string IS a valid "relative reference" with an empty path.
        { ""                         , true },
    };
    size_t index = 0;
    for (const auto& testVector : test_vectors) 
    {
-       URI uri;
+       Uri uri;
        ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
        ASSERT_EQ(testVector.has_relative_path, uri.has_relative_path()) << index;
        ++index;
@@ -207,7 +207,7 @@ TEST(UriTests, parseFromStringQueryAndFragmentElements)
    size_t index = 0;
    for (const auto& testVector : test_vectors) 
    {
-       URI uri;
+       Uri uri;
        ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
        ASSERT_EQ(testVector.host, uri.get_host()) << index;
        ASSERT_EQ(testVector.query, uri.get_query()) << index;
@@ -236,7 +236,7 @@ TEST(UriTests, parseFromStringUserInfo)
    size_t index = 0;
    for (const auto& testVector : test_vectors) 
    {
-       URI uri;
+       Uri uri;
        ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
        ASSERT_EQ(testVector.user_info, uri.get_user_info()) << index;
        ++index;

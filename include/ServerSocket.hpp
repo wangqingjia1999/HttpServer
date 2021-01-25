@@ -1,5 +1,4 @@
-#ifndef SERVER_SOCKET_HPP
-#define SERVER_SOCKET_HPP
+#pragma once
 
 #include "Timer.hpp"
 #include "ISocket.hpp"
@@ -36,17 +35,17 @@ enum class Server_Socket_State
  * In:  response data in the form of std::string
  * Out: request data in the form of std::string
  */
-class Server_Socket
+class ServerSocket
 {
 public:
-    Server_Socket();
-    ~Server_Socket();
+    ServerSocket();
+    ~ServerSocket();
 
-    Server_Socket(const Server_Socket&) = delete;
-    Server_Socket& operator=(const Server_Socket&) = delete;
+    ServerSocket(const ServerSocket&) = delete;
+    ServerSocket& operator=(const ServerSocket&) = delete;
 
-    Server_Socket(const Server_Socket&&) = delete;
-    Server_Socket& operator=(const Server_Socket&&) = delete;
+    ServerSocket(const ServerSocket&&) = delete;
+    ServerSocket& operator=(const ServerSocket&&) = delete;
     
     // overrides
 public:
@@ -117,5 +116,3 @@ private:
     std::queue< int > send_fd_queue;
     bool has_finished_initialization;
 };
-
-#endif

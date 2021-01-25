@@ -1,6 +1,14 @@
-#include "URI.hpp"
+#include "Uri.hpp"
 
-bool URI::parse_scheme(const std::string& uri_string, std::string & rest_string)
+Uri::Uri()
+{
+}
+
+Uri::~Uri()
+{
+}
+
+bool Uri::parse_scheme(const std::string& uri_string, std::string & rest_string)
 {
 	// Extract the scheme part(if any) from uri_string
 	auto authority_or_path_start_delimiter = uri_string.find('/');
@@ -29,7 +37,7 @@ bool URI::parse_scheme(const std::string& uri_string, std::string & rest_string)
 	}
 }
 
-bool URI::parse_user_info(std::string& authority_string, std::string& authority_without_user_info)
+bool Uri::parse_user_info(std::string& authority_string, std::string& authority_without_user_info)
 {
 	auto user_info_end_delimiter = authority_string.find('@');
 	if (user_info_end_delimiter != std::string::npos)
@@ -43,7 +51,7 @@ bool URI::parse_user_info(std::string& authority_string, std::string& authority_
 	return true;
 }
 
-bool URI::parse_host(std::string& authority_without_user_info, std::string& authority_without_host)
+bool Uri::parse_host(std::string& authority_without_user_info, std::string& authority_without_host)
 {
 	auto host_end_delimiter = authority_without_user_info.find_first_of(":/");
 	if (host_end_delimiter != std::string::npos)
@@ -65,13 +73,13 @@ bool URI::parse_host(std::string& authority_without_user_info, std::string& auth
 	}
 }
 
-bool URI::parse_port(std::string& authority_string)
+bool Uri::parse_port(std::string& authority_string)
 {
 	auto port_begin_delimiter = authority_string.find(':');
 	if (port_begin_delimiter != std::string::npos)
 	{
 		// has port
-		has_port_bool = true;
+		m_has_port = true;
 		// strip ':'
 		std::string port_string = authority_string.substr(port_begin_delimiter+1);
 		
@@ -80,7 +88,7 @@ bool URI::parse_port(std::string& authority_string)
 		{
 			if(!std::isdigit(*iterator))
 			{
-				has_port_bool = false;
+				m_has_port = false;
 				return false;
 			}
 		}
@@ -89,7 +97,7 @@ bool URI::parse_port(std::string& authority_string)
 
 		if ( temperary_port < 0 || temperary_port >= 65536)
 		{
-			has_port_bool = false;
+			m_has_port = false;
 			return false;
 		}
 		else
@@ -100,12 +108,12 @@ bool URI::parse_port(std::string& authority_string)
 	}
 	else
 	{
-		has_port_bool = false;
+		m_has_port = false;
 		return true;
 	}
 }
 
-bool URI::parse_authority(std::string& uri_string, std::string& rest_string)
+bool Uri::parse_authority(std::string& uri_string, std::string& rest_string)
 {
 	auto authority_begin_delimiter = uri_string.find("//");
 
@@ -158,7 +166,7 @@ bool URI::parse_authority(std::string& uri_string, std::string& rest_string)
 	}
 }
 
-bool URI::parse_path(std::string& uri_may_contain_path, std::string& rest_string)
+bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string)
 {
 	path.clear();
 	if(uri_may_contain_path == "/")
@@ -173,7 +181,7 @@ bool URI::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 	else if(!uri_may_contain_path.empty())
 	{
 		// The path is terminated by the first question "?", "#", or
-		// by the end of the URI.
+		// by the end of the Uri.
 		auto path_end_delimiter = uri_may_contain_path.find_first_of("?#");
 
 		// path string without query or fragment
@@ -242,7 +250,7 @@ bool URI::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 	return true;
 }
 
-bool URI::parse_query(std::string& uri_string, std::string& rest_string)
+bool Uri::parse_query(std::string& uri_string, std::string& rest_string)
 {
 	auto query_begin_delimiter = uri_string.find('?');
 	auto query_end_delimiter = uri_string.find('#');
@@ -272,7 +280,7 @@ bool URI::parse_query(std::string& uri_string, std::string& rest_string)
 	}
 }
 
-bool URI::parse_fragment(std::string& uri_may_contain_fragment, std::string& rest_string)
+bool Uri::parse_fragment(std::string& uri_may_contain_fragment, std::string& rest_string)
 {
 	auto fragment_begin_delimiter = uri_may_contain_fragment.find('#');
 	if (fragment_begin_delimiter != std::string::npos)
@@ -293,12 +301,12 @@ bool URI::parse_fragment(std::string& uri_may_contain_fragment, std::string& res
 }
 
 // absolute path begins with a "/"
-bool URI::is_absolute_path()
+bool Uri::is_absolute_path()
 {
 	return (!path.empty() && !is_relative_path);
 }
 
-void URI::remove_dots()
+void Uri::remove_dots()
 {
 	std::vector< std::string > old_path = std::move(path);
 	path.clear();
@@ -345,50 +353,28 @@ void URI::remove_dots()
 	}
 }
 
-
-URI::~URI() noexcept = default;
-
-URI::URI(const URI& other)
-{
-	*this = other;
-}
-
-URI& URI::operator=(const URI& other) 
-{
-	// TODO
-	return *this;
-}
-
-URI::URI(URI&&) noexcept = default;
-
-URI& URI::operator=(URI&&) noexcept = default;
-
-URI::URI()
-{
-}
-
 // Getters
-std::string URI::get_scheme()
+std::string Uri::get_scheme()
 {
 	return scheme;
 }
 
-std::string URI::get_user_info()
+std::string Uri::get_user_info()
 {
 	return user_info;
 }
 
-std::string URI::get_host()
+std::string Uri::get_host()
 {
 	return host;
 }
 
-std::vector< std::string > URI::get_path()
+std::vector< std::string > Uri::get_path()
 {
 	return path;
 }
 
-std::string URI::get_path_string()
+std::string Uri::get_path_string()
 {
 	if(path[0] == "")
 		return "/";
@@ -400,23 +386,23 @@ std::string URI::get_path_string()
 	return pathString;
 }
 
-int URI::get_port()
+int Uri::get_port()
 {
 	return port;
 }
 
-std::string URI::get_query()
+std::string Uri::get_query()
 {
 	return query;
 }
 
-std::string URI::get_fragment()
+std::string Uri::get_fragment()
 {
 	return fragment;
 }
 
 // Setters
-bool URI::set_scheme(std::string& s)
+bool Uri::set_scheme(std::string& s)
 {
 	if (scheme.empty())
 	{
@@ -426,7 +412,7 @@ bool URI::set_scheme(std::string& s)
 	return false;
 }
 
-bool URI::set_host(std::string& host)
+bool Uri::set_host(std::string& host)
 {
 	if (host.empty()) 
 	{ 
@@ -436,21 +422,21 @@ bool URI::set_host(std::string& host)
 	return false;
 }
 
-bool URI::set_port(int& p)
+bool Uri::set_port(int& p)
 {
 	port = p;
 	return true;
 }
 
 
-bool URI::set_query(std::string q)
+bool Uri::set_query(std::string q)
 {
 	query = q;
 	if (query.empty()) { return false; }
 	return true;
 }
 
-bool URI::set_fragment(std::string& s)
+bool Uri::set_fragment(std::string& s)
 {
 	if (fragment.empty())
 	{
@@ -460,13 +446,13 @@ bool URI::set_fragment(std::string& s)
 	return false;
 }
 
-bool URI::clear_port()
+bool Uri::clear_port()
 {
 	port = -1;
 	return true;
 }
 
-bool URI::clear_query()
+bool Uri::clear_query()
 {
 	if (!query.empty())
 	{
@@ -476,7 +462,7 @@ bool URI::clear_query()
 	return false;
 }
 
-bool URI::clear_fragment()
+bool Uri::clear_fragment()
 {
 	if (!fragment.empty())
 	{
@@ -486,31 +472,31 @@ bool URI::clear_fragment()
 	return false;
 }
 
-bool URI::clear_scheme()
+bool Uri::clear_scheme()
 {
 	scheme.clear();
 	return true;
 }
 
-bool URI::has_port()
+bool Uri::has_port()
 {
-	return has_port_bool;
+	return m_has_port;
 }
 
-bool URI::has_query()
+bool Uri::has_query()
 {
 	return has_query_bool;
 }
 
-bool URI::has_fragment()
+bool Uri::has_fragment()
 {
 	return has_fragment_bool;
 }
 
 
-bool URI::parse_from_string(const std::string& uri_string)
+bool Uri::parse_from_string(const std::string& uri_string)
 {
-	Percent_Encoding percent_encoding;
+	PercentEncoding percent_encoding;
 	std::string decoded_uri_string = percent_encoding.decode(uri_string);
 
 	std::string uri_without_scheme;
@@ -547,17 +533,17 @@ bool URI::parse_from_string(const std::string& uri_string)
 	return true;
 }
 
-bool URI::is_relative_reference()
+bool Uri::is_relative_reference()
 {
 	return scheme.empty();
 }
 
-bool URI::has_relative_path()
+bool Uri::has_relative_path()
 {
 	return !is_absolute_path();
 }
 
-bool URI::operator==(const URI& other) const
+bool Uri::operator==(const Uri& other) const
 {
 	return true;
 }

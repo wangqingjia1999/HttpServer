@@ -1,5 +1,4 @@
-#ifndef BASE64_HPP
-#define BASE64_HPP
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -47,5 +46,3 @@ namespace Base64
      */
     std::string decode_url(const std::string& encoded_uri_string, bool has_padding = true);
 }
-    
-#endif

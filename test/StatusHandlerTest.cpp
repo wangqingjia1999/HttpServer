@@ -1,11 +1,11 @@
-#include "Status_Handler.hpp"
+#include "StatusHandler.hpp"
 
 #include <gtest/gtest.h>
 
 TEST(status_handler_tests, status_code_100_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 100);
+    StatusHandler::handle_status_code(response, 100);
     
     std::string expected_response_string = {
         "HTTP/1.1 100 Continue\r\n"
@@ -18,7 +18,7 @@ TEST(status_handler_tests, status_code_100_test)
 TEST(status_handler_tests, status_code_101_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 101);
+    StatusHandler::handle_status_code(response, 101);
     
     std::string expected_response_string = {
         "HTTP/1.1 101 Switching Protocol\r\n"
@@ -33,7 +33,7 @@ TEST(status_handler_tests, status_code_101_test)
 TEST(status_handler_tests, status_code_200_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 200);
+    StatusHandler::handle_status_code(response, 200);
     
     std::string expected_response_string = {
         "HTTP/1.1 200 OK\r\n"
@@ -49,7 +49,7 @@ TEST(status_handler_tests, status_code_200_test)
 TEST(status_handler_tests, status_code_201_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 201);
+    StatusHandler::handle_status_code(response, 201);
     
     std::string expected_response_string = {
         "HTTP/1.1 201 Created\r\n"
@@ -62,7 +62,7 @@ TEST(status_handler_tests, status_code_201_test)
 TEST(status_handler_tests, status_code_202_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 202);
+    StatusHandler::handle_status_code(response, 202);
     
     std::string expected_response_string = {
         "HTTP/1.1 202 Accepted\r\n"
@@ -75,7 +75,7 @@ TEST(status_handler_tests, status_code_202_test)
 TEST(status_handler_tests, status_code_203_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 203);
+    StatusHandler::handle_status_code(response, 203);
     
     std::string expected_response_string = {
         "HTTP/1.1 203 Non-Authoritative Information\r\n"
@@ -88,7 +88,7 @@ TEST(status_handler_tests, status_code_203_test)
 TEST(status_handler_tests, status_code_204_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 204);
+    StatusHandler::handle_status_code(response, 204);
     
     std::string expected_response_string = {
         "HTTP/1.1 204 No Content\r\n"
@@ -101,7 +101,7 @@ TEST(status_handler_tests, status_code_204_test)
 TEST(status_handler_tests, status_code_205_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 205);
+    StatusHandler::handle_status_code(response, 205);
     
     std::string expected_response_string = {
         "HTTP/1.1 205 Reset Content\r\n"
@@ -114,7 +114,7 @@ TEST(status_handler_tests, status_code_205_test)
 TEST(status_handler_tests, status_code_206_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 206);
+    StatusHandler::handle_status_code(response, 206);
     
     std::string expected_response_string = {
         "HTTP/1.1 206 Partial Content\r\n"
@@ -127,7 +127,7 @@ TEST(status_handler_tests, status_code_206_test)
 TEST(status_handler_tests, status_code_301_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 301);
+    StatusHandler::handle_status_code(response, 301);
     
     /**
      *  https://en.wikipedia.org/wiki/HTTP_301
@@ -143,7 +143,7 @@ TEST(status_handler_tests, status_code_301_test)
 TEST(status_handler_tests, status_code_404_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    Status_Handler::handle_status_code(response, 404);
+    StatusHandler::handle_status_code(response, 404);
     
     std::string expected_response_string = {
         "HTTP/1.1 404 Not Found\r\n"

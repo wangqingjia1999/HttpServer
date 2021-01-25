@@ -1,4 +1,4 @@
-#include "UTF8.hpp"
+#include "Utf8.hpp"
 
 #include <stddef.h>
 #include <vector>
@@ -13,7 +13,7 @@ namespace
     /**
      * This is the Unicode replacement character (�) as a code point.
      */
-    const UTF8::UnicodeCodePoint REPLACEMENT_CHARACTER = 0xFFFD;
+    const Utf8::UnicodeCodePoint REPLACEMENT_CHARACTER = 0xFFFD;
 
     /**
      * Since RFC 3629 (November 2003), the high and low surrogate halves
@@ -21,13 +21,13 @@ namespace
      * by UTF-16 (those after U+10FFFF) are not legal Unicode values, and
      * their UTF-8 encoding must be treated as an invalid byte sequence.
      */
-    const UTF8::UnicodeCodePoint FIRST_SURROGATE = 0xD800;
-    const UTF8::UnicodeCodePoint LAST_SURROGATE = 0xDFFF;
+    const Utf8::UnicodeCodePoint FIRST_SURROGATE = 0xD800;
+    const Utf8::UnicodeCodePoint LAST_SURROGATE = 0xDFFF;
 
     /**
      * This is the very, very, last code point in Unicode that is legal.
      */
-    const UTF8::UnicodeCodePoint LAST_LEGAL_UNICODE_CODE_POINT = 0x10FFFF;
+    const Utf8::UnicodeCodePoint LAST_LEGAL_UNICODE_CODE_POINT = 0x10FFFF;
 
     /**
      * This computes the logarithm (base 2) of the given integer.
@@ -49,7 +49,7 @@ namespace
 
 }
 
-namespace UTF8 {
+namespace Utf8 {
 
     std::vector< UnicodeCodePoint > AsciiToUnicode(const std::string& ascii) {
         return std::vector< UnicodeCodePoint >(
@@ -61,7 +61,7 @@ namespace UTF8 {
     /**
      * This contains the private properties of a Utf8 instance.
      */
-    struct UTF8::Impl {
+    struct Utf8::Impl {
         /**
          * This is where we keep the current character
          * that is being decoded.
@@ -88,14 +88,14 @@ namespace UTF8 {
         bool isValidEncoding = true;
     };
 
-    UTF8::~UTF8() noexcept = default;
+    Utf8::~Utf8() noexcept = default;
 
-    UTF8::UTF8()
+    Utf8::Utf8()
         : impl_(new Impl)
     {
     }
 
-    std::vector< uint8_t > UTF8::Encode(const std::vector< UnicodeCodePoint >& codePoints) {
+    std::vector< uint8_t > Utf8::Encode(const std::vector< UnicodeCodePoint >& codePoints) {
         std::vector< uint8_t > encoding;
         for (auto codePoint: codePoints) {
             const auto numBits = log2n(codePoint);
@@ -138,7 +138,7 @@ namespace UTF8 {
         return encoding;
     }
 
-    std::vector< UnicodeCodePoint > UTF8::Decode(const std::vector< uint8_t >& encoding) {
+    std::vector< UnicodeCodePoint > Utf8::Decode(const std::vector< uint8_t >& encoding) {
         std::vector< UnicodeCodePoint > output;
         for (auto octet: encoding) {
             if (impl_->numBytesRemainingToDecode == 0) {
@@ -198,7 +198,7 @@ namespace UTF8 {
         return output;
     }
 
-    std::vector< UnicodeCodePoint > UTF8::Decode(const std::string& encoding) {
+    std::vector< UnicodeCodePoint > Utf8::Decode(const std::string& encoding) {
         return Decode(
             std::vector< uint8_t >(
                 encoding.begin(),
@@ -207,7 +207,7 @@ namespace UTF8 {
         );
     }
 
-    bool UTF8::IsValidEncoding(
+    bool Utf8::IsValidEncoding(
         const std::string& encoding,
         bool final
     ) {

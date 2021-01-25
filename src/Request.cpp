@@ -1,4 +1,4 @@
-#include "URI.hpp"
+#include "Uri.hpp"
 #include "Request.hpp"
 #include "Logger.hpp"
 
@@ -173,14 +173,14 @@ namespace Message
         return true;
     }
 
-    bool Message::Request::parse_uri(const std::string& URI)
+    bool Message::Request::parse_uri(const std::string& Uri)
     {
         if(uri == nullptr)
         {
             return false;
         }
         
-        if(!uri->parse_from_string(URI))
+        if(!uri->parse_from_string(Uri))
         {
             return false;
         }

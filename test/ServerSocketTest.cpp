@@ -1,5 +1,5 @@
-#include "Server_Socket.hpp"
-#include "Client_Socket.hpp"
+#include "ServerSocket.hpp"
+#include "ClientSocket.hpp"
 
 #include <gtest/gtest.h>
 

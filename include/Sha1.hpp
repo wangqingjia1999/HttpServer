@@ -5,15 +5,14 @@
  * I've learnt a lot from him. Highly recommended to follow him, if you like.
  * I will take some time to figure out this amazing algorithm.
  */
-#ifndef SHA1_HPP
-#define SHA1_HPP
+#pragma once
 
 #include <cstdint>
 #include <cstddef>
 #include <string>
 #include <vector>
 
-namespace SHA1
+namespace Sha1
 {
     /**
      * @brief  Encrypt given bytes vector by SHA-1 algorithm.
@@ -43,4 +42,3 @@ namespace SHA1
      */
     std::vector< uint8_t > sha1_encrypt_into_bytes(const std::string& data);
 }
-#endif

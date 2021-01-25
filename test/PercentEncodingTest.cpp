@@ -1,4 +1,4 @@
-#include "Percent_Encoding.hpp"
+#include "PercentEncoding.hpp"
 
 #include <gtest/gtest.h>
 #include <stddef.h>
@@ -6,7 +6,7 @@
 
 TEST(DecodeTests, ASCIICharacterSet)
 {
-	Percent_Encoding percentEncode;
+	PercentEncoding percentEncode;
 
 	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
 	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
@@ -31,7 +31,7 @@ TEST(DecodeTests, ASCIICharacterSet)
 
 TEST(EncodeTests, ASCIICharacterSet)
 {
-	Percent_Encoding percentEncode;
+	PercentEncoding percentEncode;
 
 	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
 	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";

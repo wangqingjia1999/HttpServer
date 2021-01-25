@@ -1,11 +1,11 @@
-#include "Mysql_Handler.hpp"
+#include "MysqlHandler.hpp"
 
 #include <gtest/gtest.h>
 #include <iostream>
 
 TEST(mysql_handler_tests, connect_to_mysql_test)
 {
-    Mysql_Handler mysql;
+    MysqlHandler mysql;
 
     // port number can not be negative
     ASSERT_FALSE(mysql.connect_to_mysql(-3306, "bitate", "qwer"));

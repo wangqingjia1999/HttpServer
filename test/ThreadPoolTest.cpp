@@ -1,4 +1,4 @@
-#include "Thread_Pool.hpp"
+#include "ThreadPool.hpp"
 
 #include <gtest/gtest.h>
 #include <mutex>

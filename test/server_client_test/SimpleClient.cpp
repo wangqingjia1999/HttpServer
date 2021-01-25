@@ -1,11 +1,11 @@
-#include "../../include/Client_Socket.hpp"
+#include "../../include/ClientSocket.hpp"
 
 #include <string>
 #include <iostream>
 
 int main()
 {
-    Client_Socket client_socket;
+    ClientSocket client_socket;
     client_socket.connect_to("127.0.0.1", 18135);
 
     for(;;)

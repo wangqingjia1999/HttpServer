@@ -1,6 +1,6 @@
-#include "Thread_Pool.hpp"
+#include "ThreadPool.hpp"
 
-Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false) 
+ThreadPool::ThreadPool() : is_shutdown_thread_pool(false) 
 {
     for(int i = 0; i < hardware_supported_threads; ++i)
     {
@@ -8,12 +8,12 @@ Thread_Pool::Thread_Pool() : is_shutdown_thread_pool(false)
     }
 }
 
-Thread_Pool::~Thread_Pool()
+ThreadPool::~ThreadPool()
 {
     shutdown_thread_pool();
 }
 
-void Thread_Pool::thread_work_loop()
+void ThreadPool::thread_work_loop()
 {
     for(;;)
     {
@@ -38,7 +38,7 @@ void Thread_Pool::thread_work_loop()
     }
 }
 
-void Thread_Pool::post_task(const Task& new_task)
+void ThreadPool::post_task(const Task& new_task)
 {
     {
         std::unique_lock< std::mutex > lock(task_queue_mutex);
@@ -47,7 +47,7 @@ void Thread_Pool::post_task(const Task& new_task)
     task_queue_condition.notify_one();
 }
 
-void Thread_Pool::shutdown_thread_pool()
+void ThreadPool::shutdown_thread_pool()
 {
     {
         std::unique_lock< std::mutex > lock( task_queue_mutex );
@@ -63,7 +63,7 @@ void Thread_Pool::shutdown_thread_pool()
     thread_pool.clear();   
 }
 
-bool Thread_Pool::have_finished_taskes(int thread_index)
+bool ThreadPool::have_finished_taskes(int thread_index)
 {  
     return thread_pool[thread_index].has_finished_task;
 }

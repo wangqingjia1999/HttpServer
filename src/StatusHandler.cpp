@@ -1,7 +1,7 @@
-#include "Status_Handler.hpp"
+#include "StatusHandler.hpp"
 #include "Timer.hpp"
 
-namespace Status_Handler
+namespace StatusHandler
 {                           
     void handle_status_code(std::shared_ptr< Message::Response >& response, const int status_code)
     {

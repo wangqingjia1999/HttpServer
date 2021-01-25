@@ -1,5 +1,4 @@
-#ifndef MYSQL_HANDLER_HPP
-#define MYSQL_HANDLER_HPP
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -13,17 +12,17 @@ struct Mysql_Layout;
  * MySQL Connector/C++ Documentation
  * https://dev.mysql.com/doc/dev/connector-cpp/8.0/
  */
-class Mysql_Handler
+class MysqlHandler
 {
 public:
-    Mysql_Handler();
-    ~Mysql_Handler();
+    MysqlHandler();
+    ~MysqlHandler();
 
-    Mysql_Handler(const Mysql_Handler&) = delete;
-    Mysql_Handler& operator=(const Mysql_Handler&) = delete;
+    MysqlHandler(const MysqlHandler&) = delete;
+    MysqlHandler& operator=(const MysqlHandler&) = delete;
     
-    Mysql_Handler(Mysql_Handler&&) = delete;
-    Mysql_Handler& operator=(Mysql_Handler&&) = delete;
+    MysqlHandler(MysqlHandler&&) = delete;
+    MysqlHandler& operator=(MysqlHandler&&) = delete;
 
 public:
     /**
@@ -82,5 +81,3 @@ struct Mysql_Layout
 
 
 };
-
-#endif

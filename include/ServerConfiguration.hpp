@@ -61,6 +61,6 @@ private:
 
     /**
      * TODO:
-     *  * URI maximum length;
+     *  * Uri maximum length;
      */
 };

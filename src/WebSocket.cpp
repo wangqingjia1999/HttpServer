@@ -1,14 +1,9 @@
-#ifdef __linux__
-    #include <sys/socket.h>
-#endif
-
 #include "WebSocket.hpp"
 #include "Logger.hpp"
-#include "Status_Handler.hpp"
+#include "StatusHandler.hpp"
 #include "Base64.hpp"
-#include "SHA1.hpp"
+#include "Sha1.hpp"
 
-// helpers 
 namespace
 {
     /**
@@ -225,7 +220,7 @@ bool WebSocket::parse_websocket_request()
         || !impl_->request->has_header("Sec-WebSocket-Version")
     )
     {
-        Status_Handler::handle_status_code(impl_->response, 400);
+        StatusHandler::handle_status_code(impl_->response, 400);
         return false;
     }
 
@@ -235,7 +230,7 @@ bool WebSocket::parse_websocket_request()
 std::string WebSocket::generate_sec_websocket_key()
 {
     return Base64::encode_hex_string(
-        SHA1::sha1_encrypt(
+        Sha1::sha1_encrypt(
             impl_->request->get_header("Sec-WebSocket-Key") + WEBSOCKET_KEY
         )
     );
@@ -244,7 +239,7 @@ std::string WebSocket::generate_sec_websocket_key()
 std::string WebSocket::generate_sec_websocket_key(const std::string& key_string)
 {
     return Base64::encode_hex_string(
-        SHA1::sha1_encrypt(
+        Sha1::sha1_encrypt(
             key_string + WEBSOCKET_KEY
         )
     );

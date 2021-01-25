@@ -1,5 +1,5 @@
 #include "Response.hpp"
-#include "Status_Handler.hpp"
+#include "StatusHandler.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -23,7 +23,7 @@ TEST(response_tests, generate_200_response)
     response->set_body(response_body);
     response->set_content_type("text/html");
     response->set_body_length(response_body.size());
-    Status_Handler::handle_status_code(response, 200);
+    StatusHandler::handle_status_code(response, 200);
 
     // Googletest will report inequality of the 'Date' header.
     // Because the Date is generated in real-time, I cannot predict

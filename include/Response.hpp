@@ -1,5 +1,4 @@
-#ifndef RESPONSE_HPP
-#define RESPONSE_HPP
+#pragma once
 
 #include "Request.hpp"
 
@@ -148,8 +147,8 @@ namespace Message
 		void set_content_type(const std::string& new_content_type);
 
 		/**
-		 * @brief  Map given URI to local file system.
-		 * @param  request_uri  Request URI taken from request message
+		 * @brief  Map given Uri to local file system.
+		 * @param  request_uri  Request Uri taken from request message
 		 * @return  True if successfully set content.
 		 */
 		bool set_content(const std::string& new_request_uri);
@@ -186,7 +185,7 @@ namespace Message
 
 		/**
 		 * @brief  Determine content type based on the file extension.
-		 * @param  request_uri  Request URI taken from request message
+		 * @param  request_uri  Request Uri taken from request message
 		 * 
 		 * For all available content types, see:
 		 * https://www.iana.org/assignments/media-types/media-types.xhtml#application
@@ -207,7 +206,7 @@ namespace Message
 		void clear_up_header_fields();
 
 	private:
-		std::shared_ptr< URI > uri;
+		std::shared_ptr< Uri > uri;
 		
 		// Status code of response
 		int status_code;
@@ -236,6 +235,3 @@ namespace Message
 		std::string response_message;
 	};
 }
-
-#endif
-

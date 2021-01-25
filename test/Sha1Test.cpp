@@ -1,4 +1,4 @@
-#include "SHA1.hpp"
+#include "Sha1.hpp"
 
 #include <gtest/gtest.h>
 #include <vector>
@@ -23,7 +23,7 @@ TEST(sha1_tests, sha1_encode_test)
     size_t index = 0;
     for( auto& test_case : test_vectors)
     {
-        ASSERT_EQ(SHA1::sha1_encrypt(test_case.raw_string), test_case.message_digest) << "Error at index: " << index;
+        ASSERT_EQ(Sha1::sha1_encrypt(test_case.raw_string), test_case.message_digest) << "Error at index: " << index;
         ++index;
     }
     

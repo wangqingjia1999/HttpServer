@@ -1,4 +1,4 @@
-#include "SHA1.hpp"
+#include "Sha1.hpp"
 
 #include <cstring>
 #include <sstream>
@@ -12,7 +12,7 @@ namespace
     }
 }
 
-namespace SHA1
+namespace Sha1
 {
     std::string sha1_encrypt(const std::string& data)
     {

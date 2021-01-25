@@ -44,7 +44,7 @@ bash build.sh
 ## Useful links that help me build this project
 * WebSocket
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
-* URI
+* Uri
   * https://nodejs.org/api/url.html#url_url
 * Percent encoding
   * https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding

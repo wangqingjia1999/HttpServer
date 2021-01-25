@@ -1,4 +1,4 @@
-#include "Server_Socket.hpp"
+#include "ServerSocket.hpp"
 
 namespace
 {
@@ -23,7 +23,7 @@ namespace
     constexpr size_t MAXIMUM_BUFFER_SIZE = 8192;
 }
 
-Server_Socket::Server_Socket()
+ServerSocket::ServerSocket()
     : server_socket_state(Server_Socket_State::UNINITIALIZED),
       listen_fd(-1),
       epfd(-1),
@@ -36,7 +36,7 @@ Server_Socket::Server_Socket()
         fprintf(stderr, "Failed to create epoll file descriptor.\n");
 }
 
-Server_Socket::~Server_Socket()
+ServerSocket::~ServerSocket()
 {
     if(close(listen_fd))
         fprintf(stderr, "Failed to close server listening fd, please kill it manually.");
@@ -44,7 +44,7 @@ Server_Socket::~Server_Socket()
         fprintf(stderr, "Failed to close epoll file descriptor.\n");
 }
 
-bool Server_Socket::initialize_server_socket(const std::string ip, const int port)
+bool ServerSocket::initialize_server_socket(const std::string ip, const int port)
 {
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
@@ -90,7 +90,7 @@ bool Server_Socket::initialize_server_socket(const std::string ip, const int por
     return true;
 }
 
-Server_Socket_State Server_Socket::listen_at(const std::string ip, const int port)
+Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port)
 {
     if(!has_finished_initialization)
         initialize_server_socket(ip, port);
@@ -178,12 +178,12 @@ Server_Socket_State Server_Socket::listen_at(const std::string ip, const int por
     }   // end of for(;;)
 }
 
-bool Server_Socket::write_to(const std::string& data_string)
+bool ServerSocket::write_to(const std::string& data_string)
 {
     return write_to(readable_fd, data_string);
 }
 
-bool Server_Socket::write_to(const int peer_fd, const std::string& data_string)
+bool ServerSocket::write_to(const int peer_fd, const std::string& data_string)
 {
     int send_result = send(peer_fd, data_string.c_str(), data_string.size(), 0);
     
@@ -201,12 +201,12 @@ bool Server_Socket::write_to(const int peer_fd, const std::string& data_string)
     return true;
 }   
 
-std::string Server_Socket::read_from()
+std::string ServerSocket::read_from()
 {
     return read_from(readable_fd);
 }
 
-std::string Server_Socket::read_from(const int peer_fd)
+std::string ServerSocket::read_from(const int peer_fd)
 {
     char local_receive_buffer[MAXIMUM_BUFFER_SIZE] = { 0 };
     ssize_t receive_result = 0;
@@ -239,17 +239,17 @@ std::string Server_Socket::read_from(const int peer_fd)
     return local_receive_buffer_string;
 }
 
-std::vector<uint8_t>* Server_Socket::get_receive_buffer()
+std::vector<uint8_t>* ServerSocket::get_receive_buffer()
 {
     return &receive_buffer;
 }
 
-std::vector<uint8_t>* Server_Socket::get_send_buffer()
+std::vector<uint8_t>* ServerSocket::get_send_buffer()
 {
     return &send_buffer;
 }
 
-void Server_Socket::print_receive_buffer()
+void ServerSocket::print_receive_buffer()
 {
     std::string receive_buffer_string;
     for(const auto& byte : receive_buffer)
@@ -258,7 +258,7 @@ void Server_Socket::print_receive_buffer()
     printf("Receive: %s\n", receive_buffer_string.c_str());
 }
 
-std::string Server_Socket::generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream)
+std::string ServerSocket::generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream)
 {
     std::string result_string;
     for(const auto& byte : byte_stream)
@@ -267,7 +267,7 @@ std::string Server_Socket::generate_string_from_byte_stream(const std::vector<ui
     return result_string;
 }
 
-bool Server_Socket::set_socket_non_blocking(const int socket_fd)
+bool ServerSocket::set_socket_non_blocking(const int socket_fd)
 {
     if(socket_fd < 0)
         return false;
@@ -280,7 +280,7 @@ bool Server_Socket::set_socket_non_blocking(const int socket_fd)
     return (fcntl(socket_fd, F_SETFL, file_status_flags) == 0);
 }
 
-int Server_Socket::get_readable_fd() const
+int ServerSocket::get_readable_fd() const
 {
     return readable_fd;
 }

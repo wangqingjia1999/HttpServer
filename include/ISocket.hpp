@@ -1,5 +1,4 @@
-#ifndef SOCKET_HPP
-#define SOCKET_HPP
+#pragma once
 
 #include <vector>
 #include <string>
@@ -37,6 +36,3 @@ public:
      */
     virtual bool write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size) = 0;
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef UTF8_HPP
-#define UTF8_HPP
+#pragma once
 
 #include <memory>
 #include <stdint.h>
@@ -7,7 +6,7 @@
 #include <ostream>
 #include <vector>
 
-namespace UTF8 {
+namespace Utf8 {
 
     /**
      * This represents a single character in Unicode.
@@ -27,18 +26,18 @@ namespace UTF8 {
      * in order to store or transmit them across any interface
      * that accepts a sequence of bytes.
      */
-    class UTF8 
+    class Utf8 
     {
         // Lifecycle management
     public:
-        ~UTF8() noexcept;
-        UTF8();
+        ~Utf8() noexcept;
+        Utf8();
 
-        UTF8(const UTF8&) = delete;
-        UTF8& operator=(const UTF8&) = delete;
+        Utf8(const Utf8&) = delete;
+        Utf8& operator=(const Utf8&) = delete;
 
-        UTF8(UTF8&&) noexcept = delete;
-        UTF8& operator=(UTF8&&) noexcept = delete;
+        Utf8(Utf8&&) noexcept = delete;
+        Utf8& operator=(Utf8&&) noexcept = delete;
 
     public:
         /**
@@ -98,5 +97,3 @@ namespace UTF8 {
     };
 
 }
-
-#endif

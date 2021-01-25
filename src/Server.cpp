@@ -5,10 +5,10 @@ Server::~Server()
 }
 Server::Server()
     : logger(new Logger()),
-      thread_pool(std::make_shared<Thread_Pool>()),
+      thread_pool(std::make_shared<ThreadPool>()),
       request(std::make_shared<Message::Request>()),
       response(std::make_shared<Message::Response>()),
-      server_socket(new Server_Socket()),
+      server_socket(new ServerSocket()),
       m_configuration(new ServerConfiguration())
 {
 }
@@ -83,7 +83,7 @@ void Server::set_raw_request(const std::string& raw_request)
 
 bool Server::handle_post_request()
 {
-    Percent_Encoding percent_encoding;
+    PercentEncoding percent_encoding;
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
      */
@@ -118,7 +118,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
     {
         // 400 Bad Request
         // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse request"); } );
-        Status_Handler::handle_status_code(response, 400);
+        StatusHandler::handle_status_code(response, 400);
         return;
     }
 
@@ -128,7 +128,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
         if(handle_post_request())
         {
             // Content created
-            Status_Handler::handle_status_code(response, 200);
+            StatusHandler::handle_status_code(response, 200);
             response->add_header("Location", "/sign_up_done.html");
             response->set_content("/sign_up_done.html");
             response->add_header("Content-Type", "text/html");
@@ -137,7 +137,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
         }
         else
         {
-            Status_Handler::handle_status_code(response, 400);
+            StatusHandler::handle_status_code(response, 400);
             return;
         }
     }
@@ -155,7 +155,7 @@ void Server::request_core_handler(const std::string& raw_request_string)
             return;
         }
         response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
-        Status_Handler::handle_status_code(response, 101);
+        StatusHandler::handle_status_code(response, 101);
         return;
     }
 
@@ -166,11 +166,11 @@ void Server::request_core_handler(const std::string& raw_request_string)
     )
     {
         // 404 Not Found
-        Status_Handler::handle_status_code(response, 404);
+        StatusHandler::handle_status_code(response, 404);
         // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("handle requested resources"); } );
         return;
     }
 
     // Status handler
-    Status_Handler::handle_status_code(response, 200);
+    StatusHandler::handle_status_code(response, 200);
 }

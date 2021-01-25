@@ -1,148 +1,130 @@
-set(this Http_Server_All_Test)
+include_directories(${this} PUBLIC ../include)
 
 enable_testing()
 
 add_subdirectory(server_client_test)
 
 set(source_files
-    URI_Test.cpp
-    Server_Test.cpp
-    Client_Test.cpp
-    Request_Test.cpp
-    Response_Test.cpp
+    UriTest.cpp
+    ServerTest.cpp
+    ClientTest.cpp
+    RequestTest.cpp
+    ResponseTest.cpp
     CharacterSetTest.cpp
-    Percent_Encoding_Test.cpp
-    WebSocket_Test.cpp
+    PercentEncodingTest.cpp
+    WebSocketTest.cpp
 )
 
-include_directories(${this} PUBLIC ../include)
 
-add_executable(${this} ${source_files})
-target_link_libraries(${this} PUBLIC
+
+add_executable(all_tests ${source_files})
+target_link_libraries(all_tests PUBLIC
     gtest_main 
-    Http_Server
+    all_libs
 )
 
-# Character_Set test 
-add_executable(CharacterSetTest CharacterSetTest.cpp)
-target_link_libraries(CharacterSetTest PUBLIC
+add_executable(character_set_test CharacterSetTest.cpp)
+target_link_libraries(character_set_test PUBLIC
     gtest_main 
-    CharacterSetLib
+    character_set_lib
 )
 
-# Percent-Encoding test 
-add_executable(Percent_Encoding_Test Percent_Encoding_Test.cpp)
-target_link_libraries(Percent_Encoding_Test PUBLIC
+add_executable(percent_encoding_test PercentEncodingTest.cpp)
+target_link_libraries(percent_encoding_test PUBLIC
     gtest_main 
-    Percent_Encoding
+    percent_encoding_lib
 )
 
-# URI test 
-add_executable(URI_Test URI_Test.cpp)
-target_link_libraries(URI_Test PUBLIC
+add_executable(uri_test UriTest.cpp)
+target_link_libraries(uri_test PUBLIC
     gtest_main 
-    Http_Server
+    uri_lib
 )
 
-# Request test 
-add_executable(Request_Test Request_Test.cpp)
-target_link_libraries(Request_Test PUBLIC
+add_executable(request_test RequestTest.cpp)
+target_link_libraries(request_test PUBLIC
     gtest_main 
-    Http_Server
+    request_lib
 )
 
-# Response test 
-add_executable(Response_Test Response_Test.cpp)
-target_link_libraries(Response_Test PUBLIC
+add_executable(response_test ResponseTest.cpp)
+target_link_libraries(response_test PUBLIC
     gtest_main 
-    Response_Lib
+    response_lib
 )
 
-# Server test 
-add_executable(Server_Test Server_Test.cpp)
-target_link_libraries(Server_Test PUBLIC
+add_executable(server_test ServerTest.cpp)
+target_link_libraries(server_test PUBLIC
     gtest_main 
-    Http_Server
+    server_lib
 )
 
-# Client test 
-add_executable(Client_Test Client_Test.cpp)
-target_link_libraries(Client_Test PUBLIC
+add_executable(client_test ClientTest.cpp)
+target_link_libraries(client_test PUBLIC
     gtest_main 
-    Http_Server
+    client_lib
 )
 
-
-# Mysql_Handler test 
-add_executable(Mysql_Handler_Test Mysql_Handler_Test.cpp)
-target_link_libraries(Mysql_Handler_Test PUBLIC
+add_executable(mysql_handler_test MysqlHandlerTest.cpp)
+target_link_libraries(mysql_handler_test PUBLIC
     gtest_main 
-    Mysql_Handler
+    mysql_handler_lib
 )
 
-# logger test 
-add_executable(Logger_Test Logger_Test.cpp)
-target_link_libraries(Logger_Test PUBLIC
+add_executable(logger_test LoggerTest.cpp)
+target_link_libraries(logger_test PUBLIC
     gtest_main 
-    Logger
+    logger_lib
 )
 
-# WebSocket test 
-add_executable(WebSocket_Test WebSocket_Test.cpp)
-target_link_libraries(WebSocket_Test PUBLIC
+add_executable(websocket_test WebSocketTest.cpp)
+target_link_libraries(websocket_test PUBLIC
     gtest_main 
-    Http_Server
+    websocket_lib
 )
 
-# base64 test
-add_executable(Base64_Test Base64_Test.cpp)
-target_link_libraries(Base64_Test PUBLIC
+add_executable(base64_test Base64Test.cpp)
+target_link_libraries(base64_test PUBLIC
     gtest_main
-    Http_Server    
+    base64_lib
 )
 
-# SHA-1 test
-add_executable(SHA1_Test SHA1_Test.cpp)
-target_link_libraries(SHA1_Test PUBLIC
+add_executable(sha1_test Sha1Test.cpp)
+target_link_libraries(sha1_test PUBLIC
     gtest_main
-    Http_Server    
+    sha1_lib
 )
 
-# UTF-8 test
-add_executable(UTF8_Test UTF8_Test.cpp)
-target_link_libraries(UTF8_Test PUBLIC
+add_executable(utf8_test Utf8Test.cpp)
+target_link_libraries(utf8_test PUBLIC
     gtest_main
-    Http_Server    
+    utf8_lib    
 )
 
-# status handler test
-add_executable(Status_Handler_Test Status_Handler_Test.cpp)
-target_link_libraries(Status_Handler_Test PUBLIC
+add_executable(status_handler_test StatusHandlerTest.cpp)
+target_link_libraries(status_handler_test PUBLIC
     gtest_main
-    Http_Server
+    status_handler_lib
 )
 
-# thread pool test
-add_executable(Thread_Pool_Test Thread_Pool_Test.cpp)
-target_link_libraries(Thread_Pool_Test PUBLIC
-    Thread_Pool
+add_executable(thread_pool_test ThreadPoolTest.cpp)
+target_link_libraries(thread_pool_test PUBLIC
     gtest_main
+    thread_pool_lib
 )
 
-# timer test
-add_executable(Timer_Test Timer_Test.cpp)
-target_link_libraries(Timer_Test PUBLIC
+add_executable(timer_test TimerTest.cpp)
+target_link_libraries(timer_test PUBLIC
     gtest_main
-    Timer
+    timer_lib
 )
 
-# Server Socket test
-add_executable(Server_Socket_Test
-    Server_Socket_Test.cpp
+add_executable(server_socket_test
+    ServerSocketTest.cpp
 )
-target_link_libraries(Server_Socket_Test PUBLIC
-    Server_Socket_Lib
-    Client_Socket_Lib
+target_link_libraries(server_socket_test PUBLIC
+    server_socket_lib
+    client_socket_lib
     gtest_main
 )
 
@@ -150,6 +132,6 @@ add_executable(server_configuration_test
     ServerConfigurationTest.cpp
 )
 target_link_libraries(server_configuration_test
-    server_configuration_lib
     gtest_main
+    server_configuration_lib
 )

@@ -1,20 +1,20 @@
-#include "Client_Socket.hpp"
+#include "ClientSocket.hpp"
 
 #include <stdexcept>
 #include <iostream>
 
-Client_Socket::Client_Socket()
+ClientSocket::ClientSocket()
     : client_fd(-1)
 {
 
 }
 
-Client_Socket::~Client_Socket()
+ClientSocket::~ClientSocket()
 {
     close_connection();
 }
 
-void Client_Socket::connect_to( const std::string ip, const int port )
+void ClientSocket::connect_to( const std::string ip, const int port )
 {
     client_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(client_fd == -1)
@@ -38,7 +38,7 @@ void Client_Socket::connect_to( const std::string ip, const int port )
     printf("Client: successfully connects to server\n");
 }
 
-bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
+bool ClientSocket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
 {
     if(!send_buffer.empty())
         send_buffer.clear();
@@ -59,7 +59,7 @@ bool Client_Socket::write_to(const int peer_fd, const std::vector<uint8_t>& data
     }
 }
 
-std::vector<uint8_t>* Client_Socket::read_from(const int peer_fd)
+std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
 {
     if(!receive_buffer.empty())
         receive_buffer.clear();
@@ -84,34 +84,34 @@ std::vector<uint8_t>* Client_Socket::read_from(const int peer_fd)
     return &receive_buffer;
 }
 
-void Client_Socket::close_connection()
+void ClientSocket::close_connection()
 {
     if(close(client_fd))
         fprintf(stderr, "Cannot tear down client socket fd.");
 }
 
-int Client_Socket::get_client_fd() const
+int ClientSocket::get_client_fd() const
 {
     return client_fd;
 }
 
-void Client_Socket::fill_send_buffer(const std::string& data_string)
+void ClientSocket::fill_send_buffer(const std::string& data_string)
 {
     for(int i = 0; i < data_string.size(); ++i)
         send_buffer.push_back( (uint8_t)data_string[i] );
 }
 
-std::vector<uint8_t>* Client_Socket::get_send_buffer()
+std::vector<uint8_t>* ClientSocket::get_send_buffer()
 {
     return &send_buffer;
 }
 
-std::vector<uint8_t>* Client_Socket::get_receive_buffer()
+std::vector<uint8_t>* ClientSocket::get_receive_buffer()
 {
     return &receive_buffer;
 }
 
-bool Client_Socket::write_to()
+bool ClientSocket::write_to()
 {
     return write_to(
         client_fd,
@@ -120,7 +120,7 @@ bool Client_Socket::write_to()
     );
 }
 
-std::vector<uint8_t>* Client_Socket::read_from()
+std::vector<uint8_t>* ClientSocket::read_from()
 {
     return read_from(client_fd);
 }

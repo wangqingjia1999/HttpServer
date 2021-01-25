@@ -1,4 +1,4 @@
-#include "Percent_Encoding.hpp"
+#include "PercentEncoding.hpp"
 
 namespace
 {
@@ -22,7 +22,7 @@ namespace
 	};
 
 	/**
-	 * URI producers and normalizers should use uppercase hexadecimal digits
+	 * Uri producers and normalizers should use uppercase hexadecimal digits
 	 * for all percent-encodings.
 	 */
 	const std::map<int, char> hex_mapper
@@ -46,21 +46,21 @@ namespace
 	};
 }
 
-Percent_Encoding::~Percent_Encoding()
+PercentEncoding::~PercentEncoding()
 {
 }
 
-Percent_Encoding::Percent_Encoding() 
+PercentEncoding::PercentEncoding() 
 	: decoded_character(0), 
 	  remaining_characters(0)
 {
 }
 
-std::string Percent_Encoding::encode(const std::string& unencoded_string)
+std::string PercentEncoding::encode(const std::string& unencoded_string)
 {
 	/**
 	 * Under normal circumstances, the only time to encode is during the process
-	 * of assembling the URI from its components.
+	 * of assembling the Uri from its components.
 	 * '%' is the indicator of percent-encoding.
 	 * 
 	 * Two steps to encode:
@@ -90,7 +90,7 @@ std::string Percent_Encoding::encode(const std::string& unencoded_string)
 }
 
 
-std::string Percent_Encoding::decode(const std::string& encoded_string)
+std::string PercentEncoding::decode(const std::string& encoded_string)
 {
 	if (encoded_string.find('%') == std::string::npos)
 	{
@@ -146,7 +146,7 @@ std::string Percent_Encoding::decode(const std::string& encoded_string)
 	return decoded_uri_string;
 }
 
-char Percent_Encoding::convert_decimal_to_hexo_character(int n)
+char PercentEncoding::convert_decimal_to_hexo_character(int n)
 {
 	return hex_mapper.find(n)->second;
 }

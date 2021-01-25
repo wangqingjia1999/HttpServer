@@ -1,5 +1,4 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#pragma once
 
 #include "Request.hpp"
 #include "Response.hpp"
@@ -42,9 +41,9 @@ public:
 	bool generate_request();
 
 	/**
-	 * @brief  Parse URI string.
-	 * @param  uri  URI string.
-	 * @return  True if successfully parse URI.
+	 * @brief  Parse Uri string.
+	 * @param  uri  Uri string.
+	 * @return  True if successfully parse Uri.
 	 */
 	bool parse_uri(const std::string uri);
 
@@ -58,5 +57,3 @@ private:
 	struct Impl;
 	std::unique_ptr< Impl > impl_;
 };
-
-#endif

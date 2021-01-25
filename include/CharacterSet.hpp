@@ -1,5 +1,4 @@
-#ifndef CHARACTER_SET_HPP
-#define CHARACTER_SET_HPP
+#pragma once
 
 #include <set>
 #include <memory>
@@ -64,5 +63,3 @@ public:
 public:
 	std::set< char > m_character_set;
 };
-
-#endif

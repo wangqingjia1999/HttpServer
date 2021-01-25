@@ -1,5 +1,4 @@
-#ifndef URI_HPP
-#define URI_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -8,81 +7,80 @@
 #include <functional>
 
 #include "CharacterSet.hpp"
-#include "Percent_Encoding.hpp"
+#include "PercentEncoding.hpp"
 
-class URI
+class Uri
 {
 public:
-	~URI() noexcept;
-	URI();
+	~Uri() noexcept;
+	Uri();
 
-	URI(const URI& other);
-	URI& operator=(const URI& other);
+	Uri(const Uri& other) = default;
+	Uri& operator=(const Uri& other) = default;
 
-	URI(URI&&) noexcept;
-	URI& operator=(URI&&) noexcept;
+	Uri(Uri&&) noexcept = default;
+	Uri& operator=(Uri&&) noexcept = default;
 
 public:
 	/**
 	 * Equality comparison operator.
 	 * 
 	 * @param[in] other 
-	 * 		The other URI to which to compare this URI.
+	 * 		The other Uri to which to compare this Uri.
 	 * 
 	 * @return 
 	 * 		True if equal.
 	 */
-	bool operator==(const URI& other) const;
+	bool operator==(const Uri& other) const;
 
 	/**
-	 * @brief  Get scheme of URI.
+	 * @brief  Get scheme of Uri.
 	 * @return  Scheme string.
 	 */
 	std::string get_scheme();
 
 	/**
-	 * @brief  Get Host of URI.
+	 * @brief  Get Host of Uri.
 	 * @return  Host string.
 	 */
 	std::string get_host();
 
 	/**
-	 * @brief  Get path vector of URI.
+	 * @brief  Get path vector of Uri.
 	 * @return  A vector of path elements
 	 */
 	std::vector< std::string > get_path();
 
 	/**
-	 * @brief  Get path string of URI.
+	 * @brief  Get path string of Uri.
 	 * @return  A path string.
 	 */
 	std::string get_path_string();
 
 	/**
-	 * @brief  Get port number of URI.
+	 * @brief  Get port number of Uri.
 	 * @return  A int number represents port.
 	 */
 	int get_port();
 
 	/**
-	 * @brief  Get query string of URI.
+	 * @brief  Get query string of Uri.
 	 * @return  A query string.
 	 */
 	std::string get_query();
 
 	/**
-	 * @brief  Get fragment string of URI.
+	 * @brief  Get fragment string of Uri.
 	 * @return  A fragment string.
 	 */
 	std::string get_fragment();
 
 	/**
-	 * @brief  Get user info of URI.
+	 * @brief  Get user info of Uri.
 	 * @return  A user info string.
 	 */
 	std::string get_user_info();
 
-	
 	/**
 	 * @brief  Set scheme.
 	 * @return  True if successfully set.
@@ -156,8 +154,8 @@ public:
 	bool clear_path();
 
 	/**
-	 * @brief  Parse an URI string.
-	 * @param  uri_string  URI string to be parsed.
+	 * @brief  Parse an Uri string.
+	 * @param  uri_string  Uri string to be parsed.
 	 * @return  True if successfully parse.
 	 */
 	bool parse_from_string(const std::string& uri_string);
@@ -239,7 +237,6 @@ private:
 	void remove_dots();
 	
 private:
-	// Properties
 	std::string scheme;
 
 	std::string authority;
@@ -248,7 +245,7 @@ private:
 
 	std::string host;
 
-	bool has_port_bool;
+	bool m_has_port;
 	uint16_t port;
 
 	bool is_relative_path;
@@ -262,5 +259,3 @@ private:
 
 	CharacterSet characterset;
 };
-
-#endif

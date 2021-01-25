@@ -1,5 +1,4 @@
-#ifndef WEBSOCKET_HPP
-#define WEBSOCKET_HPP
+#pragma once
 
 #include <functional>
 
@@ -109,5 +108,3 @@ private:
     struct Impl;
     std::unique_ptr< Impl > impl_;
 };
-
-#endif

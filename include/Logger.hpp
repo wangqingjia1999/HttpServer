@@ -1,5 +1,4 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
 #include <memory>
 #include <string>
@@ -60,8 +59,4 @@ private:
         const std::string& message_string, 
         const Logger_Level logger_level = Logger_Level::NORMAL
     );
-
-
 };
-
-#endif
