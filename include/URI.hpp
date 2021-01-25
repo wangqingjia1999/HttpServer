@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "Character_Set.hpp"
+#include "CharacterSet.hpp"
 #include "Percent_Encoding.hpp"
 
 class URI
@@ -260,7 +260,7 @@ private:
 	bool has_fragment_bool;
 	std::string fragment;
 
-	Character_Set characterset;
+	CharacterSet characterset;
 };
 
 #endif

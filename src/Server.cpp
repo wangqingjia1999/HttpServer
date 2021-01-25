@@ -83,9 +83,6 @@ void Server::set_raw_request(const std::string& raw_request)
 
 bool Server::handle_post_request()
 {
-    /**
-     * e.g. request->get_body() is "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer"
-     */
     Percent_Encoding percent_encoding;
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
@@ -140,9 +137,8 @@ void Server::request_core_handler(const std::string& raw_request_string)
         }
         else
         {
-            // bad request
-            // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse POST request"); } );
             Status_Handler::handle_status_code(response, 400);
+            return;
         }
     }
 

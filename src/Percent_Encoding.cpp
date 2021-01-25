@@ -1,8 +1,53 @@
 #include "Percent_Encoding.hpp"
 
+namespace
+{
+	// General delimiters
+	const CharacterSet GEN_DELIMS
+	{
+		':', '/', '?' , '#' , '[' , ']' , '@',
+	};
+
+	// Subcomponents delimiters
+	const CharacterSet SUB_DELIMS
+	{
+		'!', '$', '&', '\'', '(', ')',
+		'*', '+', ',', ';', '=',
+	};
+
+	const CharacterSet RESERVED
+	{
+		GEN_DELIMS,
+		SUB_DELIMS,
+	};
+
+	/**
+	 * URI producers and normalizers should use uppercase hexadecimal digits
+	 * for all percent-encodings.
+	 */
+	const std::map<int, char> hex_mapper
+	{
+		{0,'0'},
+		{1,'1'},
+		{2,'2'},
+		{3,'3'},
+		{4,'4'},
+		{5,'5'},
+		{6,'6'},
+		{7,'7'},
+		{8,'8'},
+		{9,'9'},
+		{10,'A'},
+		{11,'B'},
+		{12,'C'},
+		{13,'D'},
+		{14,'E'},
+		{15,'F'}
+	};
+}
+
 Percent_Encoding::~Percent_Encoding()
 {
-
 }
 
 Percent_Encoding::Percent_Encoding() 
@@ -20,8 +65,8 @@ std::string Percent_Encoding::encode(const std::string& unencoded_string)
 	 * 
 	 * Two steps to encode:
 	 * 	1. Convert the character string into a sequence of bytes using the UTF-8 encoding;
-	 * 	2. Convert each byte that is not an ASCII letter or digit to % HH, where HH is 
-	 * 	   the hexadecimal value of the byte
+	 * 	2. Convert each byte that is not an ASCII letter or digit to %HH, where HH is 
+	 * 	   the hexadecimal value of the byte.
 	 */
 	std::string encoded_string;
 	for (size_t i = 0; i < unencoded_string.size(); ++i)
@@ -47,12 +92,6 @@ std::string Percent_Encoding::encode(const std::string& unencoded_string)
 
 std::string Percent_Encoding::decode(const std::string& encoded_string)
 {
-	// When a URI is dereferenced/decode, the components and subcomponents
-	// must be parsed and separated before the decoding.
-	// Otherwise, the data may be mistaken from component delimiters.
-
-	// The uppercase hexadecimal digits 'A' through 'F' are equivalent to
-	// the lowercase digits 'a' through 'f', respectively.
 	if (encoded_string.find('%') == std::string::npos)
 	{
 		return encoded_string;
@@ -65,9 +104,7 @@ std::string Percent_Encoding::decode(const std::string& encoded_string)
 		 * Each character is in the form of: %[1][2]
 		 * We do this:  [1]*16 + [2]
 		 * Use this method, we get the decimal number,
-		 * then directly converting it to char.
-		 * 
-		 * TODO:  Add to_upper_case().
+		 * Then we directly convert it to char.
 		 */
 		if (encoded_string[i] == '%')
 		{
@@ -107,16 +144,6 @@ std::string Percent_Encoding::decode(const std::string& encoded_string)
 	}
 
 	return decoded_uri_string;
-}
-
-bool Percent_Encoding::is_finished()
-{
-	return remaining_characters == 0;
-}
-
-char Percent_Encoding::get_decoded_character()
-{
-	return char(decoded_character);
 }
 
 char Percent_Encoding::convert_decimal_to_hexo_character(int n)

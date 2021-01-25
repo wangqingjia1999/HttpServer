@@ -1,7 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(HeaderFiles
-    ../include/Character_Set.hpp
+    ../include/CharacterSet.hpp
     ../include/Client.hpp
     ../include/Percent_Encoding.hpp
     ../include/Request.hpp
@@ -21,7 +21,7 @@ set(HeaderFiles
 )
 
 set(SourceFiles
-    Character_Set.cpp
+    CharacterSet.cpp
     Client.cpp
     Percent_Encoding.cpp
     Request.cpp
@@ -55,9 +55,9 @@ add_library(Client_Socket_Lib STATIC
     Client_Socket.cpp
 )
 
-add_library(Character_Set STATIC
-    ../include/Character_Set.hpp
-    Character_Set.cpp
+add_library(CharacterSetLib STATIC
+    ../include/CharacterSet.hpp
+    CharacterSet.cpp
 )
 
 add_library(Percent_Encoding STATIC
@@ -65,7 +65,7 @@ add_library(Percent_Encoding STATIC
     Percent_Encoding.cpp
 )
 target_link_libraries(Percent_Encoding PUBLIC
-    Character_Set
+    CharacterSetLib
 )
 
 add_library(Thread_Pool STATIC

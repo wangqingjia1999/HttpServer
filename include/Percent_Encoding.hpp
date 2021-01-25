@@ -6,7 +6,7 @@
 #include <memory>
 #include <sstream>
 
-#include "Character_Set.hpp"
+#include "CharacterSet.hpp"
 
 class Percent_Encoding
 {
@@ -46,22 +46,6 @@ public:
 	 */
 	std::string decode(const std::string& encoded_string);
 
-	/**
-	 * Is finished processing?
-	 * 
-	 * @return  
-	 * 		True if it is finished.
-	 */
-	bool is_finished();
-
-	/**
-	 * Get decoded character.
-	 * 
-	 * @return  
-	 * 		Decoded character.
-	 */
-	char get_decoded_character();
-
 private:
 	/**
 	 * Convert decimal integer to corresponding hexadecimal character.
@@ -75,52 +59,7 @@ private:
 
 private:
 	int decoded_character;
-
 	int remaining_characters;
-
-	// gen-delims characters
-	const Character_Set GEN_DELIMS
-	{
-		':', '/', '?' , '#' , '[' , ']' , '@',
-	};
-
-	// sub-delims characters
-	const Character_Set SUB_DELIMS
-	{
-		'!', '$', '&', '\'', '(', ')',
-		'*', '+', ',', ';', '=',
-	};
-
-	const Character_Set RESERVED
-	{
-		GEN_DELIMS,
-		SUB_DELIMS,
-	};
-
-	/**
-	 * Experimental solution:
-	 * URI producers and normalizers should use uppercase hexadecimal digits
-	 * for all percent-encodings.
-	 */
-	const std::map<int, char> hex_mapper
-	{
-		{0,'0'},
-		{1,'1'},
-		{2,'2'},
-		{3,'3'},
-		{4,'4'},
-		{5,'5'},
-		{6,'6'},
-		{7,'7'},
-		{8,'8'},
-		{9,'9'},
-		{10,'A'},
-		{11,'B'},
-		{12,'C'},
-		{13,'D'},
-		{14,'E'},
-		{15,'F'},
-	};
 };
 
 #endif

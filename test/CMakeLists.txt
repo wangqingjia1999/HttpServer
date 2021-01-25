@@ -10,7 +10,7 @@ set(source_files
     Client_Test.cpp
     Request_Test.cpp
     Response_Test.cpp
-    Character_Set_Test.cpp
+    CharacterSetTest.cpp
     Percent_Encoding_Test.cpp
     WebSocket_Test.cpp
 )
@@ -24,10 +24,10 @@ target_link_libraries(${this} PUBLIC
 )
 
 # Character_Set test 
-add_executable(Character_Set_Test Character_Set_Test.cpp)
-target_link_libraries(Character_Set_Test PUBLIC
+add_executable(CharacterSetTest CharacterSetTest.cpp)
+target_link_libraries(CharacterSetTest PUBLIC
     gtest_main 
-    Character_Set
+    CharacterSetLib
 )
 
 # Percent-Encoding test 
