@@ -35,7 +35,6 @@ void Server::listen_at(const std::string& host, const int port)
                 continue;
             }
                 
-
             case Server_Socket_State::READABLE:
             {   
                 request_core_handler( server_socket->read_from() );
