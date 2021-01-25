@@ -15,30 +15,46 @@
 namespace Sha1
 {
     /**
-     * @brief  Encrypt given bytes vector by SHA-1 algorithm.
-     * @param  data  Data in the form of bytes sequence/vector.
-     * @return  The message digest in the form of string.
+     * Encrypt given bytes vector by SHA-1 algorithm.
+     * 
+     * @param[in] data  
+     *      Data in the form of bytes sequence/vector.
+     * 
+     * @return  
+     *      The message digest in the form of string.
      */
     std::string sha1_encrypt(const std::vector< uint8_t >& data);
 
     /**
-     * @brief  Encrypt given data string by SHA-1 algorithm.
-     * @param  data  Data in the form of string.
-     * @return  The message digest in the form of string.
+     * Encrypt given data string by SHA-1 algorithm.
+     * 
+     * @param[in] data  
+     *      Data in the form of string.
+     * 
+     * @return  
+     *      The message digest in the form of string.
      */
     std::string sha1_encrypt(const std::string& data);
 
     /**
-     * @brief  Core function to convert given data into message digest in the form of bytes.
-     * @param  data  Data in the form of bytes sequence/vector.
-     * @return  The message digest bytes sequence.
+     * Core function to convert given data into message digest in the form of bytes.
+     * 
+     * @param[in] data  
+     *      Data in the form of bytes sequence/vector.
+     * 
+     * @return  
+     *      The message digest bytes sequence.
      */
     std::vector< uint8_t > sha1_encrypt_into_bytes(const std::vector< uint8_t >& data);
 
     /**
-     * @brief  Core function to convert given data into message digest in the form of bytes.
-     * @param  data  Data in the form of string.
-     * @return  The message digest bytes sequence.
+     * Core function to convert given data into message digest in the form of bytes.
+     * 
+     * @param[in] data  
+     *      Data in the form of string.
+     * 
+     * @return  
+     *      The message digest bytes sequence.
      */
     std::vector< uint8_t > sha1_encrypt_into_bytes(const std::string& data);
 }

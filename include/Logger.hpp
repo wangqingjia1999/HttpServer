@@ -13,47 +13,62 @@ class Logger
 
 public:
     /**
-     * @brief  Record normal intformational message.
-     * @param  normal_message  Normal info message.
+     * Record normal intformational message.
+     * 
+     * @param[in] normal_message  
+     *      Normal info message.
      */
     void record_normal_message(const std::string& normal_message);
 
     /**
-     * @brief  Record warning message.
-     * @param  warning_message  Warning message.
+     * Record warning message.
+     * 
+     * @param[in] warning_message  
+     *      Warning message.
      */
     void record_warning_message(const std::string& warning_message);
 
     /**
-     * @brief  Record errors.
-     * @param  error_message  Error message.
+     * Record errors.
+     * 
+     * @param[in] error_message  
+     *      Error message.
      */
     void record_error_message(const std::string& error_message);
 
     /**
-     * @brief  Clear up log.
+     * Clear up log.
      */
     void clear_up_log();
     
     /**
-     * @brief  Get log.txt's absolute path.
-     * @return  The absolute path string.
+     * Get log.txt's absolute path.
+     * 
+     * @return  
+     *      The absolute path string.
      */
     std::string get_log_file_absolute_path();
 
     /**
-     * @brief  Return the first line of log.txt.
-     * @return  The first line of log.txt.
+     * Return the first line of log.txt.
+     * 
+     * @return  
+     *      The first line of log.txt.
      */
     std::string get_first_line_of_log();
 
 private:
     /**
-     * @brief  Record a message based on given logging level.
-     * @param  message_string  Log information to be stored into log.txt.
-     * @param  logger_level  Denote the logging level/urgency/priority.
+     * Record a message based on given logging level.
      * 
-     * @note  Store the log file into "../HttpServer/log.txt".
+     * @param[in] message_string  
+     *      Log information to be stored into log.txt.
+     * 
+     * @param[in] logger_level  
+     *      Denote the logging level/urgency/priority.
+     * 
+     * @note  
+     *      Store the log file into "../HttpServer/log.txt".
      */
     void record(
         const std::string& message_string, 

@@ -9,7 +9,6 @@
 
 class PercentEncoding
 {
-	// Life-cycle management
 public:
 	~PercentEncoding();
 	PercentEncoding();
@@ -20,7 +19,6 @@ public:
 	PercentEncoding(PercentEncoding&&) = delete;
 	PercentEncoding& operator=(PercentEncoding&&) = delete;
 
-	// Member methods
 public:
 
 	/**
@@ -51,6 +49,7 @@ private:
 	 * 
 	 * @param[in] n 
 	 * 		Given decimal integer.
+	 * 
 	 * @return 
 	 * 		Hexadecimal character [1-F]
 	 */

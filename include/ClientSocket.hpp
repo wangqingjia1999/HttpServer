@@ -6,9 +6,10 @@
 #include <string>
 
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+
 
 class ClientSocket : public ISocket
 {
@@ -29,16 +30,6 @@ public:
      */
     void connect_to(const std::string ip, const int port);
 
-    void close_connection();
-
-    int get_client_fd() const;
-    
-    void fill_send_buffer(const std::string& data_string);
-
-    std::vector<uint8_t>* get_send_buffer();
-    std::vector<uint8_t>* get_receive_buffer();
-    
-    
     /**
      * Write to server after successfully connecting to it.
      * 
@@ -54,6 +45,18 @@ public:
      *      A pointer to socket's internal receive buffer.
      */
     std::vector<uint8_t>* read_from();
+
+    void close_connection();
+
+    int get_client_fd() const;
+    
+    void fill_send_buffer(const std::string& data_string);
+
+    std::vector<uint8_t>* get_send_buffer();
+    std::vector<uint8_t>* get_receive_buffer();
+    
+    
+
     
 private:
     int client_fd;

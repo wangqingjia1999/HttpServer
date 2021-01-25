@@ -26,31 +26,37 @@ public:
 
 public:
     /**
-     * @brief  Post task to task queue.
-     * @param  new_task  New task.
+     * Post task to task queue.
+     * 
+     * @param[in] new_task  
+     *      New task.
      */
     void post_task(const Task& new_task);
 
     /**
-     * @brief  Single thread infinite task-loop.
+     * Single thread infinite task-loop.
      * 
-     * Consistently check whether the task queue has something to fetch.
+     * @note
+     *      Consistently check whether the task queue has something to fetch.
      */
     void thread_work_loop();
     
     /**
-     * @brief  Shutdown the thread pool.
+     * Shutdown the thread pool.
      */
     void shutdown_thread_pool();
 
     /**
-     * @brief  Whether the taskes have been finished by workers.
-     * @param  thread_index  Thread index within thread pool.
-     * @return  True if all taskes have been finished by workers.
+     * Whether the taskes have been finished by workers.
+     * 
+     * @param[in] thread_index  
+     *      Thread index within thread pool.
+     * 
+     * @return  
+     *      True if all taskes have been finished by workers.
      */
     bool have_finished_taskes(int thread_index);
 
-    // Private properties
 private:
     /**
      * For an efficient thread pool implementation, 

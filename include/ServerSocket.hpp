@@ -47,7 +47,6 @@ public:
     ServerSocket(const ServerSocket&&) = delete;
     ServerSocket& operator=(const ServerSocket&&) = delete;
     
-    // overrides
 public:
     bool write_to(const std::string& data_string);
     bool write_to(const int peer_fd, const std::string& data_string);

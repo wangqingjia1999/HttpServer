@@ -2,58 +2,71 @@
 
 #include "Request.hpp"
 #include "Response.hpp"
+#include "ClientSocket.hpp"
 
 class Client
 {
-	// Life-cycle management
 public:
 	~Client();
 	Client();
 
-	Client(const Client&);
-	Client& operator=(const Client&) ;
+	Client(const Client&) = delete;
+	Client& operator=(const Client&) = delete;
 	
-	Client(Client&&) noexcept;
-	Client& operator=(Client&&) noexcept;
+	Client(Client&&) noexcept = delete;
+	Client& operator=(Client&&) noexcept = delete;
 public:
 	/**
-	 * @brief  Connect to target server.
-	 * @return  True if successfully connect to server.
+	 * Connect to target server.
+	 * 
+	 * @return  
+	 * 		True if successfully connect to server.
 	 */
 	bool connect_to();
 	
 	/**
-	 * @brief  Send request to server.
-	 * @return  True if successfully send request to server.
+	 * Send request to server.
+	 * 
+	 * @return  
+	 * 		True if successfully send request to server.
 	 */
 	bool send_request();
 
 	/** 
-	 * @brief  Parse received response from Server.
-	 * @return  True if successfully parse the response.
+	 * Parse received response from Server.
+	 * 	
+	 * @return 
+	 * 		True if successfully parse the response.
 	 */
 	bool parse_response();
 
 	/**
-	 * @brief  Generate request message.
-	 * @return  True if successfully generate message.
+	 * Generate request message.
+	 * 
+	 * @return  
+	 * 		True if successfully generate message.
 	 */
 	bool generate_request();
 
 	/**
-	 * @brief  Parse Uri string.
-	 * @param  uri  Uri string.
-	 * @return  True if successfully parse Uri.
+	 * Parse Uri string.
+	 * 
+	 * @param[in] uri  
+	 * 		Uri string.
+	 * 
+	 * @return  
+	 * 		True if successfully parse Uri.
 	 */
 	bool parse_uri(const std::string uri);
 
 	/**
-	 * @brief  Get generated request string.
-	 * @return  Generated request string.
+	 * Get generated request string.
+	 * 
+	 * @return  
+	 * 		Generated request string.
 	 */
 	std::string get_generated_request();
 
 private:
-	struct Impl;
-	std::unique_ptr< Impl > impl_;
+	std::shared_ptr< ClientSocket > m_client_socket;
 };
