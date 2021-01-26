@@ -8,8 +8,10 @@ Server::Server()
       thread_pool(std::make_shared<ThreadPool>()),
       m_connection(std::make_shared<Connection>()),
       server_socket(new ServerSocket()),
+      m_resource_handler(new ResourceHandler()),
       m_configuration(new ServerConfiguration())
 {
+    m_resource_handler->set_resource_directory_path(m_configuration->get_resource_directory_path());
 }
 
 void Server::listen_at(const std::string& host, const int port)

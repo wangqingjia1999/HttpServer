@@ -6,6 +6,7 @@
 #include "ThreadPool.hpp"
 #include "ServerSocket.hpp"
 #include "StatusHandler.hpp"
+#include "ResourceHandler.hpp"
 #include "ServerConfiguration.hpp"
 
 #include <queue>
@@ -114,6 +115,7 @@ private:
 	std::shared_ptr< ThreadPool > thread_pool;
 	std::shared_ptr< Connection > m_connection;
 	std::unique_ptr< ServerSocket > server_socket;
+	std::unique_ptr< ResourceHandler > m_resource_handler;
 	std::unique_ptr< ServerConfiguration > m_configuration;
 
 	std::map< std::string, std::string > post_data_map;

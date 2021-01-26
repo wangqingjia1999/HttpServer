@@ -132,7 +132,7 @@ namespace Message
 		 * 		Response status code
 		 * 
 		 * @return  
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_status(const int new_status_code);
 		
@@ -143,7 +143,7 @@ namespace Message
 		 * 		Protocol version.
 		 * 
 		 * @return  
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_protocol_version(const std::string new_protocol_version);
 		
@@ -154,7 +154,7 @@ namespace Message
 		 * 		Response body string.
 		 * 
 		 * @return  
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_body(const std::string& new_response_body);
 		
@@ -165,7 +165,7 @@ namespace Message
 		 * 		Length of response body.
 		 * 
 		 * @return 
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_body_length(const std::streamoff new_body_length);
 		
@@ -190,7 +190,7 @@ namespace Message
 		 * 		Length of response body.
 		 * 
 		 * @return  
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_content_length(const size_t& new_content_length);
 		
@@ -203,15 +203,15 @@ namespace Message
 		void set_content_type(const std::string& new_content_type);
 
 		/**
-		 * Map given Uri to local file system.
+		 * Set requested content/resource.
 		 * 
-		 * @param[in] request_uri  
-		 * 		Request Uri taken from request message
+		 * @param[in] resource
+		 * 		Requested resource.
 		 * 
 		 * @return  
-		 * 		True if successfully set content.
+		 * 		True if succeeds.
 		 */
-		bool set_content(const std::string& new_request_uri);
+		bool set_content(const std::string& resource);
 
 		/**
 		 * Set the complete response message.
@@ -220,7 +220,7 @@ namespace Message
 		 * 		Complete response message.
 		 * 
 		 * @return  
-		 * 		True if set successfully.
+		 * 		True if succeeds.
 		 */
 		bool set_response_message(const std::string& new_response_message_string);
 		
@@ -269,51 +269,37 @@ namespace Message
 		void parse_content_type(const std::string& request_uri);
 
 		/**
-		 * Convert given relative path to absolute path.
-		 * 
-		 * @param[in] path 
-		 * 		Relative path.
-		 * 
-		 * @param[in] absolute_path  
-		 * 		Generated absolute path.
-		 * 
-		 * @return  
-		 * 		True if convert successfully.
-		 */
-		bool convert_path_to_absolute(const std::string& relative_path, std::string& absolute_path);
-
-		/**
 		 * Clear up the header fields.
 		 */
 		void clear_up_header_fields();
 
 	private:
-		std::shared_ptr< Uri > uri;
+		std::shared_ptr< Uri > m_uri;
 		
 		// Status code of response
-		int status_code;
+		int m_status_code;
 
 		// Default protocol version
-		std::string protocol_version;
+		std::string m_protocol_version;
 		
 		// Reason phrase for specific status code.
-		std::string reason_phrase;
+		std::string m_reason_phrase;
 		
 		// Header fields
-		std::map < std::string, std::string > headers;
+		std::map < std::string, std::string > m_headers;
 		
 		// Body of response message
-		std::string body;
+		std::string m_body;
 		
 		// Length of body of response message
-		std::streamoff body_length;
+		std::streamoff m_body_length;
 
 		// Content type
-		std::string content_type;
+		std::string m_content_type;
 
-		size_t content_length;
+		size_t m_content_length;
 
 		// Generated response message string
-		std::string response_message;
+		std::string m_response_message;
 	};
 }

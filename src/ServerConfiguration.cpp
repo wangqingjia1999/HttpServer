@@ -64,7 +64,7 @@ void ServerConfiguration::create_configuration_file()
     }
     else
     {
-                // log: cannot create configuration file
+        // log: cannot create configuration file
         return;
     }
 }

@@ -1,17 +1,30 @@
 #include "ResourceHandler.hpp"
 
 ResourceHandler::ResourceHandler()
-    : m_connection_ptr(nullptr)
 {
 }
 
 ResourceHandler::~ResourceHandler()
 {
-    m_connection_ptr->~Connection();
 }
 
-ResourceHandler::ResourceHandler(ConnectionPtr& connection_ptr)
-    : m_connection_ptr(connection_ptr)
+bool ResourceHandler::is_resource_exists(const std::string& resource_path) const
 {
+    struct stat resource_buffer;
+    return (stat(resource_path.c_str(), &resource_buffer) == 0);
 }
 
+void ResourceHandler::set_resource_directory_path(const std::string& resource_directory_path)
+{
+    m_resource_directory_path = resource_directory_path;
+}
+
+std::string& ResourceHandler::get_resource_directory_path()
+{
+    return m_resource_directory_path;
+}
+
+bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
+{
+    
+}

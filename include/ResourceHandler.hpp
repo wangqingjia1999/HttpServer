@@ -2,13 +2,15 @@
 
 #include "Connection.hpp"
 
+#include <string>
 #include <memory>
+#include <sys/stat.h>
 
+/**
+ * This class is responsible for managing server side resources, mainly for I/O.
+ */
 class ResourceHandler
 {
-public:
-    using ConnectionPtr = std::shared_ptr< Connection >;
-
 public:
     ResourceHandler();
     ~ResourceHandler();
@@ -20,11 +22,26 @@ public:
     ResourceHandler& operator=(ResourceHandler&& other) = default;
 
 public:
-    ResourceHandler(ConnectionPtr& connection_ptr);
+    /**
+     * Fetch resource based on given connection's request
+     * and fill the resource into the connection's response.
+     * 
+     * @return 
+     *      True if succeeds.
+     */
+    bool fetch_resource(std::shared_ptr<Connection>& connection);
 
-public:
+    /**
+     * Whether the resource exists on the server.
+     *
+     * @return
+     *      True if the resource exists.
+     */
+    bool is_resource_exists(const std::string& resource_path) const;
 
-
+    void set_resource_directory_path(const std::string& resource_directory_path);
+    std::string& get_resource_directory_path();
+    
 private:
-    ConnectionPtr m_connection_ptr;
+    std::string m_resource_directory_path;
 };

@@ -90,67 +90,67 @@ namespace Message
 	Message::Response::~Response() noexcept = default;
 
 	Message::Response::Response()
-		: uri(std::make_shared< Uri > ()),
-		  status_code(0),
-		  protocol_version("HTTP/1.1"),
-		  content_length(0)
+		: m_uri(std::make_shared<Uri> ()),
+		  m_status_code(0),
+		  m_protocol_version("HTTP/1.1"),
+		  m_content_length(0)
 	{
 	}
 
 	Message::Response::Response(const Response& other)
     {
-		uri = std::make_shared< Uri > (*(other.uri));
-		status_code = other.status_code;
-		reason_phrase = other.reason_phrase;
-		headers = other.headers;
-		body = other.body;
-		body_length = other.body_length;
-		content_type = other.content_type;
-		content_length = other.content_length;
-		response_message = other.response_message;
+		m_uri = std::make_shared< Uri > (*(other.m_uri));
+		m_status_code = other.m_status_code;
+		m_reason_phrase = other.m_reason_phrase;
+		m_headers = other.m_headers;
+		m_body = other.m_body;
+		m_body_length = other.m_body_length;
+		m_content_type = other.m_content_type;
+		m_content_length = other.m_content_length;
+		m_response_message = other.m_response_message;
     }
 
 	Response& Message::Response::operator=(const Response& other)
 	{
 		if(this != &other)
 		{
-			uri = std::make_shared< Uri > (*(other.uri));
-			status_code = other.status_code;
-			reason_phrase = other.reason_phrase;
-			headers = other.headers;
-			body = other.body;
-			body_length = other.body_length;
-			content_type = other.content_type;
-			content_length = other.content_length;
-			response_message = other.response_message;
+			m_uri = std::make_shared< Uri > (*(other.m_uri));
+			m_status_code = other.m_status_code;
+			m_reason_phrase = other.m_reason_phrase;
+			m_headers = other.m_headers;
+			m_body = other.m_body;
+			m_body_length = other.m_body_length;
+			m_content_type = other.m_content_type;
+			m_content_length = other.m_content_length;
+			m_response_message = other.m_response_message;
 		}
 		return *this;
 	}
 
 	int Message::Response::get_status_code()
 	{
-		return status_code;
+		return m_status_code;
 	}
 
 	std::string Message::Response::get_protocol_version()
 	{
-		return protocol_version;
+		return m_protocol_version;
 	}
 
 	std::string Message::Response::get_reason_phrase()
 	{
-		return reason_phrase;
+		return m_reason_phrase;
 	}
 
 	std::string Message::Response::get_body()
 	{
-		return body;
+		return m_body;
 	}
 
 	std::string Message::Response::get_header(const std::string& header_name)
 	{
-		auto iterator = headers.find(header_name);
-		if (iterator != headers.end())
+		auto iterator = m_headers.find(header_name);
+		if (iterator != m_headers.end())
 		{
 			return iterator->second.c_str();
 		}
@@ -160,51 +160,51 @@ namespace Message
 		}
 	}
 
-	std::string Message::Response::get_status_code_reason_string(const int status_code)
+	std::string Message::Response::get_status_code_reason_string(const int m_status_code)
 	{
-		return status_code_map[status_code];
+		return status_code_map[m_status_code];
 	}
 
 	std::string Message::Response::get_body_length()
 	{
-		body_length = body.size();
-		return std::to_string(body_length);
+		m_body_length = m_body.size();
+		return std::to_string(m_body_length);
 	}
 
 	std::string Message::Response::get_response_message()
 	{
-		return response_message;
+		return m_response_message;
 	}
 
 	size_t Message::Response::get_response_length()
 	{
-		return response_message.size();
+		return m_response_message.size();
 	}
 
 	std::string Message::Response::get_content_type()
 	{
-		return content_type;
+		return m_content_type;
 	}
 
 	bool Message::Response::set_status(int new_status_code)
 	{
-		status_code = new_status_code;
-		reason_phrase = status_code_map[new_status_code];
+		m_status_code = new_status_code;
+		m_reason_phrase = status_code_map[new_status_code];
 		return true;
 	}
 
 	bool Message::Response::set_protocol_version(const std::string new_protocol_version)
 	{
-		protocol_version = new_protocol_version;
+		m_protocol_version = new_protocol_version;
 		return true;
 	}
 	
 	bool Message::Response::set_body(const std::string& new_response_body)
 	{
-		if (!body.empty())
-			body.clear();
+		if (!m_body.empty())
+			m_body.clear();
 
-		body = new_response_body;
+		m_body = new_response_body;
 		return true;
 	}
 
@@ -212,7 +212,7 @@ namespace Message
 	{
 		if (new_body_length != -1)
 		{
-			body_length = new_body_length;
+			m_body_length = new_body_length;
 			return true;
 		}
 		else
@@ -223,7 +223,7 @@ namespace Message
 
 	void Message::Response::set_content_type(const std::string& new_content_type)
 	{
-		content_type = new_content_type;
+		m_content_type = new_content_type;
 		return;
 	}
 
@@ -235,7 +235,7 @@ namespace Message
 		}
 
 		// insert new or update existing header
-		headers[name] = value;
+		m_headers[name] = value;
 		return true;
 	}
 
@@ -247,7 +247,7 @@ namespace Message
 		}
 		else
 		{
-			content_length = new_content_length;
+			m_content_length = new_content_length;
 			add_header("Content-Length", std::to_string(new_content_length));
 			return true;
 		}
@@ -255,8 +255,8 @@ namespace Message
 
 	bool Message::Response::set_response_message(const std::string& new_response_message_string)
 	{
-		response_message.clear();
-		response_message = std::move(new_response_message_string);
+		m_response_message.clear();
+		m_response_message = std::move(new_response_message_string);
 		return true;
 	}
 
@@ -268,7 +268,7 @@ namespace Message
 			return false;
 		}
 
-		reason_phrase = header_position->second;
+		m_reason_phrase = header_position->second;
 		return true;
 	}
 	
@@ -277,10 +277,10 @@ namespace Message
 		std::ostringstream response;
 
 		// Set first line of response string.
-		response << protocol_version << " " << std::to_string(status_code) << " " << reason_phrase << "\r\n";
+		response << m_protocol_version << " " << std::to_string(m_status_code) << " " << m_reason_phrase << "\r\n";
 
-		// Iterate headers map and add to respoinse string.
-		for (auto position = headers.cbegin(); position != headers.cend(); ++position)
+		// Iterate m_headers map and add to respoinse string.
+		for (auto position = m_headers.cbegin(); position != m_headers.cend(); ++position)
 		{
 			std::string name = position->first.c_str();
 			std::string value = position->second.c_str();
@@ -288,16 +288,16 @@ namespace Message
 			response << name << ": " << value << "\r\n";
 		}
 
-		// Set body content.
-		if (body.empty())
+		// Set m_body content.
+		if (m_body.empty())
 		{
 			response << "\r\n";
 		}
 		else
 		{
-			response << "\r\n" << body;
+			response << "\r\n" << m_body;
 
-			// Do not put '\r\n' at the end of the http message-body.
+			// Do not put '\r\n' at the end of the http message-m_body.
 			// see: https://stackoverflow.com/a/13821352/11850070			
 		}
 		
@@ -306,94 +306,6 @@ namespace Message
 			// FIXME: logger "failed to set response message
 			return;
 		}
-	}
-
-	bool Message::Response::read_file(const std::string& request_uri)
-	{
-		// first, convert given relative request_uri to absolute request_uri
-		std::string absolute_path;
-		if (!convert_path_to_absolute(request_uri, absolute_path))
-		{
-			set_body_length(0);
-			set_body("");
-			return false;
-		}
-
-		std::ifstream file(absolute_path, std::ios_base::binary);
-
-		if (!file.is_open())
-		{
-			set_body_length(0);
-			set_body("");
-			return false;
-		}
-
-		// position at end of file object
-		file.seekg(0, std::ios_base::end);
-
-		auto size = file.tellg();
-
-		if (!set_content_length(size))
-		{
-			set_body_length(0);
-			set_body("");
-			return false;
-		}
-
-		if (!set_body_length(size))
-		{
-			set_body_length(0);
-			set_body("");
-			return false;
-		}
-
-		file.seekg(0);
-
-		std::string read_result((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-
-		if (!set_body(read_result.c_str()))
-		{
-			set_body_length(0);
-			set_body("");
-			return false;
-		}
-		
-		return true;
-	}
-
-	bool Message::Response::convert_path_to_absolute(const std::string& relative_path,  std::string& absolute_path)
-	{ 
-		char path_buffer[1024];
-		if(getcwd(path_buffer, 1024) == nullptr)
-		{
-			return false;
-		}
-
-		std::string current_working_directory = path_buffer;
-
-		if(current_working_directory.find("HttpServer") == std::string::npos)
-			return false;
-		else // prevent the cwd path from containing '\\build\\test\\debug' after _getcwd() system call.
-			current_working_directory = current_working_directory.substr( 0, current_working_directory.find("HttpServer") + 10 );
-
-		// if relative path only has '/', redirect it to index.html
-		if( (relative_path[0] == '/')  &&  (relative_path.size() == 1) )
-		{
-			absolute_path = current_working_directory + "/public_html/index.html"; 
-			return true;
-		}
-
-		if( relative_path[0] == '/')
-		{
-			std::string relative_path_without_leading_forward_slash = relative_path.substr(1);
-			absolute_path = current_working_directory + "/public_html/" + relative_path_without_leading_forward_slash;
-		}
-		else
-		{
-			absolute_path = current_working_directory + "/public_html/" + relative_path;
-		}
-
-		return true;
 	}
 
 	void Message::Response::parse_content_type(const std::string& request_uri)
@@ -415,113 +327,92 @@ namespace Message
 
 		if ( file_extention == "txt")
 		{
-			content_type = "text/plain";
+			m_content_type = "text/plain";
 			return;
 		}
 		else if (file_extention == "html" || file_extention == "htm")
 		{
-			content_type = "text/html";
+			m_content_type = "text/html";
 			return;
 		}
 		else if (file_extention == "css")
 		{
-			content_type = "text/css";
+			m_content_type = "text/css";
 			return;
 		}
 		else if (file_extention == "jpeg" || file_extention == "jpg")
 		{
-			content_type = "image/jpg";
+			m_content_type = "image/jpg";
 			return;
 		}
 		else if (file_extention == "png")
 		{
-			content_type = "image/png";
+			m_content_type = "image/png";
 			return;
 		}
 		else if (file_extention == "gif")
 		{
-			content_type = "image/gif";
+			m_content_type = "image/gif";
 			return;
 		}
 		else if (file_extention == "svg")
 		{
-			content_type = "image/svg+xml";
+			m_content_type = "image/svg+xml";
 			return;
 		}
 		else if (file_extention == "ico")
 		{
-			content_type = "image/x-icon";
+			m_content_type = "image/x-icon";
 			return;
 		}
 		else if (file_extention == "json")
 		{
-			content_type = "application/json";
+			m_content_type = "application/json";
 			return;
 		}
 		else if (file_extention == "pdf")
 		{
-			content_type = "application/pdf";
+			m_content_type = "application/pdf";
 			return;
 		}
 		else if (file_extention == "js")
 		{
-			content_type = "application/javascript";
+			m_content_type = "application/javascript";
 			return;
 		}
 		else if (file_extention == "wasm")
 		{
-			content_type = "application/wasm";
+			m_content_type = "application/wasm";
 			return;
 		}
 		else if (file_extention == "xml")
 		{
-			content_type = "application/xml";
+			m_content_type = "application/xml";
 			return;
 		}
 		else if (file_extention == "xhtml")
 		{
-			content_type = "application/xhtml+xml";
+			m_content_type = "application/xhtml+xml";
 			return;
 		}
 
 		return;
 	}
 
-	bool Message::Response::set_content(const std::string& request_uri)
+	bool Message::Response::set_content(const std::string& resource)
 	{
-		if (request_uri.size() == 1 && request_uri[0] == '/')
-		{
-			if(read_file("/index.html"))
-			{
-				parse_content_type("/index.html");
-				return true;
-			}
-		}
-
-		// Query request goes here:
-		// ...
-
-		
-		// set body and body length
-		if (!read_file(request_uri))
-		{
-			return false;
-		}
-
-		// set content-type
-		parse_content_type(request_uri);
-
+		m_body = resource;
 		return true;
 	}
 
 	bool Message::Response::has_header(const std::string& name)
 	{
-		return headers.find(name) != headers.cend();
+		return m_headers.find(name) != m_headers.cend();
 	}
 
 	void Message::Response::clear_up_header_fields()
 	{
-		headers.clear();
+		m_headers.clear();
 	}
 	
 }

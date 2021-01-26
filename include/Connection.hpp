@@ -21,11 +21,11 @@ public:
     Connection& operator=(Connection&& other) = default;
 
 public:
-    Connection(RequestPtr& request_ptr, ResponsePtr& response_ptr);
+    Connection(RequestPtr& request, ResponsePtr& response);
 
 public:
-    void set_request(RequestPtr& request_ptr);
-    void set_response(ResponsePtr& response_ptr);
+    void set_request(RequestPtr& request);
+    void set_response(ResponsePtr& response);
     RequestPtr& get_request();
     ResponsePtr& get_response();
 
@@ -35,6 +35,6 @@ public:
     bool operator!=(const Connection& other) const;
 
 private:
-    RequestPtr m_request_ptr;
-    ResponsePtr m_response_ptr;
+    RequestPtr m_request;
+    ResponsePtr m_response;
 };

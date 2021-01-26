@@ -1,8 +1,8 @@
 #include "Connection.hpp"
 
 Connection::Connection()
-	: m_request_ptr(std::make_shared<Message::Request>()),
-	  m_response_ptr(std::make_shared<Message::Response>())
+	: m_request(std::make_shared<Message::Request>()),
+	  m_response(std::make_shared<Message::Response>())
 {
 }
 
@@ -10,38 +10,38 @@ Connection::~Connection()
 {
 }
 
-Connection::Connection(RequestPtr& request_ptr, ResponsePtr& response_ptr)
-    : m_request_ptr(request_ptr),
-      m_response_ptr(response_ptr)
+Connection::Connection(RequestPtr& request, ResponsePtr& response)
+    : m_request(request),
+      m_response(response)
 {
 }
 
-void Connection::set_request(RequestPtr& request_ptr)
+void Connection::set_request(RequestPtr& request)
 {
-	m_request_ptr = request_ptr;
+	m_request = request;
 }
 
-void Connection::set_response(ResponsePtr& response_ptr)
+void Connection::set_response(ResponsePtr& response)
 {
-	m_response_ptr = response_ptr;
+	m_response = response;
 }
 
 Connection::RequestPtr& Connection::get_request()
 {
-	return m_request_ptr;
+	return m_request;
 }
 
 Connection::ResponsePtr& Connection::get_response()
 {
-	return m_response_ptr;
+	return m_response;
 }
 
 bool Connection::operator==(const Connection& other) const
 {
-	return (this->m_request_ptr == other.m_request_ptr) && (this->m_response_ptr == other.m_response_ptr);
+	return (this->m_request == other.m_request) && (this->m_response == other.m_response);
 }
 
 bool Connection::operator!=(const Connection& other) const
 {
-	return (this->m_request_ptr != other.m_request_ptr) && (this->m_response_ptr != other.m_response_ptr);
+	return (this->m_request != other.m_request) && (this->m_response != other.m_response);
 }
