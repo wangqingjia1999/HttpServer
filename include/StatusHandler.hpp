@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Timer.hpp"
 #include "Response.hpp"
 
 namespace StatusHandler
@@ -16,5 +17,4 @@ namespace StatusHandler
 	 * 		Status code integer.
 	 */
 	void handle_status_code( std::shared_ptr< Message::Response >& response, const int status_code);
-
 }

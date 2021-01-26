@@ -1,5 +1,4 @@
 #include "StatusHandler.hpp"
-#include "Timer.hpp"
 
 namespace StatusHandler
 {                           
@@ -8,6 +7,9 @@ namespace StatusHandler
         response->set_status(status_code);
         response->set_reason_phrase(status_code);
 
+        // The Date header MUST be sent if the server is capable of generating accurate date.
+        response->add_header("Date", Timer::get_current_http_time());
+
         switch(status_code)
         {
             /**
@@ -15,7 +17,6 @@ namespace StatusHandler
              */
             case 100:   // Continue
             {
-                
                 break;
             }
 
@@ -37,7 +38,6 @@ namespace StatusHandler
             {
                 response->add_header("Content-Length", response->get_body_length());
                 response->add_header("Content-Type", response->get_content_type());
-		        response->add_header("Date", Timer::get_current_http_time());
                 
                 break;
             }
@@ -124,7 +124,6 @@ namespace StatusHandler
                 response->set_body("<html> Bad Request :< </html>");
                 response->add_header("Content-Type", response->get_content_type());
                 response->add_header("Content-Length", response->get_body_length());
-		        response->add_header("Date", Timer::get_current_http_time());
                 break;
             }
 
@@ -165,7 +164,6 @@ namespace StatusHandler
 
                 response->add_header("Content-Length", response->get_body_length());
                 response->add_header("Content-Type", "text/html");
-		        response->add_header("Date", Timer::get_current_http_time());
 
                 break;
             }
