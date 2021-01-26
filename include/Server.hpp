@@ -1,18 +1,17 @@
 #pragma once
 
 #include "Logger.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
 #include "WebSocket.hpp"
+#include "Connection.hpp"
 #include "ThreadPool.hpp"
 #include "ServerSocket.hpp"
 #include "StatusHandler.hpp"
 #include "ServerConfiguration.hpp"
 
-#include <string>
-#include <memory>
 #include <queue>
 #include <mutex>
+#include <string>
+#include <memory>
 #include <thread>
 #include <iostream>
 #include <condition_variable>
@@ -113,8 +112,7 @@ private:
 private:
 	std::shared_ptr< Logger > logger;
 	std::shared_ptr< ThreadPool > thread_pool;
-	std::shared_ptr< Message::Request > request;
-	std::shared_ptr< Message::Response > response;
+	std::shared_ptr< Connection > m_connection;
 	std::unique_ptr< ServerSocket > server_socket;
 	std::unique_ptr< ServerConfiguration > m_configuration;
 

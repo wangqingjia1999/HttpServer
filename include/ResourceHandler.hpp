@@ -13,11 +13,11 @@ public:
     ResourceHandler();
     ~ResourceHandler();
 
-    ResourceHandler(const ResourceHandler& other);
-    ResourceHandler& operator=(const ResourceHandler& other);
+    ResourceHandler(const ResourceHandler& other) = default;
+    ResourceHandler& operator=(const ResourceHandler& other) = default;
 
-    ResourceHandler(ResourceHandler&& other) = delete;
-    ResourceHandler& operator=(ResourceHandler&& other) = delete;
+    ResourceHandler(ResourceHandler&& other) = default;
+    ResourceHandler& operator=(ResourceHandler&& other) = default;
 
 public:
     ResourceHandler(ConnectionPtr& connection_ptr);

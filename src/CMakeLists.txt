@@ -99,8 +99,7 @@ add_library(server_lib STATIC
     Server.cpp
 )
 target_link_libraries(server_lib PUBLIC
-    request_lib
-    response_lib
+    connection_lib
     websocket_lib
     thread_pool_lib
     server_socket_lib

@@ -23,8 +23,16 @@ public:
 public:
     Connection(RequestPtr& request_ptr, ResponsePtr& response_ptr);
 
+public:
+    void set_request(RequestPtr& request_ptr);
+    void set_response(ResponsePtr& response_ptr);
+    RequestPtr& get_request();
+    ResponsePtr& get_response();
+
     // Operator overloading
 public:
+    bool operator==(const Connection& other) const;
+    bool operator!=(const Connection& other) const;
 
 private:
     RequestPtr m_request_ptr;
