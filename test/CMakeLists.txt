@@ -15,9 +15,11 @@ set(source_files
     ResponseTest.cpp
     WebSocketTest.cpp
     ThreadPoolTest.cpp
+    ConnectionTest.cpp
     ServerSocketTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
+    ResourceHandlerTest.cpp
     PercentEncodingTest.cpp
     ServerConfigurationTest.cpp
 )
@@ -136,7 +138,23 @@ target_link_libraries(server_socket_test PUBLIC
 add_executable(server_configuration_test
     ServerConfigurationTest.cpp
 )
-target_link_libraries(server_configuration_test
+target_link_libraries(server_configuration_test PUBLIC
     gtest_main
     server_configuration_lib
+)
+
+add_executable(resource_handler_test
+    ResourceHandlerTest.cpp
+)
+target_link_libraries(resource_handler_test PUBLIC
+    gtest_main
+    resource_handler_lib
+)
+
+add_executable(connection_test
+    ConnectionTest.cpp
+)
+target_link_libraries(connection_test PUBLIC
+    gtest_main
+    connection_lib
 )

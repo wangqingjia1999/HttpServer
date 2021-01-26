@@ -18,6 +18,8 @@ set(header_files
     ../include/Timer.hpp
     ../include/ServerSocket.hpp
     ../include/ServerConfiguration.hpp
+    ../include/ResourceHandler.hpp
+    ../include/Connection.hpp
 )
 
 set(source_files
@@ -38,6 +40,8 @@ set(source_files
     Timer.cpp
     ServerSocket.cpp
     ServerConfiguration.cpp
+    ResourceHandler.cpp
+    Connection.cpp
 )
 
 add_library(all_libs STATIC
@@ -169,5 +173,24 @@ target_link_libraries(status_handler_lib PUBLIC
 )
 
 add_library(server_configuration_lib
+    ../include/ServerConfiguration.hpp
     ServerConfiguration.cpp
 )
+
+add_library(connection_lib
+    ../include/Connection.hpp
+    Connection.cpp
+)
+target_link_libraries(connection_lib PUBLIC
+    request_lib
+    response_lib
+)
+
+add_library(resource_handler_lib
+    ../include/ResourceHandler.hpp
+    ResourceHandler.cpp
+)
+target_link_libraries(resource_handler_lib PUBLIC
+    connection_lib
+)
+

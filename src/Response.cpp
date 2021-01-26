@@ -516,13 +516,7 @@ namespace Message
 
 	bool Message::Response::has_header(const std::string& name)
 	{
-		auto iterator = headers.find(name);
-		if (iterator == headers.end())
-		{
-			return false;
-		}
-
-		return true;
+		return headers.find(name) != headers.cend();
 	}
 
 	void Message::Response::clear_up_header_fields()

@@ -116,61 +116,22 @@ void Server::request_core_handler(const std::string& raw_request_string)
     // Parse request
     if(!parse_request(raw_request_string))
     {
-        // 400 Bad Request
-        // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse request"); } );
         StatusHandler::handle_status_code(response, 400);
         return;
     }
 
-    // If it is POST request
-    if(request->get_request_method() == "POST")
+    if(request->get_request_method() == "GET")
     {
-        if(handle_post_request())
-        {
-            // Content created
-            StatusHandler::handle_status_code(response, 200);
-            response->add_header("Location", "/sign_up_done.html");
-            response->set_content("/sign_up_done.html");
-            response->add_header("Content-Type", "text/html");
-            response->add_header("Content-Length", response->get_body_length());
-            return;
-        }
-        else
-        {
-            StatusHandler::handle_status_code(response, 400);
-            return;
-        }
-    }
 
-    // If it is websocket opening handshake
-    if(
-        request->has_header("Upgrade")
-        && request->get_header("Upgrade") == "websocket"
-    )
+    }
+    else if(request->get_request_method() == "POST")
     {
-        WebSocket websocket(request, response);
-        if(!websocket.parse_websocket_request())
-        {
-            // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("parse WebSocket request"); } );
-            return;
-        }
-        response->add_header("Sec-WebSocket-Accept", websocket.generate_sec_websocket_key());
-        StatusHandler::handle_status_code(response, 101);
-        return;
+
+    }
+    else if(request->get_request_method() == "HEAD")
+    {
+
     }
 
     // Resources handler
-    if(
-        request->get_request_method() == "GET"
-        && !response->set_content(request->get_request_uri())
-    )
-    {
-        // 404 Not Found
-        StatusHandler::handle_status_code(response, 404);
-        // FIXME: thread_pool->post_task( [this]{ logger.record_error_message("handle requested resources"); } );
-        return;
-    }
-
-    // Status handler
-    StatusHandler::handle_status_code(response, 200);
 }

@@ -5,6 +5,10 @@
 #include "Timer.hpp"
 #include "Response.hpp"
 
+/**
+ * Set status code, reason-phrase, and appropriate headers 
+ * to @b response based on the @b status_code.
+ */
 namespace StatusHandler
 {
     /**
@@ -16,5 +20,5 @@ namespace StatusHandler
 	 * @param[in] status_code  
 	 * 		Status code integer.
 	 */
-	void handle_status_code( std::shared_ptr< Message::Response >& response, const int status_code);
+	void handle_status_code(std::shared_ptr< Message::Response >& response, const int status_code);
 }

@@ -348,7 +348,5 @@ namespace StatusHandler
                 break;
             }
         }
-
-        response->generate_response();
     }
 }
