@@ -9,6 +9,8 @@ namespace StatusHandler
 
         // The Date header MUST be sent if the server is capable of generating accurate date.
         response->add_header("Date", Timer::get_current_http_time());
+        // Generally, a server should have the following headers despite the status.
+        response->add_header("Server", "Bitate");
 
         switch(status_code)
         {

@@ -35,6 +35,7 @@ TEST(status_handler_tests, status_code_100_test)
     std::string expected_response_string
     {
         "HTTP/1.1 100 Continue\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -53,6 +54,7 @@ TEST(status_handler_tests, status_code_101_test)
     {
         "HTTP/1.1 101 Switching Protocol\r\n"
         "Connection: upgrade\r\n"
+        "Server: Bitate\r\n"
         "Upgrade: HTTP/2.0\r\n"
         "\r\n"
     };
@@ -73,6 +75,7 @@ TEST(status_handler_tests, status_code_200_test)
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 0\r\n"
 	    "Content-Type: \r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
 
@@ -90,6 +93,7 @@ TEST(status_handler_tests, status_code_201_test)
     std::string expected_response_string
     {
         "HTTP/1.1 201 Created\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -107,6 +111,7 @@ TEST(status_handler_tests, status_code_202_test)
     std::string expected_response_string
     {
         "HTTP/1.1 202 Accepted\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -124,6 +129,7 @@ TEST(status_handler_tests, status_code_203_test)
     std::string expected_response_string
     {
         "HTTP/1.1 203 Non-Authoritative Information\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -141,6 +147,7 @@ TEST(status_handler_tests, status_code_204_test)
     std::string expected_response_string
     {
         "HTTP/1.1 204 No Content\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -158,6 +165,7 @@ TEST(status_handler_tests, status_code_205_test)
     std::string expected_response_string
     {
         "HTTP/1.1 205 Reset Content\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -175,6 +183,7 @@ TEST(status_handler_tests, status_code_206_test)
     std::string expected_response_string
     {
         "HTTP/1.1 206 Partial Content\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -195,6 +204,7 @@ TEST(status_handler_tests, status_code_301_test)
     std::string expected_response_string
     {
         "HTTP/1.1 301 Moved Permanently\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
     };
     
@@ -215,6 +225,7 @@ TEST(status_handler_tests, status_code_404_test)
         "Content-Length: 135\r\n"
         "Content-Type: text/html\r\n"
         "Date: Thu, 12 Nov 2020 13:41:37 GMT\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
         "<html>"
             "<head>"
