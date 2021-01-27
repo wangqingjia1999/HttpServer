@@ -1,8 +1,5 @@
 #include "Server.hpp"
 
-Server::~Server()
-{
-}
 Server::Server()
     : logger(new Logger()),
       thread_pool(std::make_shared<ThreadPool>()),
@@ -12,6 +9,10 @@ Server::Server()
       m_configuration(new ServerConfiguration())
 {
     m_resource_handler->set_resource_directory_path(m_configuration->get_resource_directory_path());
+}
+
+Server::~Server()
+{
 }
 
 void Server::listen_at(const std::string& host, const int port)

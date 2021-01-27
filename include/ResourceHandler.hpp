@@ -22,6 +22,9 @@ public:
     ResourceHandler& operator=(ResourceHandler&& other) = default;
 
 public:
+    ResourceHandler(const std::string& resource_directory_path);
+
+public:
     /**
      * Fetch resource based on given connection's request
      * and fill the resource into the connection's response.

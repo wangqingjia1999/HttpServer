@@ -97,20 +97,6 @@ public:
 	 */
 	std::string get_user_info();
 
-
-	bool set_scheme(std::string& scheme);
-	bool set_host(std::string& host);
-	bool set_port(int& port);
-	bool set_query(std::string query);
-	bool set_fragment(std::string& fragment);
-	bool set_user_info(std::string& user_info);
-
-	bool clear_port();
-	bool clear_query();
-	bool clear_fragment();
-	bool clear_scheme();
-	bool clear_path();
-
 	/**
 	 * Parse an Uri string.
 	 * 
@@ -187,27 +173,38 @@ private:
 	bool is_absolute_path();
 
 	void remove_dots();
+
+	bool set_scheme(std::string& scheme);
+	bool set_host(std::string& host);
+	bool set_port(int& port);
+	bool set_query(std::string query);
+	bool set_fragment(std::string& fragment);
+	bool set_user_info(std::string& user_info);
+
+	bool clear_port();
+	bool clear_query();
+	bool clear_fragment();
+	bool clear_scheme();
+	bool clear_path();
 	
 private:
-	std::string scheme;
+	std::string m_scheme;
 
-	std::string authority;
+	std::string m_authority;
 
-	std::string user_info;
+	std::string m_user_info;
 
-	std::string host;
+	std::string m_host;
 
 	bool m_has_port;
-	uint16_t port;
+	uint16_t m_port;
 
-	bool is_relative_path;
-	std::vector < std::string > path;
+	bool m_is_relative_path;
+	std::vector < std::string > m_path;
 
-	bool has_query_bool;
-	std::string query;
+	bool m_has_query;
+	std::string m_query;
 
-	bool has_fragment_bool;
-	std::string fragment;
-
-	CharacterSet characterset;
+	bool m_has_fragment;
+	std::string m_fragment;
 };

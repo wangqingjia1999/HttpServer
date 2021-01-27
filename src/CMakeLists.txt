@@ -192,5 +192,6 @@ add_library(resource_handler_lib
 )
 target_link_libraries(resource_handler_lib PUBLIC
     connection_lib
+    server_configuration_lib
 )
 

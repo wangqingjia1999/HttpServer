@@ -3,6 +3,8 @@
 #include "Uri.hpp"
 #include "Logger.hpp"
 
+#include <stdio.h>
+
 #include <map>
 #include <memory>
 #include <sstream>
@@ -76,59 +78,6 @@ namespace Message
 		 * 		True if successfully parse the given Uri string.
 		 */
 		bool parse_uri(const std::string& Uri);
-		
-		void set_raw_request(std::string raw_request_string);
-		void set_method(const std::string new_method = "GET");
-		void set_http_version(const std::string new_http_version = "HTTP/1.1");
-		void set_user_agent(std::string new_user_agent = "Bitate");
-
-		/**
-		 * Get request method string.
-		 * 
-		 * @return 
-		 * 		Method string of request message.
-		 */
-		std::string get_request_method();
-
-		/**
-		 * Get request Uri string.
-		 * 
-		 * @return  
-		 * 		Request Uri string.
-		 */
-		std::string get_request_uri();
-
-		/**
-		 * Get request http protocol version.
-		 * 
-		 * @return  
-		 * 		Http protocol version string.
-		 */
-		std::string get_http_version();
-
-		/**
-		 * Get given request header.
-		 * 
-		 * @return  
-		 * 		Header name's corresponding header value.
-		 */
-		std::string get_header(const std::string& header_name);
-
-		/**
-		 * Get request body string.
-		 * 	
-		 * @return 
-		 * 		Request body string.
-		 */
-		std::string get_body();
-
-		/**
-		 * Get generated request string.
-		 * 
-		 * @return  
-		 * 		Request string.
-		 */
-		std::string get_generated_request();
 
 		/**
 		 * Has given header?
@@ -162,50 +111,46 @@ namespace Message
 		 */
 		std::string get_raw_request();
 
-		/**
-		 * Get host name.
-		 * 
-		 * @return  
-		 * 		Host string.
-		 */
+				
+		void set_raw_request(std::string raw_request_string);
+		void set_method(const std::string new_method = "GET");
+		void set_http_version(const std::string new_http_version = "HTTP/1.1");
+		void set_user_agent(std::string new_user_agent = "Bitate");
+
+		std::string get_request_method();
+		std::string get_request_uri();
+		std::string get_http_version();
+		std::string get_header(const std::string& header_name);
+		std::string get_body();
+		std::string get_generated_request();
 		std::string get_host();
-
-		/**
-		 * Get port string.
-		 * 
-		 * @return  
-		 * 		Port string.
-		 */
 		std::string get_port();
-
 	private:
-		Logger logger;
-
-		std::shared_ptr< Uri > uri = std::make_shared< Uri > ();
+		std::shared_ptr< Uri > m_uri;
         
         // Generated/Received raw request string
-        std::string raw_request;
+        std::string m_raw_request;
 
         // Request method. e.g. GET, POST
-        std::string method;
+        std::string m_method;
         
         // default http_version
-        std::string http_version = "HTTP/1.1";
+        std::string m_http_version = "HTTP/1.1";
 
         // Store the generated/received raw headers
-        std::string headers;
+        std::string m_headers;
 
         /**
          * For search bar: /?Search=This+is+just+a+demo
          * For normal get: /index.html
          * For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
          */
-        std::string request_uri;
+        std::string m_request_uri;
 
         // Contain the header {key: value} pairs
-        std::map< std::string, std::string> headers_map;
+        std::map< std::string, std::string> m_headers_map;
 
         // request body string
-        std::string body;
+        std::string m_body;
 	};
 }

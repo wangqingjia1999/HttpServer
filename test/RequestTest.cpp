@@ -2,28 +2,28 @@
 
 #include <gtest/gtest.h>
 
-TEST(RequestTests, defaultMethodGET)
+TEST(request_test, default_method_get_test)
 {
 	Message::Request request;
 	request.set_method();
 	ASSERT_EQ(request.get_request_method(), "GET");
 }
 
-TEST(RequestTests, defaultHttpVersion)
+TEST(request_test, default_http_version_test)
 {
 	Message::Request request;
 	request.set_http_version();
 	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 }
 
-TEST(RequestTests, defaultUserAgent)
+TEST(request_test, default_user_agent_test)
 {
 	Message::Request request;
 	request.set_user_agent();
 	ASSERT_EQ(request.get_header("User-Agent"), "Bitate");
 }
 
-TEST(RequestTests, generateRequestFromUri)
+TEST(request_test, generate_request_from_uri_test)
 {
 	Message::Request request;
 	
@@ -44,7 +44,7 @@ TEST(RequestTests, generateRequestFromUri)
 	ASSERT_EQ(request.get_generated_request(), raw_request);
 }
 
-TEST(RequestTests, parseRawGetRequest)
+TEST(request_test, parse_raw_get_request_test)
 {
 	Message::Request request;
 
@@ -90,7 +90,7 @@ TEST(RequestTests, parseRawGetRequest)
 	ASSERT_EQ(request.get_body(), "");
 }
 
-TEST(request_tests, post_request_test)
+TEST(request_tests, parse_post_request_test)
 {
 	Message::Request request;
 

@@ -1,6 +1,10 @@
 #include "Uri.hpp"
 
 Uri::Uri()
+	: m_has_port(false),
+	  m_is_relative_path(false),
+	  m_has_query(false),
+	  m_has_fragment(false)
 {
 }
 
@@ -10,7 +14,7 @@ Uri::~Uri()
 
 bool Uri::parse_scheme(const std::string& uri_string, std::string & rest_string)
 {
-	// Extract the scheme part(if any) from uri_string
+	// Extract the m_scheme part(if any) from uri_string
 	auto authority_or_path_start_delimiter = uri_string.find('/');
 	if (authority_or_path_start_delimiter == std::string::npos)
 	{
@@ -21,10 +25,10 @@ bool Uri::parse_scheme(const std::string& uri_string, std::string & rest_string)
 	// Find the position of ':' (if any)
 	if (scheme_part.find(':') != std::string::npos)
 	{
-		// If we find the scheme, do
-		scheme = scheme_part.substr(0, scheme_part.find(':'));
+		// If we find the m_scheme, do
+		m_scheme = scheme_part.substr(0, scheme_part.find(':'));
 
-		// strip scheme part from uri_string,
+		// strip m_scheme part from uri_string,
 		// and store it to "rest" parameter
 		rest_string = uri_string.substr(scheme_part.find(':') + 1);
 		return true;
@@ -32,7 +36,7 @@ bool Uri::parse_scheme(const std::string& uri_string, std::string & rest_string)
 	else
 	{
 		rest_string = uri_string;
-		scheme.clear();
+		m_scheme.clear();
 		return true;
 	}
 }
@@ -42,7 +46,7 @@ bool Uri::parse_user_info(std::string& authority_string, std::string& authority_
 	auto user_info_end_delimiter = authority_string.find('@');
 	if (user_info_end_delimiter != std::string::npos)
 	{
-		user_info = authority_string.substr(0, user_info_end_delimiter);
+		m_user_info = authority_string.substr(0, user_info_end_delimiter);
 		authority_without_user_info = authority_string.substr(user_info_end_delimiter);
 		return true;
 	}
@@ -56,8 +60,8 @@ bool Uri::parse_host(std::string& authority_without_user_info, std::string& auth
 	auto host_end_delimiter = authority_without_user_info.find_first_of(":/");
 	if (host_end_delimiter != std::string::npos)
 	{
-		// we find host part
-		host = authority_without_user_info.substr(0, host_end_delimiter);
+		// we find m_host part
+		m_host = authority_without_user_info.substr(0, host_end_delimiter);
 		
 		authority_without_host = authority_without_user_info.substr(host_end_delimiter);
 		
@@ -65,7 +69,7 @@ bool Uri::parse_host(std::string& authority_without_user_info, std::string& auth
 	}
 	else
 	{
-		host = authority_without_user_info;
+		m_host = authority_without_user_info;
 
 		authority_without_host = authority_without_user_info;
 
@@ -78,12 +82,12 @@ bool Uri::parse_port(std::string& authority_string)
 	auto port_begin_delimiter = authority_string.find(':');
 	if (port_begin_delimiter != std::string::npos)
 	{
-		// has port
+		// has m_port
 		m_has_port = true;
 		// strip ':'
 		std::string port_string = authority_string.substr(port_begin_delimiter+1);
 		
-		// whether the given port string is integer string.
+		// whether the given m_port string is integer string.
 		for(auto iterator = port_string.cbegin(); iterator != port_string.cend(); ++iterator)
 		{
 			if(!std::isdigit(*iterator))
@@ -102,7 +106,7 @@ bool Uri::parse_port(std::string& authority_string)
 		}
 		else
 		{
-			port = temperary_port;
+			m_port = temperary_port;
 			return true;
 		}
 	}
@@ -128,7 +132,7 @@ bool Uri::parse_authority(std::string& uri_string, std::string& rest_string)
 	{
 		auto authority_end_delimiter = uri_string.find_first_of("/?#");
 		std::string authority_string;
-		// If authority exists and the query or fragment exist
+		// If authority exists and the m_query or m_fragment exist
 		if(authority_end_delimiter != std::string::npos)
 		{
 			authority_string = uri_string.substr(0, authority_end_delimiter);
@@ -168,35 +172,35 @@ bool Uri::parse_authority(std::string& uri_string, std::string& rest_string)
 
 bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string)
 {
-	path.clear();
+	m_path.clear();
 	if(uri_may_contain_path == "/")
 	{
-		// usi path begins with "/" is absolute path
-		is_relative_path = false;
-		path.push_back("");
+		// usi m_path begins with "/" is absolute m_path
+		m_is_relative_path = false;
+		m_path.push_back("");
 		uri_may_contain_path.clear();
 		rest_string = "";
 		return true;
 	}
 	else if(!uri_may_contain_path.empty())
 	{
-		// The path is terminated by the first question "?", "#", or
+		// The m_path is terminated by the first question "?", "#", or
 		// by the end of the Uri.
 		auto path_end_delimiter = uri_may_contain_path.find_first_of("?#");
 
-		// path string without query or fragment
+		// m_path string without m_query or m_fragment
 		if (path_end_delimiter == std::string::npos)
 		{
-			// strip beginning slash of path string
+			// strip beginning slash of m_path string
 			auto begin_slash_position = uri_may_contain_path.find_first_of('/');
 			if(begin_slash_position == 0)
 			{
-				is_relative_path = false;
+				m_is_relative_path = false;
 				uri_may_contain_path = uri_may_contain_path.substr(1);
 			}
 			else
 			{
-				is_relative_path = true;
+				m_is_relative_path = true;
 			}
 			
 
@@ -205,12 +209,12 @@ bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 				auto path_elelment_delimiter = uri_may_contain_path.find("/");
 				if(path_elelment_delimiter != std::string::npos)
 				{
-					path.emplace_back(uri_may_contain_path.begin(), uri_may_contain_path.begin() + path_elelment_delimiter);
+					m_path.emplace_back(uri_may_contain_path.begin(), uri_may_contain_path.begin() + path_elelment_delimiter);
 					uri_may_contain_path = uri_may_contain_path.substr(path_elelment_delimiter+1);
 				}
 				else	// no "/" found
 				{
-					path.push_back(uri_may_contain_path);
+					m_path.push_back(uri_may_contain_path);
 					uri_may_contain_path.clear();
 					break;
 				}
@@ -219,7 +223,7 @@ bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 			return true;
 			
 		}
-		else	// find query or fragment
+		else	// find m_query or m_fragment
 		{
 			rest_string = uri_may_contain_path.substr(path_end_delimiter);
 			
@@ -229,23 +233,23 @@ bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 	}
 
 	// else, uri is empty
-	path.push_back("");
+	m_path.push_back("");
 
 	// This is a special case,
-	// If host presents and path is empty,
-	// This path is absolute path
-	// e.g. "https://google.com" is absolute path.
+	// If m_host presents and m_path is empty,
+	// This m_path is absolute m_path
+	// e.g. "https://google.com" is absolute m_path.
 	// It's same as "https://google.com/"
-	if(!host.empty() && uri_may_contain_path.empty())
+	if(!m_host.empty() && uri_may_contain_path.empty())
 	{
-		is_relative_path = false;
-		path.push_back("");
+		m_is_relative_path = false;
+		m_path.push_back("");
 		return true;
 	}
 	
-	// If host doesn't exist and path is empty,
-	// The path is relative path
-	is_relative_path = true;
+	// If m_host doesn't exist and m_path is empty,
+	// The m_path is relative m_path
+	m_is_relative_path = true;
 	rest_string = uri_may_contain_path;
 	return true;
 }
@@ -256,17 +260,17 @@ bool Uri::parse_query(std::string& uri_string, std::string& rest_string)
 	auto query_end_delimiter = uri_string.find('#');
 	if (query_begin_delimiter != std::string::npos)
 	{
-		// has query
-		has_query_bool = true;
+		// has m_query
+		m_has_query = true;
 		if (query_end_delimiter != std::string::npos)
 		{
-			query = uri_string.substr(query_begin_delimiter+1, query_end_delimiter-1);
+			m_query = uri_string.substr(query_begin_delimiter+1, query_end_delimiter-1);
 			rest_string = uri_string.substr(query_end_delimiter);
 			return true;
 		}
 		else
 		{
-			query = uri_string.substr(query_begin_delimiter+1);
+			m_query = uri_string.substr(query_begin_delimiter+1);
 			rest_string = "";
 			return true;
 		}
@@ -274,7 +278,7 @@ bool Uri::parse_query(std::string& uri_string, std::string& rest_string)
 	}
 	else
 	{
-		has_query_bool = false;
+		m_has_query = false;
 		rest_string = uri_string;
 		return true;
 	}
@@ -285,31 +289,31 @@ bool Uri::parse_fragment(std::string& uri_may_contain_fragment, std::string& res
 	auto fragment_begin_delimiter = uri_may_contain_fragment.find('#');
 	if (fragment_begin_delimiter != std::string::npos)
 	{
-		// has fragment
-		has_fragment_bool = true;
-		fragment = uri_may_contain_fragment.substr(fragment_begin_delimiter + 1);
+		// has m_fragment
+		m_has_fragment = true;
+		m_fragment = uri_may_contain_fragment.substr(fragment_begin_delimiter + 1);
 		rest_string = "";
 		return true;
 	}
 	else
 	{
-		has_fragment_bool = false;
+		m_has_fragment = false;
 		rest_string = uri_may_contain_fragment;
 		return true;
 	}
 	
 }
 
-// absolute path begins with a "/"
+// absolute m_path begins with a "/"
 bool Uri::is_absolute_path()
 {
-	return (!path.empty() && !is_relative_path);
+	return (!m_path.empty() && !m_is_relative_path);
 }
 
 void Uri::remove_dots()
 {
-	std::vector< std::string > old_path = std::move(path);
-	path.clear();
+	std::vector< std::string > old_path = std::move(m_path);
+	m_path.clear();
 	// TAT: why use this?
 	// Is this means that the resources directory
 	bool is_at_directory_level = false;
@@ -322,12 +326,12 @@ void Uri::remove_dots()
 		}
 		else if ( segment == "..")
 		{
-			if(!path.empty())
+			if(!m_path.empty())
 			{
-				// remove last path element if we can navigate up a path level 
-				if(!is_absolute_path() || (path.size() > 1))
+				// remove last m_path element if we can navigate up a m_path level 
+				if(!is_absolute_path() || (m_path.size() > 1))
 				{
-					path.pop_back();
+					m_path.pop_back();
 				}
 			}
 			is_at_directory_level = true;
@@ -336,7 +340,7 @@ void Uri::remove_dots()
 		{
 			if( !is_at_directory_level || ! segment.empty())
 			{
-				path.push_back(segment);
+				m_path.push_back(segment);
 			}
 			is_at_directory_level = segment.empty();
 		}
@@ -344,42 +348,42 @@ void Uri::remove_dots()
 		
 	}
 	
-	// if at the end of reconstructing the path,
+	// if at the end of reconstructing the m_path,
 	// we are in a directory level, 
-	// add an empty segment to path vector end to notify
-	if( is_at_directory_level && (!path.empty() && !path.back().empty()))
+	// add an empty segment to m_path vector end to notify
+	if( is_at_directory_level && (!m_path.empty() && !m_path.back().empty()))
 	{
-		path.push_back("");
+		m_path.push_back("");
 	}
 }
 
 // Getters
 std::string Uri::get_scheme()
 {
-	return scheme;
+	return m_scheme;
 }
 
 std::string Uri::get_user_info()
 {
-	return user_info;
+	return m_user_info;
 }
 
 std::string Uri::get_host()
 {
-	return host;
+	return m_host;
 }
 
 std::vector< std::string > Uri::get_path()
 {
-	return path;
+	return m_path;
 }
 
 std::string Uri::get_path_string()
 {
-	if(path[0] == "")
+	if(m_path[0] == "")
 		return "/";
 	std::string pathString;
-	for(auto &element : path)
+	for(auto &element : m_path)
 	{
 		pathString += element;
 	}
@@ -388,35 +392,35 @@ std::string Uri::get_path_string()
 
 int Uri::get_port()
 {
-	return port;
+	return m_port;
 }
 
 std::string Uri::get_query()
 {
-	return query;
+	return m_query;
 }
 
 std::string Uri::get_fragment()
 {
-	return fragment;
+	return m_fragment;
 }
 
 // Setters
 bool Uri::set_scheme(std::string& s)
 {
-	if (scheme.empty())
+	if (m_scheme.empty())
 	{
-		scheme = s;
+		m_scheme = s;
 		return true;
 	}
 	return false;
 }
 
-bool Uri::set_host(std::string& host)
+bool Uri::set_host(std::string& m_host)
 {
-	if (host.empty()) 
+	if (m_host.empty()) 
 	{ 
-		host = host; 
+		m_host = m_host; 
 		return true;
 	}
 	return false;
@@ -424,23 +428,23 @@ bool Uri::set_host(std::string& host)
 
 bool Uri::set_port(int& p)
 {
-	port = p;
+	m_port = p;
 	return true;
 }
 
 
 bool Uri::set_query(std::string q)
 {
-	query = q;
-	if (query.empty()) { return false; }
+	m_query = q;
+	if (m_query.empty()) { return false; }
 	return true;
 }
 
 bool Uri::set_fragment(std::string& s)
 {
-	if (fragment.empty())
+	if (m_fragment.empty())
 	{
-		fragment = s;
+		m_fragment = s;
 		return true;
 	}
 	return false;
@@ -448,15 +452,15 @@ bool Uri::set_fragment(std::string& s)
 
 bool Uri::clear_port()
 {
-	port = -1;
+	m_port = -1;
 	return true;
 }
 
 bool Uri::clear_query()
 {
-	if (!query.empty())
+	if (!m_query.empty())
 	{
-		query.clear();
+		m_query.clear();
 		return true;
 	}
 	return false;
@@ -464,9 +468,9 @@ bool Uri::clear_query()
 
 bool Uri::clear_fragment()
 {
-	if (!fragment.empty())
+	if (!m_fragment.empty())
 	{
-		fragment.clear();
+		m_fragment.clear();
 		return true;
 	}
 	return false;
@@ -474,7 +478,7 @@ bool Uri::clear_fragment()
 
 bool Uri::clear_scheme()
 {
-	scheme.clear();
+	m_scheme.clear();
 	return true;
 }
 
@@ -485,12 +489,12 @@ bool Uri::has_port()
 
 bool Uri::has_query()
 {
-	return has_query_bool;
+	return m_has_query;
 }
 
 bool Uri::has_fragment()
 {
-	return has_fragment_bool;
+	return m_has_fragment;
 }
 
 
@@ -535,7 +539,7 @@ bool Uri::parse_from_string(const std::string& uri_string)
 
 bool Uri::is_relative_reference()
 {
-	return scheme.empty();
+	return m_scheme.empty();
 }
 
 bool Uri::has_relative_path()
