@@ -12,7 +12,7 @@ namespace
 
 ServerConfiguration::ServerConfiguration()
     : m_root_directory_path(generate_root_directory_path()),
-      m_resource_directory_path(m_root_directory_path + "resource/"),
+      m_resource_root_directory_path(m_root_directory_path + "resource/"),
       m_configuration_file_path(m_root_directory_path + "config")
 {
     if(!has_configuration_file())
@@ -60,7 +60,7 @@ void ServerConfiguration::create_configuration_file()
         configuration_file_handler << "# Type your server's root directory path below\n";
         configuration_file_handler << "root_directory_path: " << m_root_directory_path << '\n';
         configuration_file_handler << "# Type your server's resources directory path below\n";
-        configuration_file_handler << "resource_directory_path: " << m_resource_directory_path << '\n';
+        configuration_file_handler << "resource_directory_path: " << m_resource_root_directory_path << '\n';
     }
     else
     {
@@ -76,7 +76,7 @@ std::string ServerConfiguration::get_root_directory_path() const
 
 std::string ServerConfiguration::get_resource_directory_path() const
 {
-    return m_resource_directory_path;
+    return m_resource_root_directory_path;
 }
 
 void ServerConfiguration::parse_configuration_file()
@@ -115,5 +115,5 @@ void ServerConfiguration::parse_configuration(const std::string& configuration)
     );
     
     if(!matcher.empty())
-        m_resource_directory_path = strip_leading_and_pending_spaces(matcher[1]);
+        m_resource_root_directory_path = strip_leading_and_pending_spaces(matcher[1]);
 }

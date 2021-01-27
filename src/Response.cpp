@@ -93,7 +93,7 @@ namespace Message
 		: m_uri(std::make_shared<Uri> ()),
 		  m_status_code(0),
 		  m_protocol_version("HTTP/1.1"),
-		  m_content_length(0)
+		  m_body_length(0)
 	{
 	}
 
@@ -106,7 +106,6 @@ namespace Message
 		m_body = other.m_body;
 		m_body_length = other.m_body_length;
 		m_content_type = other.m_content_type;
-		m_content_length = other.m_content_length;
     }
 
 	Response& Message::Response::operator=(const Response& other)
@@ -120,7 +119,6 @@ namespace Message
 			m_body = other.m_body;
 			m_body_length = other.m_body_length;
 			m_content_type = other.m_content_type;
-			m_content_length = other.m_content_length;
 		}
 		return *this;
 	}
@@ -158,9 +156,9 @@ namespace Message
 		}
 	}
 
-	std::string Message::Response::get_status_code_reason_string(const int m_status_code)
+	std::string Message::Response::get_status_code_reason_string(const int status_code)
 	{
-		return status_code_map[m_status_code];
+		return status_code_map[status_code];
 	}
 
 	std::string Message::Response::get_body_length()
@@ -174,33 +172,34 @@ namespace Message
 		return m_content_type;
 	}
 
-	bool Message::Response::set_status(int new_status_code)
+	bool Message::Response::set_status(int status_code)
 	{
-		m_status_code = new_status_code;
-		m_reason_phrase = status_code_map[new_status_code];
+		m_status_code = status_code;
+		m_reason_phrase = status_code_map[status_code];
 		return true;
 	}
 
-	bool Message::Response::set_protocol_version(const std::string new_protocol_version)
+	bool Message::Response::set_protocol_version(const std::string protocol_version)
 	{
-		m_protocol_version = new_protocol_version;
+		m_protocol_version = protocol_version;
 		return true;
 	}
 	
-	bool Message::Response::set_body(const std::string& new_response_body)
+	bool Message::Response::set_body(const std::string& body)
 	{
 		if (!m_body.empty())
 			m_body.clear();
 
-		m_body = new_response_body;
+		m_body = body;
+		m_body_length = body.size();
 		return true;
 	}
 
-	bool Message::Response::set_body_length(const std::streamoff new_body_length)
+	bool Message::Response::set_body_length(const std::streamoff body_length)
 	{
-		if (new_body_length != -1)
+		if (body_length != -1)
 		{
-			m_body_length = new_body_length;
+			m_body_length = body_length;
 			return true;
 		}
 		else
@@ -209,9 +208,9 @@ namespace Message
 		}
 	}
 
-	void Message::Response::set_content_type(const std::string& new_content_type)
+	void Message::Response::set_content_type(const std::string& content_type)
 	{
-		m_content_type = new_content_type;
+		m_content_type = content_type;
 		return;
 	}
 
@@ -235,15 +234,15 @@ namespace Message
 		}
 		else
 		{
-			m_content_length = new_content_length;
+			m_body_length = new_content_length;
 			add_header("Content-Length", std::to_string(new_content_length));
 			return true;
 		}
 	}
 
-	bool Message::Response::set_reason_phrase(const int new_status_code)
+	bool Message::Response::set_reason_phrase(const int status_code)
 	{
-		auto header_position = status_code_map.find(new_status_code);
+		auto header_position = status_code_map.find(status_code);
 		if(header_position == status_code_map.cend())
 		{
 			return false;
@@ -285,103 +284,6 @@ namespace Message
 		return response.str();
 	}
 
-	void Message::Response::parse_content_type(const std::string& request_uri)
-	{
-		std::smatch match_result;
-
-		auto regex = std::regex("\\.([0-9a-zA-Z]+)$");
-
-		std::string file_extention;
-
-		if (std::regex_search(request_uri, match_result, regex))
-		{
-			file_extention = match_result[1].str();
-		}
-		else
-		{
-			return;
-		}
-
-		if ( file_extention == "txt")
-		{
-			m_content_type = "text/plain";
-			return;
-		}
-		else if (file_extention == "html" || file_extention == "htm")
-		{
-			m_content_type = "text/html";
-			return;
-		}
-		else if (file_extention == "css")
-		{
-			m_content_type = "text/css";
-			return;
-		}
-		else if (file_extention == "jpeg" || file_extention == "jpg")
-		{
-			m_content_type = "image/jpg";
-			return;
-		}
-		else if (file_extention == "png")
-		{
-			m_content_type = "image/png";
-			return;
-		}
-		else if (file_extention == "gif")
-		{
-			m_content_type = "image/gif";
-			return;
-		}
-		else if (file_extention == "svg")
-		{
-			m_content_type = "image/svg+xml";
-			return;
-		}
-		else if (file_extention == "ico")
-		{
-			m_content_type = "image/x-icon";
-			return;
-		}
-		else if (file_extention == "json")
-		{
-			m_content_type = "application/json";
-			return;
-		}
-		else if (file_extention == "pdf")
-		{
-			m_content_type = "application/pdf";
-			return;
-		}
-		else if (file_extention == "js")
-		{
-			m_content_type = "application/javascript";
-			return;
-		}
-		else if (file_extention == "wasm")
-		{
-			m_content_type = "application/wasm";
-			return;
-		}
-		else if (file_extention == "xml")
-		{
-			m_content_type = "application/xml";
-			return;
-		}
-		else if (file_extention == "xhtml")
-		{
-			m_content_type = "application/xhtml+xml";
-			return;
-		}
-
-		return;
-	}
-
-	bool Message::Response::set_content(const std::string& resource)
-	{
-		m_body = resource;
-		return true;
-	}
-
 	bool Message::Response::has_header(const std::string& name)
 	{
 		return m_headers.find(name) != m_headers.cend();
@@ -393,10 +295,5 @@ namespace Message
 	}
 	
 }
-
-
-
-
-
 
 

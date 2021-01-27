@@ -118,7 +118,7 @@ namespace Message
 		 * @return  
 		 * 		True if succeeds.
 		 */
-		bool set_status(const int new_status_code);
+		bool set_status(const int status_code);
 		
 		/**
 		 * Set HTTP protocol version.
@@ -129,18 +129,18 @@ namespace Message
 		 * @return  
 		 * 		True if succeeds.
 		 */
-		bool set_protocol_version(const std::string new_protocol_version);
+		bool set_protocol_version(const std::string protocol_version);
 		
 		/**
 		 * Set response body.
 		 * 
-		 * @param[in]  response_body  
+		 * @param[in]  body  
 		 * 		Response body string.
 		 * 
 		 * @return  
 		 * 		True if succeeds.
 		 */
-		bool set_body(const std::string& new_response_body);
+		bool set_body(const std::string& body);
 		
 		/**
 		 * Set response body length.
@@ -151,7 +151,7 @@ namespace Message
 		 * @return 
 		 * 		True if succeeds.
 		 */
-		bool set_body_length(const std::streamoff new_body_length);
+		bool set_body_length(const std::streamoff body_length);
 		
 		/**
 		 * Add header.
@@ -184,18 +184,7 @@ namespace Message
 		 * @param[in] content_type  
 		 * 		Content type.
 		 */
-		void set_content_type(const std::string& new_content_type);
-
-		/**
-		 * Set requested content/resource.
-		 * 
-		 * @param[in] resource
-		 * 		Requested resource.
-		 * 
-		 * @return  
-		 * 		True if succeeds.
-		 */
-		bool set_content(const std::string& resource);
+		void set_content_type(const std::string& content_type);
 
 		/**
 		 * Set reason phrase.
@@ -212,18 +201,6 @@ namespace Message
 		 * Assemble response string from member variables.
 		 */
 		std::string generate_response();
-
-		/**
-		 * Determine content type based on the file extension.
-		 * 
-		 * @param[in] request_uri  
-		 * 		Request Uri taken from request message
-		 * 
-		 * @note 
-		 * 		For all available content types, see:
-		 * 		https://www.iana.org/assignments/media-types/media-types.xhtml#application
-		 */
-		void parse_content_type(const std::string& request_uri);
 
 		/**
 		 * Clear up the header fields.
@@ -249,11 +226,9 @@ namespace Message
 		std::string m_body;
 		
 		// Length of body of response message
-		std::streamoff m_body_length;
+		size_t m_body_length;
 
 		// Content type
 		std::string m_content_type;
-
-		size_t m_content_length;
 	};
 }

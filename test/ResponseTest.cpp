@@ -19,10 +19,10 @@ TEST(response_tests, generate_200_response)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
     
-    std::string response_body = "Hello World! My payload includes a trailing CRLF.\r\n";
-    response->set_body(response_body);
+    std::string body = "Hello World! My payload includes a trailing CRLF.\r\n";
+    response->set_body(body);
     response->set_content_type("text/html");
-    response->set_body_length(response_body.size());
+    response->set_body_length(body.size());
     StatusHandler::handle_status_code(response, 200);
 
     std::string expected_result
@@ -52,67 +52,3 @@ TEST(response_tests, map_status_code_to_reaseon_phrase)
     ASSERT_EQ(response.get_status_code_reason_string(505), "HTTP Version Not Supported");
 }
 
-TEST(response_tests, parse_content_types)
-{
-    Message::Response response;
-
-    response.parse_content_type("/demo.txt");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
-
-    response.parse_content_type("/demo.html");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "text/html");
-
-    response.parse_content_type("/demo.css");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "text/css");
-
-    response.parse_content_type("/demo.jpeg");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
-
-    response.parse_content_type("/demo.jpg");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/jpg");
-
-    response.parse_content_type("/demo.png");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/png");
-
-    response.parse_content_type("/demo.gif");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/gif");
-
-    response.parse_content_type("/demo.svg");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/svg+xml");
-
-    response.parse_content_type("/demo.ico");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "image/x-icon");
-
-    response.parse_content_type("/demo.json");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/json");
-
-    response.parse_content_type("/demo.pdf");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/pdf");
-
-    response.parse_content_type("/demo.js");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/javascript");
-
-    response.parse_content_type("/demo.xml");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/xml");
-
-    response.parse_content_type("/demo.wasm");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/wasm");
-
-    response.parse_content_type("/demo.xhtml");
-    response.add_header("Content-Type", response.get_content_type());
-    ASSERT_EQ(response.get_header("Content-Type"), "application/xhtml+xml");
-};
