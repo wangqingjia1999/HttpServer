@@ -100,13 +100,13 @@ public:
 	/**
 	 * Parse an Uri string.
 	 * 
-	 * @param[in] uri_string  
+	 * @param[in] uri  
 	 * 		Uri string to be parsed.
 	 * 
 	 * @return  
 	 * 		True if successfully parse.
 	 */
-	bool parse_from_string(const std::string& uri_string);
+	bool parse_from_string(const std::string& uri);
 	
 	bool has_port();
 	bool has_fragment();
@@ -130,49 +130,117 @@ public:
 
 private:
 	/**
-	 * Extract the scheme from uri_string if any,
+	 * Extract the scheme from uri if any,
 	 * return the remaining string.
 	 * 
-	 * @param[in] uri_string 
+	 * @param[in] uri 
 	 * 		Uri string that may contain scheme.
 	 * 
-	 * @param[out] rest_string 
+	 * @param[out] remains 
 	 * 		Remaining string after parsing/extracting.
 	 * 
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_scheme(const std::string& uri_string, std::string & rest_string);
+	bool parse_scheme(const std::string& uri, std::string & remains);
 
 	/**
 	 * Parse user info from Uri string.
 	 * 
-	 * @param[in] authority_string 
+	 * @param[in] authority 
 	 * 		Authority string.
 	 * 
-	 * @param[out] authority_string_without_user_info
+	 * @param[out] remains
 	 * 		Remaining authority string with the user info substring being deleted.
 	 * 
 	 * @return 
 	 * 		True if succeeds.
 	 */
-	bool parse_user_info(std::string& authority_string, std::string& authority_without_user_info);
+	bool parse_user_info(std::string& authority, std::string& remains);
+	
+	/**
+	 * Parse host of an URI if any.
+	 * 
+	 * @param[in] authority
+	 * 		Authority of an URI.
+	 * 
+	 * @param[out] remains
+	 * 		Remains after weeding out the host.
+	 * 
+	 * @return 
+	 * 		True if succeeds.
+	 */
+	bool parse_host(std::string& authority, std::string& remains);
 
-	bool parse_host(std::string& authority_without_user_info, std::string& authority_without_host);
+	/**
+	 * Parse port of an URI if any.
+	 * 
+	 * @param[in] authority
+	 * 		Authority of an URI.
+	 * 
+	 * @param[out] remains
+	 * 		Remains after weeding out the port.
+	 *
+	 * @return 
+	 * 		True if succeeds.
+	 */
+	bool parse_port(std::string& authority);
 
-	bool parse_port(std::string& authority_string);
+	/**
+	 * Parse authority of an URI if any.
+	 * 
+	 * @param[in] uri
+	 * 		Given URI.
+	 * 
+	 * @param[out] remains
+	 * 		Remains after weeding out the authority.
+	 * 
+	 * @return 
+	 * 		True if succeeds.
+	 */
+	bool parse_authority(std::string& uri, std::string& remains);	
 
-	bool parse_authority(std::string& uri_string, std::string& rest_string);	
+	/**
+	 * Parse path of an URI if any.
+	 * 
+	 * @param[in] uri
+	 * 		Given URI.		
+	 * 
+	 * @param[out] remains
+	 * 		Remains after weeding out the path.
+	 * 
+	 * @return
+	 * 		True if succeeds.
+	 */
+	bool parse_path(std::string& uri, std::string& remains);
 
-	bool parse_path(std::string& uri_may_contain_path, std::string& rest_string);
+	/**
+	 * Parse query of an URI if any.
+	 * 
+	 * @param[in] uri
+	 * 
+	 * @param[out] remains 
+	 * 		Remains after weeding out the query.
+	 * 
+	 * @return
+	 * 		True if succeeds.
+	 */
+	bool parse_query(std::string& uri, std::string& remains);
 
-	bool parse_query(std::string& uri_string, std::string& rest_string);
-
-	bool parse_fragment(std::string& uri_may_contain_fragment, std::string& rest_string);
+	/**
+	 * Parse fragment of an URI if any.
+	 * 
+	 * @param[in] uri
+	 * 
+	 * @param[out] remains 
+	 * 		Remains after weeding out the fragment.
+	 * 
+	 * @return
+	 * 		True if succeeds.
+	 */
+	bool parse_fragment(std::string& uri, std::string& remains);
 
 	bool is_absolute_path();
-
-	void remove_dots();
 
 	bool set_scheme(std::string& scheme);
 	bool set_host(std::string& host);

@@ -12,80 +12,80 @@ Uri::~Uri()
 {
 }
 
-bool Uri::parse_scheme(const std::string& uri_string, std::string & rest_string)
+bool Uri::parse_scheme(const std::string& uri, std::string & remains)
 {
-	// Extract the m_scheme part(if any) from uri_string
-	auto authority_or_path_start_delimiter = uri_string.find('/');
+	// Extract the m_scheme part(if any) from uri
+	auto authority_or_path_start_delimiter = uri.find('/');
 	if (authority_or_path_start_delimiter == std::string::npos)
 	{
-		authority_or_path_start_delimiter = uri_string.size();
+		authority_or_path_start_delimiter = uri.size();
 	}
 
-	auto scheme_part = uri_string.substr(0, authority_or_path_start_delimiter);
+	auto scheme_part = uri.substr(0, authority_or_path_start_delimiter);
 	// Find the position of ':' (if any)
 	if (scheme_part.find(':') != std::string::npos)
 	{
 		// If we find the m_scheme, do
 		m_scheme = scheme_part.substr(0, scheme_part.find(':'));
 
-		// strip m_scheme part from uri_string,
+		// strip m_scheme part from uri,
 		// and store it to "rest" parameter
-		rest_string = uri_string.substr(scheme_part.find(':') + 1);
+		remains = uri.substr(scheme_part.find(':') + 1);
 		return true;
 	}
 	else
 	{
-		rest_string = uri_string;
+		remains = uri;
 		m_scheme.clear();
 		return true;
 	}
 }
 
-bool Uri::parse_user_info(std::string& authority_string, std::string& authority_without_user_info)
+bool Uri::parse_user_info(std::string& authority, std::string& remains)
 {
-	auto user_info_end_delimiter = authority_string.find('@');
+	auto user_info_end_delimiter = authority.find('@');
 	if (user_info_end_delimiter != std::string::npos)
 	{
-		m_user_info = authority_string.substr(0, user_info_end_delimiter);
-		authority_without_user_info = authority_string.substr(user_info_end_delimiter);
+		m_user_info = authority.substr(0, user_info_end_delimiter);
+		remains = authority.substr(user_info_end_delimiter);
 		return true;
 	}
 
-	authority_without_user_info = authority_string;
+	remains = authority;
 	return true;
 }
 
-bool Uri::parse_host(std::string& authority_without_user_info, std::string& authority_without_host)
+bool Uri::parse_host(std::string& authority, std::string& remains)
 {
-	auto host_end_delimiter = authority_without_user_info.find_first_of(":/");
+	auto host_end_delimiter = authority.find_first_of(":/");
 	if (host_end_delimiter != std::string::npos)
 	{
 		// we find m_host part
-		m_host = authority_without_user_info.substr(0, host_end_delimiter);
+		m_host = authority.substr(0, host_end_delimiter);
 		
-		authority_without_host = authority_without_user_info.substr(host_end_delimiter);
+		remains = authority.substr(host_end_delimiter);
 		
 		return true;
 	}
 	else
 	{
-		m_host = authority_without_user_info;
+		m_host = authority;
 
-		authority_without_host = authority_without_user_info;
+		remains = authority;
 
 		return true;
 	}
 }
 
-bool Uri::parse_port(std::string& authority_string)
+bool Uri::parse_port(std::string& authority)
 {
-	auto port_begin_delimiter = authority_string.find(':');
+	auto port_begin_delimiter = authority.find(':');
 	if (port_begin_delimiter != std::string::npos)
 	{
 		// has m_port
 		m_has_port = true;
 		// strip ':'
-		std::string port_string = authority_string.substr(port_begin_delimiter+1);
+		std::string port_string = authority.substr(port_begin_delimiter+1);
 		
 		// whether the given m_port string is integer string.
 		for(auto iterator = port_string.cbegin(); iterator != port_string.cend(); ++iterator)
@@ -117,35 +117,35 @@ bool Uri::parse_port(std::string& authority_string)
 	}
 }
 
-bool Uri::parse_authority(std::string& uri_string, std::string& rest_string)
+bool Uri::parse_authority(std::string& uri, std::string& remains)
 {
-	auto authority_begin_delimiter = uri_string.find("//");
+	auto authority_begin_delimiter = uri.find("//");
 
 	if (authority_begin_delimiter!=std::string::npos)
 	{
 		// strip two slash precede authority part
-		uri_string = uri_string.substr(2);
+		uri = uri.substr(2);
 	}
 
 	// find authority part
 	if (authority_begin_delimiter != std::string::npos)
 	{
-		auto authority_end_delimiter = uri_string.find_first_of("/?#");
-		std::string authority_string;
+		auto authority_end_delimiter = uri.find_first_of("/?#");
+		std::string authority;
 		// If authority exists and the m_query or m_fragment exist
 		if(authority_end_delimiter != std::string::npos)
 		{
-			authority_string = uri_string.substr(0, authority_end_delimiter);
-			rest_string = uri_string.substr(authority_end_delimiter);
+			authority = uri.substr(0, authority_end_delimiter);
+			remains = uri.substr(authority_end_delimiter);
 		}
 		else
 		{
-			authority_string = uri_string;
-			rest_string = "";
+			authority = uri;
+			remains = "";
 		}
 
 		std::string string_without_user_info;
-		if(!parse_user_info(authority_string, string_without_user_info))
+		if(!parse_user_info(authority, string_without_user_info))
 		{
 			return false;
 		}
@@ -165,67 +165,66 @@ bool Uri::parse_authority(std::string& uri_string, std::string& rest_string)
 	}
 	else	// not find authority part
 	{
-		rest_string = uri_string;
+		remains = uri;
 		return true;
 	}
 }
 
-bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string)
+bool Uri::parse_path(std::string& uri, std::string& remains)
 {
 	m_path.clear();
-	if(uri_may_contain_path == "/")
+
+	if(uri == "/")
 	{
-		// usi m_path begins with "/" is absolute m_path
 		m_is_relative_path = false;
 		m_path.push_back("");
-		uri_may_contain_path.clear();
-		rest_string = "";
+		uri.clear();
+		remains = "";
 		return true;
 	}
-	else if(!uri_may_contain_path.empty())
+	else if(!uri.empty())
 	{
 		// The m_path is terminated by the first question "?", "#", or
 		// by the end of the Uri.
-		auto path_end_delimiter = uri_may_contain_path.find_first_of("?#");
+		auto path_end_delimiter = uri.find_first_of("?#");
 
 		// m_path string without m_query or m_fragment
 		if (path_end_delimiter == std::string::npos)
 		{
 			// strip beginning slash of m_path string
-			auto begin_slash_position = uri_may_contain_path.find_first_of('/');
+			auto begin_slash_position = uri.find_first_of('/');
 			if(begin_slash_position == 0)
 			{
 				m_is_relative_path = false;
-				uri_may_contain_path = uri_may_contain_path.substr(1);
+				uri = uri.substr(1);
 			}
 			else
 			{
 				m_is_relative_path = true;
 			}
 			
-
 			for(;;)
 			{
-				auto path_elelment_delimiter = uri_may_contain_path.find("/");
+				auto path_elelment_delimiter = uri.find("/");
 				if(path_elelment_delimiter != std::string::npos)
 				{
-					m_path.emplace_back(uri_may_contain_path.begin(), uri_may_contain_path.begin() + path_elelment_delimiter);
-					uri_may_contain_path = uri_may_contain_path.substr(path_elelment_delimiter+1);
+					m_path.emplace_back(uri.begin(), uri.begin() + path_elelment_delimiter);
+					uri = uri.substr(path_elelment_delimiter+1);
 				}
 				else	// no "/" found
 				{
-					m_path.push_back(uri_may_contain_path);
-					uri_may_contain_path.clear();
+					m_path.push_back(uri);
+					uri.clear();
 					break;
 				}
 			}
-			rest_string = "";
+
+			remains = "";
 			return true;
-			
 		}
 		else	// find m_query or m_fragment
 		{
-			rest_string = uri_may_contain_path.substr(path_end_delimiter);
+			remains = uri.substr(path_end_delimiter);
 			
 			return true;
 		}
@@ -240,7 +239,7 @@ bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 	// This m_path is absolute m_path
 	// e.g. "https://google.com" is absolute m_path.
 	// It's same as "https://google.com/"
-	if(!m_host.empty() && uri_may_contain_path.empty())
+	if(!m_host.empty() && uri.empty())
 	{
 		m_is_relative_path = false;
 		m_path.push_back("");
@@ -250,28 +249,27 @@ bool Uri::parse_path(std::string& uri_may_contain_path, std::string& rest_string
 	// If m_host doesn't exist and m_path is empty,
 	// The m_path is relative m_path
 	m_is_relative_path = true;
-	rest_string = uri_may_contain_path;
+	remains = uri;
 	return true;
 }
 
-bool Uri::parse_query(std::string& uri_string, std::string& rest_string)
+bool Uri::parse_query(std::string& uri, std::string& remains)
 {
-	auto query_begin_delimiter = uri_string.find('?');
-	auto query_end_delimiter = uri_string.find('#');
+	auto query_begin_delimiter = uri.find('?');
+	auto query_end_delimiter = uri.find('#');
 	if (query_begin_delimiter != std::string::npos)
 	{
-		// has m_query
 		m_has_query = true;
 		if (query_end_delimiter != std::string::npos)
 		{
-			m_query = uri_string.substr(query_begin_delimiter+1, query_end_delimiter-1);
-			rest_string = uri_string.substr(query_end_delimiter);
+			m_query = uri.substr(query_begin_delimiter+1, query_end_delimiter-1);
+			remains = uri.substr(query_end_delimiter);
 			return true;
 		}
 		else
 		{
-			m_query = uri_string.substr(query_begin_delimiter+1);
-			rest_string = "";
+			m_query = uri.substr(query_begin_delimiter+1);
+			remains = "";
 			return true;
 		}
 		
@@ -279,26 +277,26 @@ bool Uri::parse_query(std::string& uri_string, std::string& rest_string)
 	else
 	{
 		m_has_query = false;
-		rest_string = uri_string;
+		remains = uri;
 		return true;
 	}
 }
 
-bool Uri::parse_fragment(std::string& uri_may_contain_fragment, std::string& rest_string)
+bool Uri::parse_fragment(std::string& uri, std::string& remains)
 {
-	auto fragment_begin_delimiter = uri_may_contain_fragment.find('#');
+	auto fragment_begin_delimiter = uri.find('#');
 	if (fragment_begin_delimiter != std::string::npos)
 	{
 		// has m_fragment
 		m_has_fragment = true;
-		m_fragment = uri_may_contain_fragment.substr(fragment_begin_delimiter + 1);
-		rest_string = "";
+		m_fragment = uri.substr(fragment_begin_delimiter + 1);
+		remains = "";
 		return true;
 	}
 	else
 	{
 		m_has_fragment = false;
-		rest_string = uri_may_contain_fragment;
+		remains = uri;
 		return true;
 	}
 	
@@ -308,53 +306,6 @@ bool Uri::parse_fragment(std::string& uri_may_contain_fragment, std::string& res
 bool Uri::is_absolute_path()
 {
 	return (!m_path.empty() && !m_is_relative_path);
-}
-
-void Uri::remove_dots()
-{
-	std::vector< std::string > old_path = std::move(m_path);
-	m_path.clear();
-	// TAT: why use this?
-	// Is this means that the resources directory
-	bool is_at_directory_level = false;
-
-	for(const std::string segment : old_path)
-	{
-		if(segment == ".")
-		{
-			is_at_directory_level = true;
-		}
-		else if ( segment == "..")
-		{
-			if(!m_path.empty())
-			{
-				// remove last m_path element if we can navigate up a m_path level 
-				if(!is_absolute_path() || (m_path.size() > 1))
-				{
-					m_path.pop_back();
-				}
-			}
-			is_at_directory_level = true;
-		}
-		else
-		{
-			if( !is_at_directory_level || ! segment.empty())
-			{
-				m_path.push_back(segment);
-			}
-			is_at_directory_level = segment.empty();
-		}
-		
-		
-	}
-	
-	// if at the end of reconstructing the m_path,
-	// we are in a directory level, 
-	// add an empty segment to m_path vector end to notify
-	if( is_at_directory_level && (!m_path.empty() && !m_path.back().empty()))
-	{
-		m_path.push_back("");
-	}
 }
 
 // Getters
@@ -498,10 +449,10 @@ bool Uri::has_fragment()
 }
 
 
-bool Uri::parse_from_string(const std::string& uri_string)
+bool Uri::parse_from_string(const std::string& uri)
 {
 	PercentEncoding percent_encoding;
-	std::string decoded_uri_string = percent_encoding.decode(uri_string);
+	std::string decoded_uri_string = percent_encoding.decode(uri);
 
 	std::string uri_without_scheme;
 

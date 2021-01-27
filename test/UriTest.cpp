@@ -129,7 +129,7 @@ TEST(UriTests, parseFromStringRelativeVsAbsolutePath)
 {
    struct TestVector 
    {
-       std::string uri_string;
+       std::string uri;
        bool is_relative_reference;
    };
    const std::vector< TestVector > test_vectors
@@ -143,7 +143,7 @@ TEST(UriTests, parseFromStringRelativeVsAbsolutePath)
    for (const auto& testVector : test_vectors) 
    {
        Uri uri;
-       ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
+       ASSERT_TRUE(uri.parse_from_string(testVector.uri)) << index;
        ASSERT_EQ(testVector.is_relative_reference, uri.is_relative_reference()) << index;
        ++index;
    }
@@ -153,7 +153,7 @@ TEST(UriTests, parseFromStringRelativeVsNonRelativePaths)
 {
    struct TestVector
    {
-       std::string uri_string;
+       std::string uri;
        bool has_relative_path;
    };
    const std::vector< TestVector > test_vectors
@@ -171,7 +171,7 @@ TEST(UriTests, parseFromStringRelativeVsNonRelativePaths)
    for (const auto& testVector : test_vectors) 
    {
        Uri uri;
-       ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
+       ASSERT_TRUE(uri.parse_from_string(testVector.uri)) << index;
        ASSERT_EQ(testVector.has_relative_path, uri.has_relative_path()) << index;
        ++index;
    }
@@ -181,7 +181,7 @@ TEST(UriTests, parseFromStringQueryAndFragmentElements)
 {
    struct TestVector 
    {
-       std::string uri_string;
+       std::string uri;
        std::string host;
        std::string query;
        std::string fragment;
@@ -208,7 +208,7 @@ TEST(UriTests, parseFromStringQueryAndFragmentElements)
    for (const auto& testVector : test_vectors) 
    {
        Uri uri;
-       ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
+       ASSERT_TRUE(uri.parse_from_string(testVector.uri)) << index;
        ASSERT_EQ(testVector.host, uri.get_host()) << index;
        ASSERT_EQ(testVector.query, uri.get_query()) << index;
        ASSERT_EQ(testVector.fragment, uri.get_fragment()) << index;
@@ -220,7 +220,7 @@ TEST(UriTests, parseFromStringUserInfo)
 {
    struct TestVector 
    {
-       std::string uri_string;
+       std::string uri;
        std::string user_info;
    };
    const std::vector< TestVector > test_vectors
@@ -237,7 +237,7 @@ TEST(UriTests, parseFromStringUserInfo)
    for (const auto& testVector : test_vectors) 
    {
        Uri uri;
-       ASSERT_TRUE(uri.parse_from_string(testVector.uri_string)) << index;
+       ASSERT_TRUE(uri.parse_from_string(testVector.uri)) << index;
        ASSERT_EQ(testVector.user_info, uri.get_user_info()) << index;
        ++index;
    }
