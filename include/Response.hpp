@@ -102,22 +102,6 @@ namespace Message
 		std::string get_body_length();
 
 		/**
-		 * Get generated response message string.
-		 * 
-		 * @return  
-		 * 		Response string.
-		 */
-		std::string get_response_message();
-
-		/**
-		 * Get response message length.
-		 * 
-		 * @return  
-		 * 		Size of response message.
-		 */
-		size_t get_response_length();
-
-		/**
 		 * Get content type.
 		 * 
 		 * @return  
@@ -214,17 +198,6 @@ namespace Message
 		bool set_content(const std::string& resource);
 
 		/**
-		 * Set the complete response message.
-		 * 
-		 * @param[in] response 
-		 * 		Complete response message.
-		 * 
-		 * @return  
-		 * 		True if succeeds.
-		 */
-		bool set_response_message(const std::string& new_response_message_string);
-		
-		/**
 		 * Set reason phrase.
 		 * 
 		 * @param[in] status_code  
@@ -238,23 +211,7 @@ namespace Message
 		/**
 		 * Assemble response string from member variables.
 		 */
-		void generate_response();
-
-		/**
-		 * Read from local file system.
-		 * 
-		 * @param[in] path  
-		 * 		Path string.
-		 * 
-		 * @return  
-		 * 		True if read local file successfully.
-		 * 
-		 * @note 
-		 * 		Map the input path string to local file system 
-		 * 		as the payloal/body of response message. 
-		 * 		It will set the body and body length as well.
-		 */
-		bool read_file(const std::string& path);
+		std::string generate_response();
 
 		/**
 		 * Determine content type based on the file extension.
@@ -298,8 +255,5 @@ namespace Message
 		std::string m_content_type;
 
 		size_t m_content_length;
-
-		// Generated response message string
-		std::string m_response_message;
 	};
 }

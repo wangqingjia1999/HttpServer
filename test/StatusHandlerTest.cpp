@@ -31,7 +31,7 @@ TEST(status_handler_tests, status_code_100_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
     StatusHandler::handle_status_code(response, 100);
-    
+
     std::string expected_response_string
     {
         "HTTP/1.1 100 Continue\r\n"
@@ -40,7 +40,7 @@ TEST(status_handler_tests, status_code_100_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -60,7 +60,7 @@ TEST(status_handler_tests, status_code_101_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -80,7 +80,7 @@ TEST(status_handler_tests, status_code_200_test)
     };
 
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -98,7 +98,7 @@ TEST(status_handler_tests, status_code_201_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -116,7 +116,7 @@ TEST(status_handler_tests, status_code_202_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -134,7 +134,7 @@ TEST(status_handler_tests, status_code_203_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -152,7 +152,7 @@ TEST(status_handler_tests, status_code_204_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -170,7 +170,7 @@ TEST(status_handler_tests, status_code_205_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -188,7 +188,7 @@ TEST(status_handler_tests, status_code_206_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         expected_response_string
     );
 }
@@ -209,7 +209,7 @@ TEST(status_handler_tests, status_code_301_test)
     };
     
     ASSERT_EQ(
-        weed_out_http_date_header(response->get_response_message()), 
+        weed_out_http_date_header(response->generate_response()), 
         expected_response_string
     );
 }
@@ -245,7 +245,7 @@ TEST(status_handler_tests, status_code_404_test)
     };
 
     ASSERT_EQ( 
-        weed_out_http_date_header(response->get_response_message()),
+        weed_out_http_date_header(response->generate_response()),
         weed_out_http_date_header(expected_response_string)
     );
 }

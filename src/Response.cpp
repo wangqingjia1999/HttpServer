@@ -107,7 +107,6 @@ namespace Message
 		m_body_length = other.m_body_length;
 		m_content_type = other.m_content_type;
 		m_content_length = other.m_content_length;
-		m_response_message = other.m_response_message;
     }
 
 	Response& Message::Response::operator=(const Response& other)
@@ -122,7 +121,6 @@ namespace Message
 			m_body_length = other.m_body_length;
 			m_content_type = other.m_content_type;
 			m_content_length = other.m_content_length;
-			m_response_message = other.m_response_message;
 		}
 		return *this;
 	}
@@ -169,16 +167,6 @@ namespace Message
 	{
 		m_body_length = m_body.size();
 		return std::to_string(m_body_length);
-	}
-
-	std::string Message::Response::get_response_message()
-	{
-		return m_response_message;
-	}
-
-	size_t Message::Response::get_response_length()
-	{
-		return m_response_message.size();
 	}
 
 	std::string Message::Response::get_content_type()
@@ -253,13 +241,6 @@ namespace Message
 		}
 	}
 
-	bool Message::Response::set_response_message(const std::string& new_response_message_string)
-	{
-		m_response_message.clear();
-		m_response_message = std::move(new_response_message_string);
-		return true;
-	}
-
 	bool Message::Response::set_reason_phrase(const int new_status_code)
 	{
 		auto header_position = status_code_map.find(new_status_code);
@@ -272,7 +253,7 @@ namespace Message
 		return true;
 	}
 	
-	void Message::Response::generate_response()
+	std::string Message::Response::generate_response()
 	{
 		std::ostringstream response;
 
@@ -300,12 +281,8 @@ namespace Message
 			// Do not put '\r\n' at the end of the http message-m_body.
 			// see: https://stackoverflow.com/a/13821352/11850070			
 		}
-		
-		if (!set_response_message(response.str()))
-		{
-			// FIXME: logger "failed to set response message
-			return;
-		}
+
+		return response.str();
 	}
 
 	void Message::Response::parse_content_type(const std::string& request_uri)

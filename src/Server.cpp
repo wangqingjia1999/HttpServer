@@ -32,7 +32,7 @@ void Server::listen_at(const std::string& host, const int port)
             {   
                 request_core_handler(server_socket->read_from());
                 
-                if(!server_socket->write_to(m_connection->get_response()->get_response_message()))
+                if(!server_socket->write_to(m_connection->get_response()->generate_response()))
                     printf("Error in sending m_connection->get_response()");
 
                 break;
@@ -64,7 +64,7 @@ std::string Server::get_raw_request()
 
 std::string Server::get_raw_response()
 {
-    return m_connection->get_response()->get_response_message();
+    return m_connection->get_response()->generate_response();
 }
 
 void Server::set_raw_request(const std::string& raw_request)

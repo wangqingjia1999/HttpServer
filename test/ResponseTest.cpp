@@ -35,7 +35,7 @@ TEST(response_tests, generate_200_response)
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
 
-    std::cout << response->get_response_message() << std::endl;
+    std::cout << response->generate_response() << std::endl;
 }
 
 TEST(response_tests, map_status_code_to_reaseon_phrase)
