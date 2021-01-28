@@ -1,24 +1,72 @@
 #include "SqliteHandler.hpp"
 
 #include <gtest/gtest.h>
+#include <algorithm>
 
-TEST(sqlite_tests, connection_to_sqlite_test)
+TEST(sqlite_tests, has_table_test)
 {
     SqliteHandler sqlite_handler;
+    
+    ASSERT_TRUE(sqlite_handler.has_table("user_table"));
 
-    std::string s = "CREATE TABLE t1(num smallint, name varchar(10))";
-    sqlite_handler.execute(s);
+    ASSERT_TRUE(sqlite_handler.has_table("audio_table"));
+}
 
-    std::string s1 = "INSERT INTO t1 VALUES(2, 'tom')";
-    sqlite_handler.execute(s1);
+TEST(sqlite_tests, table_column_info_test)
+{
+    SqliteHandler sqlite_handler;
+    /**
+     * Tables:
+     *      user_table:      User account info.
+     *          -------------------------------------
+     *          | user_name | user_age | user_email |
+     *          -------------------------------------
+     * 
+     *      audio_table:  Resources details.
+     *          -------------------------------------------
+     *          | audio_name | audio_path | audio_duration|
+     *          -------------------------------------------
+     */
 
-    std::string s2 = "INSERT INTO t1 VALUES(21, 'jane')";
-    sqlite_handler.execute(s2);
+    std::vector<ColumnInfo> expected_user_table
+    {
+        { "0", "user_name",  "varchar(15)" },
+        { "1", "user_age",   "int"  },
+        { "2", "user_email", "text" }
+    };
+    auto user_table_columns = sqlite_handler.get_columns("user_table");
+    for(int i = 0; i < user_table_columns.size(); ++i)
+    {
+        for(int j = 0; j < 3; ++j)
+        {
+            ASSERT_EQ(
+                user_table_columns[i][j],
+                expected_user_table[i][j]
+            );
+        }
+    }
 
-    std::string s3 = "INSERT INTO t1 VALUES(11, 'michael')";
-    sqlite_handler.execute(s3);
+    std::vector< ColumnInfo > expected_audio_table
+    {
+        { "0", "audio_name",     "text" },
+        { "1", "audio_caption",  "text" },
+        { "2", "audio_path",     "text" },
+        { "3", "audio_duration", "int"  }
+    };
+    auto audio_table_columns = sqlite_handler.get_columns("audio_table");
+    for(int i = 0; i < audio_table_columns.size(); ++i)
+    {
+        for(int j = 0; j < audio_table_columns[i].size(); ++j)
+        {
+            EXPECT_EQ(
+                audio_table_columns[i][j],
+                expected_audio_table[i][j]
+            );
+        }       
+    }
+}
 
-    std::string select = "SELECT * FROM t1";
-    sqlite_handler.execute(select);
-
+TEST(sqlite_tests, insert_into_test)
+{
+    SqliteHandler sqlite_handler;
 }

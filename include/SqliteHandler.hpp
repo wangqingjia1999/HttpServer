@@ -1,10 +1,13 @@
 #pragma once 
 
 #include <sqlite3.h>
-#include <memory>
+
 #include <string>
+#include <vector>
 
 #include <stdio.h>
+
+using ColumnInfo = std::vector<std::string>;
 
 class SqliteHandler
 {
@@ -13,26 +16,30 @@ public:
     ~SqliteHandler();
 
 public:
-    bool execute(const std::string& statement);
+    /**
+     * Whether the table exists?
+     * 
+     * @param[in] table_name
+     *      Target table name.
+     * 
+     * @return
+     *      True if it already exists.
+     */
+    bool has_table(const std::string& table_name);
+
+    /**
+     * Get columns info of a table, which includes the column index
+     * inside the table, the column name and the column type.
+     *
+     * @param[in] table_name
+     *      Target table name.
+     * 
+     * @return
+     *      All columns' info in the table.
+     */
+    std::vector<ColumnInfo> get_columns(const std::string& table_name);
 
 private:
     sqlite3* m_connection;
     sqlite3_stmt* m_statement;
 };
-
-
-    //   sqlite3* pdb;
-        
-    //     const char* db_name = "http-server.db";
-
-    //     int ret = 0;
-    //     if((ret = sqlite3_open(db_name, &pdb)) != SQLITE_OK)
-    //         printf("can not connect to: %d, %s\n", ret, sqlite3_errmsg(pdb));
-
-    //     const char* s1 = "create table t2(number smallint, name varchar(10))";
-    //     sqlite3_stmt* query = nullptr;
-    //     if((ret = sqlite3_prepare_v2(pdb, s1, -1, &query, NULL)) != SQLITE_DONE);
-    //         printf("can not prepare: %d, %s\n", ret, sqlite3_errmsg(pdb));
-
-    //     if((ret = sqlite3_step(query)) != SQLITE_DONE)
-    //         printf("can not execute: %d, %s", ret, sqlite3_errmsg(pdb));
