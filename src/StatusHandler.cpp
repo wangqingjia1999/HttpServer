@@ -124,7 +124,7 @@ namespace StatusHandler
             case 400:   // bad request
             {
                 response->set_body("<html> Bad Request :< </html>");
-                response->add_header("Content-Type", response->get_content_type());
+                response->add_header("Content-Type", "text/html");
                 response->add_header("Content-Length", response->get_body_length());
                 break;
             }
@@ -163,15 +163,31 @@ namespace StatusHandler
                         "</body>"
                     "</html>"
                 );
-
-                response->add_header("Content-Length", response->get_body_length());
                 response->add_header("Content-Type", "text/html");
-
                 break;
             }
 
             case 405:   // 
             {
+                response->add_header("Allow", "GET");
+                response->set_body(
+                    "<html>"
+                        "<head>"
+                            "<title>"
+                                "405 Method Not Allowed"
+                            "</title>"
+                        "</head>"
+                        "<body>"
+                            "<center>"
+                                "<h1> Please ensure the request method is compliant with the requested resource :^) </h1>"
+                            "</center>"
+                            "<center>"
+                                "<h5> Bitate Server </h5>"
+                            "</center>"
+                        "</body>"
+                    "</html>"
+                );
+                response->add_header("Content-Type", "text/html");
                 break;
             }
 
@@ -348,5 +364,7 @@ namespace StatusHandler
                 break;
             }
         }
+
+        response->add_header("Content-Length", response->get_body_length());
     }
 }

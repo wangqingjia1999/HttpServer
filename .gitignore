@@ -1,10 +1,10 @@
 ﻿.vs/
+.vscode/
 out/
 build/
-.vscode/
-resource/
 googletest/
 
+*.mp3
 *.cap
 *.txt
 CmakeSettings.json
