@@ -113,29 +113,30 @@ void Server::request_core_handler(const std::string& raw_request_string)
     if(m_connection->get_request()->get_request_method() == "GET")
     {
         if(!m_resource_handler->fetch_resource(m_connection))
-        {
             StatusHandler::handle_status_code(m_connection->get_response(), 404);
-            return;
-        }
+        else
+            StatusHandler::handle_status_code(m_connection->get_response(), 200);
+
+        return;
     }
     else if(m_connection->get_request()->get_request_method() == "POST")
     {   
         if(m_connection->get_request()->get_request_uri().find("resource/audios") == std::string::npos)
-        {
             StatusHandler::handle_status_code(m_connection->get_response(), 405);
-            return;
-        }
+        
+
+        return;
     }
     else if(m_connection->get_request()->get_request_method() == "PUT")
     {
         if(m_connection->get_request()->get_request_uri().find("resource/audios") == std::string::npos)
-        {
             StatusHandler::handle_status_code(m_connection->get_response(), 405);
-            return;
-        }
+
+        return;
     }
     else if(m_connection->get_request()->get_request_method() == "HEAD")
     {
 
+        return;
     }
 }

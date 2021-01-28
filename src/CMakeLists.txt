@@ -195,3 +195,15 @@ target_link_libraries(resource_handler_lib PUBLIC
     server_configuration_lib
 )
 
+add_library(sqlite_handler_lib STATIC
+    ../include/SqliteHandler.hpp
+    SqliteHandler.cpp
+)
+
+target_link_directories(sqlite_handler_lib PUBLIC
+    /usr/include/
+)
+# FIXME: hardcode the Sqlite3 library path
+target_link_libraries(sqlite_handler_lib PUBLIC
+    /lib/x86_64-linux-gnu/libsqlite3.so.0
+)

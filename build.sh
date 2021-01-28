@@ -13,6 +13,7 @@ fi
 # Install mysql and cpp connector
 sudo apt update
 sudo apt install cmake
+sudo apt install sqlite3 libsqlite3-dev
 
 # Create build directory and change directory to it.
 if [ -d "${PWD}/build" ] 

@@ -158,3 +158,11 @@ target_link_libraries(connection_test PUBLIC
     gtest_main
     connection_lib
 )
+
+add_executable(sqlite_handler_test
+    SqliteHandlerTest.cpp
+)
+target_link_libraries(sqlite_handler_test
+    gtest_main
+    sqlite_handler_lib
+)
