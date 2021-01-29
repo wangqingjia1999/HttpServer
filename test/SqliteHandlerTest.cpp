@@ -24,20 +24,21 @@ TEST(sqlite_tests, table_column_info_test)
      * 
      *      audio_table:  Resources details.
      *          -------------------------------------------
-     *          | audio_name | audio_path | audio_duration|
+     *          | audio_name | audio_caption | audio_path | audio_duration|
      *          -------------------------------------------
      */
 
     std::vector<ColumnInfo> expected_user_table
     {
-        { "0", "user_name",  "varchar(15)" },
-        { "1", "user_age",   "int"  },
-        { "2", "user_email", "text" }
+        { "0", "user_name",     "varchar(15)" },
+        { "1", "user_password",    "text"     },
+        { "2", "user_age",         "int"      },
+        { "3", "user_email",       "text"     }
     };
     auto user_table_columns = sqlite_handler.get_columns("user_table");
     for(int i = 0; i < user_table_columns.size(); ++i)
     {
-        for(int j = 0; j < 3; ++j)
+        for(int j = 0; j < user_table_columns[i].size(); ++j)
         {
             ASSERT_EQ(
                 user_table_columns[i][j],
@@ -69,4 +70,19 @@ TEST(sqlite_tests, table_column_info_test)
 TEST(sqlite_tests, insert_into_test)
 {
     SqliteHandler sqlite_handler;
+
+    UserInfo user_info 
+    {
+        "Tom", "1234567890", "20", "tom@gmail.com"
+    };
+    ASSERT_TRUE(sqlite_handler.add_new_user(user_info));
+
+    AudioInfo audio_info
+    {
+        "24-Dec-2020-13-09-03-3soLBPh71Y.mp3",
+        "I'd have to throw myself in front of a train.",
+        "/home/bitate/HttpServer/resource/audios/14-Dec-2020-15-06-39-1xVPfvJcrg.mp3",
+        "1"
+    };
+    ASSERT_TRUE(sqlite_handler.add_new_audio(audio_info));
 }
