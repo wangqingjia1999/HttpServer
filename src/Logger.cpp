@@ -13,46 +13,6 @@ namespace
     time_t current_time = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
 }
 
-void Logger::record(const std::string& message_string, const Logger_Level logger_level)
-{
-    std::ofstream log_file_object(get_log_file_absolute_path().c_str(), std::ios::app);
-
-    switch(logger_level)
-    {
-        case Logger_Level::NORMAL:
-        {        
-            log_file_object << "[NORMAL]: " << message_string << '\n';  
-        }
-
-        case Logger_Level::WARNING:
-        {
-            log_file_object << "[WARNING]: " << message_string << '\n';  
-        }
-
-        case Logger_Level::ERROR:
-        {
-            log_file_object << "[ERROR]: " << message_string << '\n';  
-        }
-
-    }
-    
-}
-
-void Logger::record_normal_message(const std::string& normal_message)
-{
-    record(normal_message, Logger_Level::NORMAL);
-}
-
-void Logger::record_warning_message(const std::string& warning_message)
-{
-    record(warning_message, Logger_Level::WARNING);
-}   
-
-void Logger::record_error_message(const std::string& error_message)
-{
-    record(error_message, Logger_Level::ERROR);
-}
-
 void Logger::clear_up_log()
 {
     std::ofstream output;

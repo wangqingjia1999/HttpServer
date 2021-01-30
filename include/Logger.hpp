@@ -3,22 +3,26 @@
 #include <memory>
 #include <string>
 
-class Logger
+namespace Logger
 {
     enum class Logger_Level {
-        NORMAL,  
-        WARNING, 
-        ERROR    
+        INFO,
+        WARN,
+        ERROR,
+        DEBUG
     };
 
-public:
     /**
+     * TODO:
      * Record normal intformational message.
      * 
      * @param[in] normal_message  
      *      Normal info message.
      */
-    void record_normal_message(const std::string& normal_message);
+    inline void info(const std::string& normal_message)
+    {
+
+    }
 
     /**
      * Record warning message.
@@ -26,7 +30,10 @@ public:
      * @param[in] warning_message  
      *      Warning message.
      */
-    void record_warning_message(const std::string& warning_message);
+    inline void warn(const std::string& warning_message)
+    {
+        
+    }
 
     /**
      * Record errors.
@@ -34,7 +41,18 @@ public:
      * @param[in] error_message  
      *      Error message.
      */
-    void record_error_message(const std::string& error_message);
+    inline void error(const std::string& error_message)
+    {
+
+    }
+
+    /**
+     * Log a debug message.
+     */
+    inline void debug()
+    {
+
+    }
 
     /**
      * Clear up log.
@@ -57,9 +75,8 @@ public:
      */
     std::string get_first_line_of_log();
 
-private:
     /**
-     * Record a message based on given logging level.
+     * Log a message based on given logging level.
      * 
      * @param[in] message_string  
      *      Log information to be stored into log.txt.
@@ -70,8 +87,8 @@ private:
      * @note  
      *      Store the log file into "../HttpServer/log.txt".
      */
-    void record(
+    void log(
         const std::string& message_string, 
-        const Logger_Level logger_level = Logger_Level::NORMAL
+        const Logger_Level logger_level = Logger_Level::INFO
     );
-};
+}

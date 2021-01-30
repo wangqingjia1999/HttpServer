@@ -112,7 +112,6 @@ private:
     bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request);
 
 private:
-	std::shared_ptr< Logger > m_logger;
 	std::shared_ptr< Connection > m_connection;
 	std::shared_ptr< ThreadPool > m_thread_pool;
 	std::unique_ptr< ServerSocket > m_server_socket;
