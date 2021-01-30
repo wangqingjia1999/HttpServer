@@ -135,7 +135,7 @@ namespace Message
         std::string m_method;
         
         // default http_version
-        std::string m_http_version = "HTTP/1.1";
+        std::string m_http_version;
 
         // Store the generated/received raw headers
         std::string m_headers;

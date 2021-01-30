@@ -137,3 +137,8 @@ TEST(request_tests, parse_post_request_test)
 	// test body
 	ASSERT_EQ(request.get_body(), "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer");
 }
+
+TEST(request_tests, parse_request_uri_test)
+{
+	// Request must provide keywords after parsing request-uri.
+}

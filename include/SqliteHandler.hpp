@@ -83,6 +83,17 @@ public:
      */
     bool add_new_audio(const AudioInfo& audio_info);
 
+    /**
+     * Delete a user record from database.
+     * 
+     * @param[in] user_info
+     *      User info record.
+     * 
+     * @return
+     *      True if succeeds.
+     */
+    bool delete_user(const UserInfo& user_info);    
+
 private:
     /**
      * Prepare Sqlite3 statement.

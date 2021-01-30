@@ -7,7 +7,8 @@
 namespace Message
 {
     Message::Request::Request()
-        : m_uri(std::make_shared<Uri>())
+        : m_uri(std::make_shared<Uri>()),
+          m_http_version("HTTP/1.1")
     {
     }
 

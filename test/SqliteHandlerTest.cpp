@@ -84,3 +84,22 @@ TEST(sqlite_tests, insert_into_test)
     };
     ASSERT_TRUE(sqlite_handler.add_new_audio(audio_info));
 }
+
+TEST(sqlite_tests, delete_from_test)
+{
+    SqliteHandler sqlite_handler;
+
+    UserInfo user_info 
+    {
+        "Tom", "1234567890", "20", "tom@gmail.com"
+    };
+
+    ASSERT_TRUE(sqlite_handler.delete_user(user_info));
+}
+
+TEST(sqlite_tests, select_from_test)
+{
+    SqliteHandler sqlite_handler;
+
+    
+}

@@ -180,6 +180,43 @@ bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
     return true;
 }
 
+bool SqliteHandler::delete_user(const UserInfo& user_info)
+{
+    std::string statement 
+    {
+        "DELETE FROM user_table WHERE "
+        "user_name = :user_name AND "
+        "user_password = :user_password AND "
+        "user_age = :user_age AND "
+        "user_email = :user_email"
+    };
+
+    if(!prepare_statement(statement))
+        return false;
+    
+    if(!bind_text_data(":user_name", user_info.m_name))
+        return false;
+
+    if(!bind_text_data(":user_password", user_info.m_password)) 
+        return false;
+    
+    if(!bind_text_data(":user_age", user_info.m_age))
+        return false;
+    
+    if(!bind_text_data(":user_email", user_info.m_email))
+        return false;
+
+    int result = 0;
+    if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
+    {
+        sqlite3_reset(m_statement);
+        return false;
+    }
+
+    sqlite3_reset(m_statement);
+    return true;
+}
+
 bool SqliteHandler::prepare_statement(const std::string& statement)
 {
     int result = 0;
