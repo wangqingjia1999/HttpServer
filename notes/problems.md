@@ -29,3 +29,31 @@ Conclusion: The server needs to close the connection properly.
 
 ## IS EPOLLRDDUP equal to read() return 0, which means I do not need to handle the return value in read() call?
 If EPOLLRDHUP got triggered, do not read the socket but close it immediately. However, it's possible that, before you call read(), a FIN arrives. So to be safer, close the socket with the return value of 0 of read().
+
+## POST vs PUT ?
+POST request uri points to the resource's manager/parent.
+PUT request uri is exactly the resource uri.
+
+```
+// post a new user to the users collection.
+POST /resources HTTP/1.1  
+
+// create/update the john resource under the users collection.
+PUT /resources/<newResourceId> HTTP/1.1 
+```
+
+RFC:
+Let me highlight some important parts of the RFC:
+
+POST
+The POST method is used to request that the origin server accept the entity enclosed in the request as a **new subordinate** of the resource identified by the Request-URI in the Request-Line
+
+Hence, creates a new **resource** on a **collection**.
+
+PUT
+The PUT method requests that the enclosed entity be stored under the supplied Request-URI. If the Request-URI refers to an already existing resource, the enclosed entity SHOULD be considered as a modified version of the one residing on the origin server. If the Request-URI does not point to an existing resource, and that URI is capable of being defined as a **new resource** by the requesting user agent, the origin server can create the resource with that URI."
+
+Hence, create or update based on existence of the resource.
+
+Reference:
+* https://stackoverflow.com/a/18243587/11850070

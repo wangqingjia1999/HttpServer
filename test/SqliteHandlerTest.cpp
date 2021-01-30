@@ -24,7 +24,7 @@ TEST(sqlite_tests, table_column_info_test)
      * 
      *      audio_table:  Resources details.
      *          -------------------------------------------
-     *          | audio_name | audio_caption | audio_path | audio_duration|
+     *          | audio_name | audio_caption | audio_path |
      *          -------------------------------------------
      */
 
@@ -52,7 +52,6 @@ TEST(sqlite_tests, table_column_info_test)
         { "0", "audio_name",     "text" },
         { "1", "audio_caption",  "text" },
         { "2", "audio_path",     "text" },
-        { "3", "audio_duration", "int"  }
     };
     auto audio_table_columns = sqlite_handler.get_columns("audio_table");
     for(int i = 0; i < audio_table_columns.size(); ++i)
@@ -82,7 +81,6 @@ TEST(sqlite_tests, insert_into_test)
         "24-Dec-2020-13-09-03-3soLBPh71Y.mp3",
         "I'd have to throw myself in front of a train.",
         "/home/bitate/HttpServer/resource/audios/14-Dec-2020-15-06-39-1xVPfvJcrg.mp3",
-        "1"
     };
     ASSERT_TRUE(sqlite_handler.add_new_audio(audio_info));
 }

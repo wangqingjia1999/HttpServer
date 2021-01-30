@@ -5,8 +5,8 @@ UserInfo::UserInfo(std::string name, std::string password, std::string age, std:
 {
 }
 
-AudioInfo::AudioInfo(std::string name, std::string caption, std::string path, std::string duration)
-    : m_name(name), m_caption(caption), m_path(path), m_duration(duration)
+AudioInfo::AudioInfo(std::string name, std::string caption, std::string path)
+    : m_name(name), m_caption(caption), m_path(path)
 {
 }
 
@@ -43,8 +43,7 @@ SqliteHandler::SqliteHandler()
         "CREATE TABLE IF NOT EXISTS audio_table("
             "audio_name text,"
             "audio_caption text,"
-            "audio_path text,"
-            "audio_duration int"
+            "audio_path text"
         ")"
     };
     
@@ -156,7 +155,7 @@ bool SqliteHandler::add_new_user(const UserInfo& user_info)
 
 bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
 {
-    std::string statement = "INSERT INTO audio_table VALUES(:audio_name, :audio_caption, :audio_path, :audio_duration)";
+    std::string statement = "INSERT INTO audio_table VALUES(:audio_name, :audio_caption, :audio_path)";
 
     if(!prepare_statement(statement))
         return false;
@@ -168,9 +167,6 @@ bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
         return false;
     
     if(!bind_text_data(":audio_path", audio_info.m_path))
-        return false;
-    
-    if(!bind_text_data(":audio_duration", audio_info.m_duration))
         return false;
     
     int result = 0;

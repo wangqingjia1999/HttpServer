@@ -9,6 +9,9 @@
 
 using ColumnInfo = std::vector<std::string>;
 
+/**
+ * This class maintains a Sqlite3 connection during its life-cycle.
+ */
 struct UserInfo
 {
     std::string m_name;
@@ -24,9 +27,8 @@ struct AudioInfo
     std::string m_name;
     std::string m_caption;
     std::string m_path;
-    std::string m_duration;
 
-    AudioInfo(std::string name, std::string caption, std::string path, std::string duration);
+    AudioInfo(std::string name, std::string caption, std::string path);
 };
 
 class SqliteHandler

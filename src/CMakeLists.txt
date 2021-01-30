@@ -103,6 +103,7 @@ target_link_libraries(server_lib PUBLIC
     websocket_lib
     thread_pool_lib
     server_socket_lib
+    sqlite_handler_lib
     resource_handler_lib
     server_configuration_lib
 )

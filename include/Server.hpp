@@ -5,6 +5,7 @@
 #include "Connection.hpp"
 #include "ThreadPool.hpp"
 #include "ServerSocket.hpp"
+#include "SqliteHandler.hpp"
 #include "StatusHandler.hpp"
 #include "ResourceHandler.hpp"
 #include "ServerConfiguration.hpp"
@@ -111,10 +112,11 @@ private:
     bool is_websocket_opening_handshake(std::shared_ptr< Message::Request >& request);
 
 private:
-	std::shared_ptr< Logger > logger;
-	std::shared_ptr< ThreadPool > thread_pool;
+	std::shared_ptr< Logger > m_logger;
 	std::shared_ptr< Connection > m_connection;
-	std::unique_ptr< ServerSocket > server_socket;
+	std::shared_ptr< ThreadPool > m_thread_pool;
+	std::unique_ptr< ServerSocket > m_server_socket;
+	std::unique_ptr< SqliteHandler > m_sqlite_handler;
 	std::unique_ptr< ResourceHandler > m_resource_handler;
 	std::unique_ptr< ServerConfiguration > m_configuration;
 

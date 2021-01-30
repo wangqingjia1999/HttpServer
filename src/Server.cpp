@@ -1,10 +1,11 @@
 #include "Server.hpp"
 
 Server::Server()
-    : logger(new Logger()),
-      thread_pool(std::make_shared<ThreadPool>()),
+    : m_logger(new Logger()),
       m_connection(std::make_shared<Connection>()),
-      server_socket(new ServerSocket()),
+      m_thread_pool(std::make_shared<ThreadPool>()),
+      m_server_socket(new ServerSocket()),
+      m_sqlite_handler(new SqliteHandler()),
       m_resource_handler(new ResourceHandler()),
       m_configuration(new ServerConfiguration())
 {
@@ -20,7 +21,7 @@ void Server::listen_at(const std::string& host, const int port)
     Server_Socket_State server_socket_state;
     for(;;)
     {
-        server_socket_state = server_socket->listen_at(host, port);
+        server_socket_state = m_server_socket->listen_at(host, port);
         switch(server_socket_state)
         {
             case Server_Socket_State::UNINITIALIZED:
@@ -30,9 +31,9 @@ void Server::listen_at(const std::string& host, const int port)
                 
             case Server_Socket_State::READABLE:
             {   
-                request_core_handler(server_socket->read_from());
+                request_core_handler(m_server_socket->read_from());
                 
-                if(!server_socket->write_to(m_connection->get_response()->generate_response()))
+                if(!m_server_socket->write_to(m_connection->get_response()->generate_response()))
                     printf("Error in sending m_connection->get_response()");
 
                 break;
@@ -75,6 +76,7 @@ void Server::set_raw_request(const std::string& raw_request)
 bool Server::handle_post_request()
 {
     PercentEncoding percent_encoding;
+    
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
      */
