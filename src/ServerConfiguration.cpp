@@ -12,8 +12,8 @@ namespace
 
 ServerConfiguration::ServerConfiguration()
     : m_root_directory_path(generate_root_directory_path()),
-      m_resource_root_directory_path(m_root_directory_path + "resource/"),
-      m_configuration_file_path(m_root_directory_path + "config")
+      m_configuration_file_path(m_root_directory_path + "config"),
+      m_resource_root_directory_path(m_root_directory_path + "resource/")
 {
     if(!has_configuration_file())
         create_configuration_file();

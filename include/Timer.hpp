@@ -68,3 +68,17 @@ inline Timer::milisecond_duration_type Timer::get_elapsed_time() const
 {
     return (clock_type::now() - start_time);
 }
+
+/**
+ * Get current time in the form of [2021-01-31 20:05:58.906]
+ * 
+ * @return
+ *      Time string.
+ */
+inline std::string get_current_time()
+{
+    std::time_t now = std::time(0);
+    char buffer[30];
+    std::strftime(buffer, sizeof(buffer), "[%Y-%m-%d %H:%M:%S]", std::gmtime(&now));
+    return buffer;
+}

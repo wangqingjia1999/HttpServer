@@ -1,11 +1,24 @@
 #pragma once
 
+#include "Timer.hpp"
+
+#include <chrono>
 #include <memory>
 #include <string>
+#include <fstream>
+#include <strstream>
+#include <unistd.h>
 
+/**
+ * TODO:
+ *     * Core functions
+ *         * Every day, a new log file.
+ *     * Optimization
+ *         * Speed up logging process.
+ */
 namespace Logger
 {
-    enum class Logger_Level {
+    enum class LogLevel {
         INFO,
         WARN,
         ERROR,
@@ -13,82 +26,76 @@ namespace Logger
     };
 
     /**
-     * TODO:
-     * Record normal intformational message.
+     * Log a message based on given logging level.
+     * 
+     * @param[in] log_level  
+     *      Denote the logging level/urgency/priority.
+     * 
+     * @param[in] log_message
+     *      Message to be logged.
+     * 
+     * @note  
+     *      Store the log file into "/HttpServer/logs/".
+     */
+    inline void log(const LogLevel& log_level, const std::string& log_message)
+    {
+        // TODO: let user decideds the path in which logs are stored.
+        std::ofstream log_file("2020-1-31.log", std::ios_base::app);
+        if(!log_file.is_open())
+            return;
+
+        log_file << get_current_time();
+        if(log_level == LogLevel::INFO)
+            log_file << " [info] ";
+        else if(log_level == LogLevel::WARN)
+            log_file << " [warning] ";
+        else if(log_level == LogLevel::ERROR)
+            log_file << " [error] ";
+        else
+            log_file << " [debug] ";
+        log_file << log_message << '\n';
+
+        log_file.close();
+    }   
+
+    /**
+     * Log normal intformational message.
      * 
      * @param[in] normal_message  
      *      Normal info message.
      */
-    inline void info(const std::string& normal_message)
+    inline void info(const std::string& info_message)
     {
-
+        log(LogLevel::INFO, info_message);
     }
 
     /**
-     * Record warning message.
+     * Log warning message.
      * 
      * @param[in] warning_message  
      *      Warning message.
      */
     inline void warn(const std::string& warning_message)
     {
-        
+        log(LogLevel::WARN, warning_message);
     }
 
     /**
-     * Record errors.
+     * Log error message.
      * 
      * @param[in] error_message  
      *      Error message.
      */
     inline void error(const std::string& error_message)
     {
-
+        log(LogLevel::ERROR, error_message);
     }
 
     /**
-     * Log a debug message.
+     * Log debug message.
      */
-    inline void debug()
+    inline void debug(const std::string& debug_message)
     {
-
+        log(LogLevel::DEBUG, debug_message);
     }
-
-    /**
-     * Clear up log.
-     */
-    void clear_up_log();
-    
-    /**
-     * Get log.txt's absolute path.
-     * 
-     * @return  
-     *      The absolute path string.
-     */
-    std::string get_log_file_absolute_path();
-
-    /**
-     * Return the first line of log.txt.
-     * 
-     * @return  
-     *      The first line of log.txt.
-     */
-    std::string get_first_line_of_log();
-
-    /**
-     * Log a message based on given logging level.
-     * 
-     * @param[in] message_string  
-     *      Log information to be stored into log.txt.
-     * 
-     * @param[in] logger_level  
-     *      Denote the logging level/urgency/priority.
-     * 
-     * @note  
-     *      Store the log file into "../HttpServer/log.txt".
-     */
-    void log(
-        const std::string& message_string, 
-        const Logger_Level logger_level = Logger_Level::INFO
-    );
 }
