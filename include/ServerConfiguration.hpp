@@ -16,6 +16,7 @@ public:
 public:
     std::string get_root_directory_path() const;
     std::string get_resource_directory_path() const;
+    std::string get_log_directory_path() const;
 
     /**
      * Get server's root directory path. e.g. /home/usernam/HttpServer
@@ -58,7 +59,7 @@ private:
     std::string m_root_directory_path;
     std::string m_configuration_file_path;
     std::string m_resource_root_directory_path;
-  
+    std::string m_log_directory_path;
 
     /**
      * TODO:

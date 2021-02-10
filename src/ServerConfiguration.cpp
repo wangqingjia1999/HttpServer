@@ -79,6 +79,11 @@ std::string ServerConfiguration::get_resource_directory_path() const
     return m_resource_root_directory_path;
 }
 
+std::string ServerConfiguration::get_log_directory_path() const
+{
+    return m_log_directory_path;
+}
+
 void ServerConfiguration::parse_configuration_file()
 {
     if(!has_configuration_file())
@@ -116,4 +121,13 @@ void ServerConfiguration::parse_configuration(const std::string& configuration)
     
     if(!matcher.empty())
         m_resource_root_directory_path = strip_leading_and_pending_spaces(matcher[1]);
+
+    std::regex_search(
+        configuration,
+        matcher,
+        std::regex("log_directory_path:(.*?)\n")
+    );
+
+    if(!matcher.empty())
+        m_log_directory_path = strip_leading_and_pending_spaces(matcher[1]);
 }

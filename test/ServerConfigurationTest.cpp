@@ -13,15 +13,18 @@ TEST(server_configuration_tests, parse_configuration_file_test_0)
     ServerConfiguration config;
     
     std::string configuration = {
-        "# Type your server's root directory path below\n"
+        "# server's root directory path\n"
         "root_directory_path: /home/bitate/HttpServer/\n"
-        "# Type your server's resources directory path below\n"
+        "# server's resources directory path\n"
         "resource_directory_path: /home/bitate/HttpServer/resource/\n"
+        "# server's logs directory path\n"
+        "log_directory_path: /home/bitate/HttpServer/logs/\n"
     };
 
     config.parse_configuration(configuration);
     EXPECT_EQ(config.get_root_directory_path(), "/home/bitate/HttpServer/");
     EXPECT_EQ(config.get_resource_directory_path(), "/home/bitate/HttpServer/resource/");
+    EXPECT_EQ(config.get_log_directory_path(), "/home/bitate/HttpServer/logs/");
 }
 
 TEST(server_configuration_tests, parse_configuration_file_test_1)
@@ -29,9 +32,9 @@ TEST(server_configuration_tests, parse_configuration_file_test_1)
     ServerConfiguration config;
     
     std::string configuration = {
-        "# Type your server's root directory path below\n"
+        "# server's root directory path\n"
         "root_directory_path: /home/bitate/HttpServer-this-is-a-very-very-very-very-long-path/\n"
-        "# Type your server's resources directory path below\n"
+        "# server's resources directory path\n"
         "resource_directory_path: /home/bitate/HttpServer/resource/wkkxljl20934j-xcvlkjk13-sldkfj\n"
     };
 

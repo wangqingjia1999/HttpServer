@@ -35,7 +35,10 @@ namespace Logger
      *      Message to be logged.
      * 
      * @note  
-     *      Store the log file into "/HttpServer/logs/".
+     *      Store the log file into the folder, which 
+     *      can be configured in config file. If not 
+     *      specified or not found, the default path
+     *      (same path as the executable file) is used.
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {

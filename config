@@ -1,4 +1,9 @@
-# Type your server's root directory path below
+# server's root directory path
 root_directory_path: /home/bitate/HttpServer/
-# Type your server's resources directory path below
+
+# server's resources directory path
 resource_directory_path: /home/bitate/HttpServer/resource/
+
+# server's logs directory path
+log_directory_path: /home/bitate/HttpServer/logs/
+
