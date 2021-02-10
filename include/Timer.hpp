@@ -82,3 +82,17 @@ inline std::string get_current_time()
     std::strftime(buffer, sizeof(buffer), "[%Y-%m-%d %H:%M:%S]", std::gmtime(&now));
     return buffer;
 }
+
+/**
+ * Get date in the form of 2021-02-10
+ * 
+ * @return 
+ *      Date string.
+ */
+inline std::string get_date()
+{
+    std::time_t now = std::time(0);
+    char buffer[11];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", std::gmtime(&now));
+    return buffer;
+}

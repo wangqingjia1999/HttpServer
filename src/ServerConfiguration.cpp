@@ -57,14 +57,16 @@ void ServerConfiguration::create_configuration_file()
 
     if(configuration_file_handler.is_open())
     {
-        configuration_file_handler << "# Type your server's root directory path below\n";
+        configuration_file_handler << "# server's root directory path\n";
         configuration_file_handler << "root_directory_path: " << m_root_directory_path << '\n';
-        configuration_file_handler << "# Type your server's resources directory path below\n";
+        configuration_file_handler << "# server's resources directory path\n";
         configuration_file_handler << "resource_directory_path: " << m_resource_root_directory_path << '\n';
+        configuration_file_handler << "# server's log files directory path\n";
+        configuration_file_handler << "log_directory_path: " << m_log_directory_path << '\n';
     }
     else
     {
-        // log: cannot create configuration file
+        // cannot create configuration file
         return;
     }
 }

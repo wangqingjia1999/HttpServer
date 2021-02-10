@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Timer.hpp"
+#include "ServerConfiguration.hpp"
 
 #include <chrono>
 #include <memory>
@@ -16,6 +17,13 @@
  *     * Optimization
  *         * Speed up logging process.
  */
+namespace
+{
+    ServerConfiguration server_configuration;
+
+    std::string log_directory_path = server_configuration.get_log_directory_path();
+}
+
 namespace Logger
 {
     enum class LogLevel {
@@ -42,8 +50,7 @@ namespace Logger
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {
-        // TODO: let user decideds the path in which logs are stored.
-        std::ofstream log_file("2020-1-31.log", std::ios_base::app);
+        std::ofstream log_file(log_directory_path + "log-" + get_date(), std::ios_base::app);
         if(!log_file.is_open())
             return;
 

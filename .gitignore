@@ -1,5 +1,6 @@
 ﻿.vs/
 .vscode/
+logs/
 out/
 build/
 googletest/

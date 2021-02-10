@@ -154,6 +154,9 @@ add_library(logger_lib STATIC
     ../include/Logger.hpp
     Logger.cpp
 )
+target_link_libraries(logger_lib PUBLIC
+    server_configuration_lib
+)
 
 add_library(response_lib STATIC
     ../include/Response.hpp
