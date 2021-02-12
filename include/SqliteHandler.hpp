@@ -19,6 +19,7 @@ struct UserInfo
     std::string m_age;
     std::string m_email;
 
+    UserInfo();
     UserInfo(std::string name, std::string password, std::string age, std::string email);
 };
 
@@ -28,6 +29,7 @@ struct AudioInfo
     std::string m_caption;
     std::string m_path;
 
+    AudioInfo();
     AudioInfo(std::string name, std::string caption, std::string path);
 };
 
@@ -93,6 +95,23 @@ public:
      *      True if succeeds.
      */
     bool delete_user(const UserInfo& user_info);    
+
+    /**
+     * Fetch a user record from database.
+     * 
+     * @param[in] user_name
+     *      User name.
+     * 
+     * @param[in] user_email
+     *      User email.
+     * 
+     * @return
+     *      UserInfo structure(s).
+     */
+    std::vector<UserInfo> fetch_user_info(
+        const std::string& user_name,
+        const std::string& user_email
+    );
 
 private:
     /**

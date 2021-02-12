@@ -1,7 +1,15 @@
 #include "SqliteHandler.hpp"
 
+UserInfo::UserInfo()
+{
+}
+
 UserInfo::UserInfo(std::string name, std::string password, std::string age, std::string email)
     : m_name(name), m_password(password), m_age(age), m_email(email) 
+{
+}
+
+AudioInfo::AudioInfo()
 {
 }
 
@@ -95,13 +103,12 @@ bool SqliteHandler::has_table(const std::string& table_name)
 std::vector<ColumnInfo> SqliteHandler::get_columns(const std::string& table_name)
 {
     std::string statement = "PRAGMA TABLE_INFO('" + table_name +  "')";
-    int result = 0;
 
     if(!prepare_statement(statement))
         return {};
     
     std::vector<ColumnInfo> columns;
-    while((result = sqlite3_step(m_statement)) == SQLITE_ROW)
+    while(sqlite3_step(m_statement) == SQLITE_ROW)
     {
         ColumnInfo single_conlumn_info;
         for(int i = 0; i < 3; ++i)
@@ -142,8 +149,7 @@ bool SqliteHandler::add_new_user(const UserInfo& user_info)
     if(!bind_text_data(":user_email", user_info.m_email))
         return false;
 
-    int result = 0;
-    if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
+    if(sqlite3_step(m_statement) != SQLITE_DONE)
     {
         sqlite3_reset(m_statement);
         return false;
@@ -169,8 +175,7 @@ bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
     if(!bind_text_data(":audio_path", audio_info.m_path))
         return false;
     
-    int result = 0;
-    if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
+    if(sqlite3_step(m_statement) != SQLITE_DONE)
     {
         sqlite3_reset(m_statement);
         return false;
@@ -178,6 +183,57 @@ bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
 
     sqlite3_reset(m_statement);
     return true;
+}
+
+std::vector<UserInfo> SqliteHandler::fetch_user_info(
+    const std::string& user_name,
+    const std::string& user_email
+)
+{
+    if(user_name.empty() && user_email.empty())
+        return {};
+
+    std::string statement = "SELECT * FROM user_table ";
+
+    if(!user_name.empty() && user_email.empty())
+        statement += "WHERE user_name = :user_name";
+    
+    if(!user_email.empty() && user_name.empty())
+        statement += "WHERE user_email = :user_email";
+    
+    if(!user_name.empty() && !user_email.empty())
+        statement += "WHERE user_name = :user_name AND user_email = :user_email";
+
+    if(!prepare_statement(statement))
+        return {};
+    
+    if(!user_name.empty() && !bind_text_data(":user_name", user_name))
+        return {};
+    
+    if(!user_email.empty() && !bind_text_data(":user_email", user_email))
+        return {};
+
+    std::vector<UserInfo> fetch_result;
+    while(sqlite3_step(m_statement) == SQLITE_ROW)
+    {
+        UserInfo single_user_info;
+        for(int i = 0; i < sqlite3_column_count(m_statement); ++i)
+        {
+            if(i == 0)
+                single_user_info.m_name = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else if(i == 1)
+                single_user_info.m_password = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else if(i == 2)
+                single_user_info.m_age = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else if(i == 3)
+                single_user_info.m_email = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else
+                break;
+        }
+        fetch_result.push_back(single_user_info);
+    }
+
+    return fetch_result;
 }
 
 bool SqliteHandler::delete_user(const UserInfo& user_info)
@@ -206,8 +262,7 @@ bool SqliteHandler::delete_user(const UserInfo& user_info)
     if(!bind_text_data(":user_email", user_info.m_email))
         return false;
 
-    int result = 0;
-    if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
+    if(sqlite3_step(m_statement) != SQLITE_DONE)
     {
         sqlite3_reset(m_statement);
         return false;

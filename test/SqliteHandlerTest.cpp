@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <algorithm>
+#include <iostream>
 
 TEST(sqlite_tests, has_table_test)
 {
@@ -97,9 +98,23 @@ TEST(sqlite_tests, delete_from_test)
     ASSERT_TRUE(sqlite_handler.delete_user(user_info));
 }
 
-TEST(sqlite_tests, select_from_test)
+TEST(sqlite_tests, fetch_user_info_test)
 {
     SqliteHandler sqlite_handler;
 
+    UserInfo user_info 
+    {
+        "Denis", "1234567890", "20", "denis@gmail.com"
+    };
+
+    ASSERT_TRUE(sqlite_handler.add_new_user(user_info));
+
+    auto fetch_result = sqlite_handler.fetch_user_info("Denis", "");
     
+    ASSERT_EQ(fetch_result[0].m_name, user_info.m_name);
+    ASSERT_EQ(fetch_result[0].m_age, user_info.m_age);
+    ASSERT_EQ(fetch_result[0].m_password, user_info.m_password);
+    ASSERT_EQ(fetch_result[0].m_email, user_info.m_email);
+
+    ASSERT_TRUE(sqlite_handler.delete_user(user_info));
 }
