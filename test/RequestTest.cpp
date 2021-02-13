@@ -1,6 +1,7 @@
 #include "Request.hpp"
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 TEST(request_test, default_method_get_test)
 {
@@ -155,4 +156,5 @@ TEST(request_tests, whether_request_contains_query_string_test)
 	ASSERT_TRUE(request.parse_raw_request());
 
 	ASSERT_TRUE(request.has_query());
+	ASSERT_EQ(request.get_request_uri()->get_query(), "q=test");
 }

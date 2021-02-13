@@ -244,7 +244,7 @@ private:
 
 	bool set_scheme(std::string& scheme);
 	bool set_host(std::string& host);
-	bool set_port(int& port);
+	bool set_port(int port);
 	bool set_query(std::string query);
 	bool set_fragment(std::string& fragment);
 	bool set_user_info(std::string& user_info);

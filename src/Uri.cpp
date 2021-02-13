@@ -238,7 +238,7 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 	// If m_host presents and m_path is empty,
 	// This m_path is absolute m_path
 	// e.g. "https://google.com" is absolute m_path.
-	// It's same as "https://google.com/"
+	// It'fragment same as "https://google.com/"
 	if(!m_host.empty() && uri.empty())
 	{
 		m_is_relative_path = false;
@@ -272,7 +272,6 @@ bool Uri::parse_query(std::string& uri, std::string& remains)
 			remains = "";
 			return true;
 		}
-		
 	}
 	else
 	{
@@ -357,45 +356,45 @@ std::string Uri::get_fragment()
 }
 
 // Setters
-bool Uri::set_scheme(std::string& s)
+bool Uri::set_scheme(std::string& scheme)
 {
 	if (m_scheme.empty())
 	{
-		m_scheme = s;
+		m_scheme = scheme;
 		return true;
 	}
 	return false;
 }
 
-bool Uri::set_host(std::string& m_host)
+bool Uri::set_host(std::string& host)
 {
 	if (m_host.empty()) 
 	{ 
-		m_host = m_host; 
+		m_host = host; 
 		return true;
 	}
 	return false;
 }
 
-bool Uri::set_port(int& p)
+bool Uri::set_port(int port)
 {
-	m_port = p;
+	m_port = port;
 	return true;
 }
 
 
-bool Uri::set_query(std::string q)
+bool Uri::set_query(std::string query)
 {
-	m_query = q;
+	m_query = query;
 	if (m_query.empty()) { return false; }
 	return true;
 }
 
-bool Uri::set_fragment(std::string& s)
+bool Uri::set_fragment(std::string& fragment)
 {
 	if (m_fragment.empty())
 	{
-		m_fragment = s;
+		m_fragment = fragment;
 		return true;
 	}
 	return false;

@@ -31,10 +31,16 @@ std::string& ResourceHandler::get_resource_directory_path()
 
 bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 {
-    if(connection->get_request()->get_request_uri() == "/")
+    if(connection->get_request()->get_request_uri()->get_path_string() == "/")
         return true;
 
-    std::string resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri());
+    // In this case, the *resource* is in the database :^)
+    if(connection->get_request()->has_query())
+    {
+        return true;
+    }
+
+    std::string resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
     
     if(!is_resource_exists(resource_absolute_path))
         return false;
@@ -56,7 +62,7 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
     
     connection->get_response()->set_content_type(
         parse_content_type(
-            connection->get_request()->get_request_uri()
+            connection->get_request()->get_request_uri()->get_path_string()
         )
     );
 
