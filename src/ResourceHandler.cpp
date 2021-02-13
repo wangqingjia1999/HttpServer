@@ -36,7 +36,6 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 
     std::string resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri());
     
-    // FIXIME: 
     if(!is_resource_exists(resource_absolute_path))
         return false;
     

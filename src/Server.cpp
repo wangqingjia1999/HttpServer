@@ -137,7 +137,6 @@ void Server::request_core_handler(const std::string& raw_request_string)
     }
     else if(m_connection->get_request()->get_request_method() == "HEAD")
     {
-
         return;
     }
 }

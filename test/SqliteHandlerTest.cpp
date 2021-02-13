@@ -109,12 +109,19 @@ TEST(sqlite_tests, fetch_user_info_test)
 
     ASSERT_TRUE(sqlite_handler.add_new_user(user_info));
 
-    auto fetch_result = sqlite_handler.fetch_user_info("Denis", "");
+    auto fetch_by_user_name_result = sqlite_handler.fetch_user_info("Denis", "");
     
-    ASSERT_EQ(fetch_result[0].m_name, user_info.m_name);
-    ASSERT_EQ(fetch_result[0].m_age, user_info.m_age);
-    ASSERT_EQ(fetch_result[0].m_password, user_info.m_password);
-    ASSERT_EQ(fetch_result[0].m_email, user_info.m_email);
+    ASSERT_EQ(fetch_by_user_name_result[0].m_name, user_info.m_name);
+    ASSERT_EQ(fetch_by_user_name_result[0].m_age, user_info.m_age);
+    ASSERT_EQ(fetch_by_user_name_result[0].m_password, user_info.m_password);
+    ASSERT_EQ(fetch_by_user_name_result[0].m_email, user_info.m_email);
+
+    auto fetch_by_user_email_result = sqlite_handler.fetch_user_info("", "denis@gmail.com");
+    
+    ASSERT_EQ(fetch_by_user_email_result[0].m_name, user_info.m_name);
+    ASSERT_EQ(fetch_by_user_email_result[0].m_age, user_info.m_age);
+    ASSERT_EQ(fetch_by_user_email_result[0].m_password, user_info.m_password);
+    ASSERT_EQ(fetch_by_user_email_result[0].m_email, user_info.m_email);
 
     ASSERT_TRUE(sqlite_handler.delete_user(user_info));
 }

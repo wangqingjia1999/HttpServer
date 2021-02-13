@@ -32,7 +32,7 @@ TEST(request_test, generate_request_from_uri_test)
 	request.set_http_version();
 	request.set_user_agent();
 
-	std::string raw_request = 
+	std::string raw_request
 	{
 		"GET / HTTP/1.1\r\n"
 		"Host: localhost\r\n"
@@ -48,7 +48,8 @@ TEST(request_test, parse_raw_get_request_test)
 {
 	Message::Request request;
 
-	std::string raw_request = (
+	std::string raw_request
+	{
 		"GET / HTTP/1.1\r\n"
 		"Host: localhost\r\n"
 		"Connection: keep-alive\r\n"
@@ -63,13 +64,13 @@ TEST(request_test, parse_raw_get_request_test)
 		"Accept-Encoding: gzip, deflate, br\r\n"
 		"Accept-Language: en,zh-CN;q=0.9,zh;q=0.8\r\n"
 		"\r\n"
-		);
+	};
 	request.set_raw_request(raw_request);
 	ASSERT_TRUE(request.parse_raw_request());
 
 	// test request line
 	ASSERT_EQ(request.get_request_method(), "GET");
-	ASSERT_EQ(request.get_request_uri(), "/");
+	ASSERT_EQ(request.get_request_uri()->get_path_string(), "/");
 	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 	
 	// test headers
@@ -94,7 +95,8 @@ TEST(request_tests, parse_post_request_test)
 {
 	Message::Request request;
 
-	std::string raw_post_request_message = {
+	std::string raw_post_request_message
+	{
 		"POST / HTTP/1.1\r\n"
 		"Host: 192.168.72.128:2333\r\n"
 		"Connection: keep-alive\r\n"
@@ -117,7 +119,7 @@ TEST(request_tests, parse_post_request_test)
 
 	// test request line
 	ASSERT_EQ(request.get_request_method(), "POST");
-	ASSERT_EQ(request.get_request_uri(), "/");
+	ASSERT_EQ(request.get_request_uri()->get_path_string(), "/");
 	ASSERT_EQ(request.get_http_version(), "HTTP/1.1");
 	
 	// test headers
@@ -138,7 +140,19 @@ TEST(request_tests, parse_post_request_test)
 	ASSERT_EQ(request.get_body(), "Name=Bitate&Age=21&Email=admin%40bitate.com&Password=qwerqwer");
 }
 
-TEST(request_tests, parse_request_uri_test)
+TEST(request_tests, whether_request_contains_query_string_test)
 {
-	// Request must provide keywords after parsing request-uri.
+	Message::Request request;
+
+	std::string raw_request 
+	{
+		"GET /search?q=test HTTP/1.1\r\n"
+		"Host: www.bitate.com\r\n"
+		"\r\n"
+	};
+
+	request.set_raw_request(raw_request);
+	ASSERT_TRUE(request.parse_raw_request());
+
+	ASSERT_TRUE(request.has_query());
 }

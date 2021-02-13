@@ -24,8 +24,6 @@ namespace Message
         return *this;
     }
     
-
-    // public methods
     void Message::Request::set_raw_request(std::string raw_request_string)
     {
         m_raw_request = raw_request_string;
@@ -79,6 +77,7 @@ namespace Message
         }
 
         size_t headers_begin_position = request_line_end_delimiter + 2;
+        
         /**
          * +2 is to make sure the last header also has the trailing "\r\n",
          * so that each header:value pair has "\r\n" at the end.
@@ -163,6 +162,7 @@ namespace Message
     {
         if (request_line.find(' ') == std::string::npos)
         {
+            // log
             return false;
         }
 
@@ -170,30 +170,28 @@ namespace Message
         auto second_space_position = request_line.find_last_of(' ');
 
         m_method = request_line.substr(0, first_space_position);
-        m_request_uri = request_line.substr(first_space_position+1, (second_space_position-first_space_position-1 ));
+
+        if(!parse_uri(request_line.substr(first_space_position+1, (second_space_position-first_space_position-1))))
+        {
+            // log
+            return false;
+        }
+    
         m_http_version = request_line.substr(second_space_position+1);
         
         return true;
     }
 
-    bool Message::Request::parse_uri(const std::string& Uri)
+    bool Message::Request::parse_uri(const std::string& uri)
     {        
-        if(!m_uri->parse_from_string(Uri))
+        if(!m_uri->parse_from_string(uri))
         {
+            // log
             return false;
         }
         
-        if(m_uri->get_path_string() == "")
-        {
-            m_request_uri = "/";
-        }
-        else
-        {
-            m_request_uri = m_uri->get_path_string();
-        }
-    
-        // parse request host header from m_uri if any
         m_headers_map.insert({"Host", m_uri->get_host()});
+        
         return true;
     }
 
@@ -217,9 +215,9 @@ namespace Message
         return m_method;
     }
 
-    std::string Message::Request::get_request_uri()
+    std::shared_ptr<Uri> Message::Request::get_request_uri()
     {
-        return m_request_uri;
+        return m_uri;
     }
 
     std::string Message::Request::get_http_version()
@@ -275,6 +273,11 @@ namespace Message
     bool Message::Request::has_method(const std::string& m_method) const
     {
         return m_method == m_method;
+    }
+
+    bool Message::Request::has_query() const
+    {
+        return m_uri->has_query();
     }
 }
 
