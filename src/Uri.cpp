@@ -237,8 +237,8 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 	// This is a special case,
 	// If m_host presents and m_path is empty,
 	// This m_path is absolute m_path
-	// e.g. "https://google.com" is absolute m_path.
-	// It'fragment same as "https://google.com/"
+	// e.g. "https://google.com" is absolute path.
+	// Also it's same as "https://google.com/"
 	if(!m_host.empty() && uri.empty())
 	{
 		m_is_relative_path = false;
@@ -286,7 +286,6 @@ bool Uri::parse_fragment(std::string& uri, std::string& remains)
 	auto fragment_begin_delimiter = uri.find('#');
 	if (fragment_begin_delimiter != std::string::npos)
 	{
-		// has m_fragment
 		m_has_fragment = true;
 		m_fragment = uri.substr(fragment_begin_delimiter + 1);
 		remains = "";

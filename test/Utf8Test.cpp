@@ -5,9 +5,17 @@
 #include <vector>
 
 TEST(Utf8Tests, AsciiToUnicode) {
-    const std::vector< Utf8::UnicodeCodePoint > expectedCodePoints{ 0x48, 0x65, 0x6C, 0x6C, 0x6F };
-    const auto actualCodePoints = Utf8::AsciiToUnicode("Hello");
-    ASSERT_EQ(expectedCodePoints, actualCodePoints);
+    const std::vector< Utf8::UnicodeCodePoint > expected_code_points
+    { 
+        0x48, 
+        0x65, 
+        0x6C, 
+        0x6C, 
+        0x6F
+    };
+
+    const auto actual_code_points = Utf8::AsciiToUnicode("Hello");
+    ASSERT_EQ(expected_code_points, actual_code_points);
 }
 
 TEST(Utf8Tests, EncodeAscii) {
