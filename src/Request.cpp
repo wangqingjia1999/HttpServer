@@ -162,7 +162,6 @@ namespace Message
     {
         if (request_line.find(' ') == std::string::npos)
         {
-            // log
             return false;
         }
 
@@ -173,7 +172,6 @@ namespace Message
 
         if(!parse_uri(request_line.substr(first_space_position+1, (second_space_position-first_space_position-1))))
         {
-            // log
             return false;
         }
     
@@ -186,7 +184,7 @@ namespace Message
     {        
         if(!m_uri->parse_from_string(uri))
         {
-            // log
+            Logger::error("cannot parse uri: " + uri);
             return false;
         }
         

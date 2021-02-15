@@ -10,6 +10,7 @@ TEST(UriTests, parseFromUrlString)
 	ASSERT_EQ(uri.get_scheme(), "https");
 	ASSERT_EQ(uri.get_host(), "www.github.com");
 	ASSERT_EQ(uri.get_path(), (std::vector<std::string>{"Bitate", "httpserver"}));
+    ASSERT_EQ(uri.get_path_string(), "Bitate/httpserver");
 }
  
 

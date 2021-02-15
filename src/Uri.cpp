@@ -184,11 +184,11 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 	}
 	else if(!uri.empty())
 	{
-		// The m_path is terminated by the first question "?", "#", or
+		// The path is terminated by the first question "?", "#", or
 		// by the end of the Uri.
 		auto path_end_delimiter = uri.find_first_of("?#");
 
-		// m_path string without m_query or m_fragment
+		// path string without query or fragment
 		if (path_end_delimiter == std::string::npos)
 		{
 			// strip beginning slash of m_path string
@@ -208,6 +208,7 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 				auto path_elelment_delimiter = uri.find("/");
 				if(path_elelment_delimiter != std::string::npos)
 				{
+					// TODO: difference between push_back and emplace_back
 					m_path.emplace_back(uri.begin(), uri.begin() + path_elelment_delimiter);
 					uri = uri.substr(path_elelment_delimiter+1);
 				}
@@ -222,13 +223,12 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 			remains = "";
 			return true;
 		}
-		else	// find m_query or m_fragment
+		else	// find query or fragment
 		{
 			remains = uri.substr(path_end_delimiter);
 			
 			return true;
 		}
-		
 	}
 
 	// else, uri is empty
@@ -331,12 +331,16 @@ std::string Uri::get_path_string()
 {
 	if(m_path[0] == "")
 		return "/";
-	std::string pathString;
-	for(auto &element : m_path)
+	
+	std::string path_string;
+	for(int i = 0; i < m_path.size(); ++i)
 	{
-		pathString += element;
+		path_string += m_path[i];
+		
+		if(i != m_path.size()-1)
+			path_string += '/';
 	}
-	return pathString;
+	return path_string;
 }
 
 int Uri::get_port()
