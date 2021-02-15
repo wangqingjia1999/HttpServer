@@ -51,7 +51,7 @@ namespace Logger
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {
-        std::ofstream log_file(log_directory_path + "log-" + get_date(), std::ios_base::app);
+        std::ofstream log_file(log_directory_path + get_date() + ".log", std::ios_base::app);
         if(!log_file.is_open())
             return;
 

@@ -16,7 +16,7 @@ ResourceHandler::ResourceHandler(const std::string& resource_directory_path)
 bool ResourceHandler::is_resource_exists(const std::string& resource_path) const
 {
     struct stat resource_buffer;
-    return (stat(resource_path.c_str(), &resource_buffer) == 0);
+    return stat(resource_path.c_str(), &resource_buffer) == 0;
 }
 
 void ResourceHandler::set_resource_directory_path(const std::string& resource_directory_path)
@@ -31,19 +31,24 @@ std::string& ResourceHandler::get_resource_directory_path()
 
 bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 {
-    if(connection->get_request()->get_request_uri()->get_path_string() == "/")
-        return true;
+    std::string resource_absolute_path;
 
+    if(connection->get_request()->get_request_uri()->get_path_string() == "/")
+        resource_absolute_path = m_resource_root_directory_path + "index.html";
+    else
+        resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
+    
     // In this case, the *resource* is in the database :^)
     if(connection->get_request()->has_query())
     {
         return true;
     }
 
-    std::string resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
-    
     if(!is_resource_exists(resource_absolute_path))
+    {
+        Logger::debug("resource [" + resource_absolute_path + "] doesn't exist.");
         return false;
+    }
     
     std::string buffer;
     std::ifstream resource(resource_absolute_path, std::ios_base::binary);
@@ -80,15 +85,18 @@ std::string ResourceHandler::formalize_resource_path(const std::string& resource
     return resource_path;
 }
 
-std::string ResourceHandler::parse_content_type(const std::string& request_uri)
+std::string ResourceHandler::parse_content_type(const std::string& request_uri_path)
 {
+    if(request_uri_path == "/")
+        return std::string("text/html");
+
     std::smatch match_result;
 
     auto regex = std::regex("\\.([0-9a-zA-Z]+)$");
 
     std::string file_extention;
 
-    if (std::regex_search(request_uri, match_result, regex))
+    if (std::regex_search(request_uri_path, match_result, regex))
     {
         file_extention = match_result[1].str();
     }

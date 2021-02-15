@@ -56,17 +56,21 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
     struct sockaddr_in ipv4_address;
     memset(&ipv4_address, 0 , sizeof(ipv4_address));
     ipv4_address.sin_family = AF_INET;
+    
     if(ip == "localhost" || ip == "0.0.0.0")
         ipv4_address.sin_addr.s_addr = INADDR_ANY;
     else
         ipv4_address.sin_addr.s_addr = inet_addr(ip.c_str());
+    
     ipv4_address.sin_port = htons(port);
     int ipv4_address_length = sizeof(ipv4_address);
 
     int bind_result = bind(listen_fd, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
-        Logger::error("call to bind() for " + ip + ":" + std::to_string(port) + " failed.");
+        int flag = 1;
+        if(setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
+            Logger::error("call to set socket reusable for " + ip + ":" + std::to_string(port) + " failed.");
         return false;
     }
 
@@ -77,7 +81,7 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
         return false;
     }
     
-    printf("---Server is listening at %s:%d---", ip.c_str(), port);
+    Logger::info("---Server is listening at " + ip + ":" + std::to_string(port));
 
     epoll_event epoll_event_helper;
     epoll_event_helper.data.fd = listen_fd;
@@ -156,9 +160,8 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                         );
                         int epoll_ctl_result = epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
                         if(epoll_ctl_result < 0)
-                            Logger::info("after EPOLLERR we encounter " + std::string(strerror(errno)));
+                            Logger::info("after EPOLLERR triggered we encounter " + std::string(strerror(errno)));
                         
-                        Logger::info("after EPOLLERR we sucessfully delete it from epfd");
                         return Server_Socket_State::ERROR;
                     }
                 
@@ -207,6 +210,8 @@ bool ServerSocket::write_to(const int peer_fd, const std::string& data_string)
         return false;
     }
     
+    Logger::debug("send resopnse:\n" + data_string);
+
     return true;
 }   
 
@@ -226,6 +231,7 @@ std::string ServerSocket::read_from(const int peer_fd)
 
     if(receive_result < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
     {
+        Logger::debug("receive request:\n" + local_receive_buffer_string);
         return local_receive_buffer_string;
     }
     
@@ -243,7 +249,7 @@ std::string ServerSocket::read_from(const int peer_fd)
         close(peer_fd);
     }
     
-    Logger::debug("receive:" + local_receive_buffer_string);
+    Logger::debug("receive request:\n" + local_receive_buffer_string);
 
     return local_receive_buffer_string;
 }

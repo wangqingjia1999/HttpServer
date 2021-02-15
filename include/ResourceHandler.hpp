@@ -59,7 +59,7 @@ public:
     /**
      * Determine content type based on the file extension.
      * 
-     * @param[in] request_uri  
+     * @param[in] request_uri_path
      * 		Request URI.
      * 
      * @return
@@ -69,7 +69,7 @@ public:
      * 		For all available content types, see:
      * 		https://www.iana.org/assignments/media-types/media-types.xhtml#application
      */
-    std::string parse_content_type(const std::string& request_uri);
+    std::string parse_content_type(const std::string& request_uri_path);
 
     void set_resource_directory_path(const std::string& resource_directory_path);
     std::string& get_resource_directory_path();
