@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Logger.hpp"
 #include "ISocket.hpp"
 
 #include <vector>

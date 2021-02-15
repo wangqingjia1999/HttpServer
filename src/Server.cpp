@@ -33,7 +33,7 @@ void Server::listen_at(const std::string& host, const int port)
                 request_core_handler(m_server_socket->read_from());
                 
                 if(!m_server_socket->write_to(m_connection->get_response()->generate_response()))
-                    printf("Error in sending m_connection->get_response()");
+                    Logger::warn("Error in sending response message.");
 
                 break;
             }

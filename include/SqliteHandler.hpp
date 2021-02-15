@@ -1,11 +1,11 @@
 #pragma once 
 
-#include <sqlite3.h>
+#include "Logger.hpp"
 
+#include <sqlite3.h>
 #include <string>
 #include <vector>
-
-#include <stdio.h>
+#include <cstdio>
 
 using ColumnInfo = std::vector<std::string>;
 

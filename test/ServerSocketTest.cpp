@@ -3,8 +3,3 @@
 
 #include <gtest/gtest.h>
 
-TEST(server_socket_tests, todo)
-{
-    
-}
-

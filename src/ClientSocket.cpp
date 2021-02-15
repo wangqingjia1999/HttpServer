@@ -6,7 +6,6 @@
 ClientSocket::ClientSocket()
     : client_fd(-1)
 {
-
 }
 
 ClientSocket::~ClientSocket()
@@ -14,12 +13,12 @@ ClientSocket::~ClientSocket()
     close_connection();
 }
 
-void ClientSocket::connect_to( const std::string ip, const int port )
+void ClientSocket::connect_to(const std::string ip, const int port)
 {
     client_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(client_fd == -1)
     {
-        perror("socket");
+        Logger::error("call to socket() failed.");
         return;
     }
 
@@ -31,11 +30,11 @@ void ClientSocket::connect_to( const std::string ip, const int port )
     int connect_result = connect(client_fd, (sockaddr*)&server_socket, sizeof(server_socket));
     if(connect_result == -1)
     {
-        perror("connect");
+        Logger::error("call to connect() failed");
         return;
     }
 
-    printf("Client: successfully connects to server\n");
+    Logger::info("client successfully connects to server.");
 }
 
 bool ClientSocket::write_to(const int peer_fd, const std::vector<uint8_t>& data, const int data_size)
@@ -50,7 +49,7 @@ bool ClientSocket::write_to(const int peer_fd, const std::vector<uint8_t>& data,
     int send_result = send(peer_fd, local_send_buffer, data_size, 0);
     if(send_result == -1)
     {
-        perror("send");
+        Logger::error("call to send() failed.");
         return false;
     }
     else
@@ -69,7 +68,7 @@ std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
     ssize_t receive_result = recv(peer_fd, local_receive_buffer, sizeof(local_receive_buffer), 0);
     if(receive_result == -1)
     {
-        perror("recv");
+        Logger::error("call to recv() failed.");
         return {};
     }
 
@@ -79,7 +78,7 @@ std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
     std::string receive_buffer_string;
     for(const auto& byte : receive_buffer)
         receive_buffer_string += (char)byte;
-    printf("Receive: %s\n", receive_buffer_string.c_str());
+    Logger::info("receive: " + receive_buffer_string);
 
     return &receive_buffer;
 }

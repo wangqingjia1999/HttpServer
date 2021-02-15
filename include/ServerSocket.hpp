@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Timer.hpp"
+#include "Logger.hpp"
 #include "ISocket.hpp"
 
 #include <queue>
@@ -89,8 +90,6 @@ public:
 
     std::vector<uint8_t>* get_receive_buffer();
     std::vector<uint8_t>* get_send_buffer();
-
-    void print_receive_buffer();
 
     bool set_socket_non_blocking(const int socket_fd);
 

@@ -7,12 +7,13 @@
 #include <memory>
 #include <string>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include <unistd.h>
 
 /**
  * TODO:
  *     * Core functions
+ *         * Log formatting.
  *         * Every day, a new log file.
  *     * Optimization
  *         * Speed up logging process.

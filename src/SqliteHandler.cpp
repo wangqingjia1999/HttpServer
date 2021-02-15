@@ -23,7 +23,7 @@ SqliteHandler::SqliteHandler()
       m_statement(nullptr)
 {
     if(sqlite3_open("http-server.db", &m_connection) != SQLITE_OK)  
-        printf("can not open database");
+        Logger::error("can not open database");
 
     std::string create_user_table
     {
@@ -42,7 +42,7 @@ SqliteHandler::SqliteHandler()
         
     int result = 0;
     if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
-        printf("can not execute statement: %d, %s\n", result, sqlite3_errmsg(m_connection));
+        Logger::error("can not execute statement because " + std::string(sqlite3_errmsg(m_connection)));
 
     sqlite3_reset(m_statement);
 
@@ -61,7 +61,7 @@ SqliteHandler::SqliteHandler()
     }
         
     if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
-        printf("can not execute statement: %d, %s\n", result, sqlite3_errmsg(m_connection));
+        Logger::error("can not execute statement because " + std::string(sqlite3_errmsg(m_connection)));
     
     sqlite3_reset(m_statement);
 }
@@ -278,7 +278,7 @@ bool SqliteHandler::prepare_statement(const std::string& statement)
     result = sqlite3_prepare_v2(m_connection, statement.c_str(), -1, &m_statement, nullptr);
     if(result != SQLITE_OK)
     {
-        printf("Error in preparing statement, error code: %d, error message: %s\n", result, sqlite3_errmsg(m_connection));
+        Logger::error("Error in preparing statement because " + std::string(sqlite3_errmsg(m_connection)));
         sqlite3_reset(m_statement);
         return false;
     }
@@ -291,7 +291,7 @@ bool SqliteHandler::bind_text_data(const std::string& placeholder, const std::st
     int placeholder_index = sqlite3_bind_parameter_index(m_statement, placeholder.c_str());
     if((result = sqlite3_bind_text(m_statement, placeholder_index, data.c_str(), -1, SQLITE_STATIC)) != SQLITE_OK)
     {
-        printf("Error in binding data, error code: %d, error message: %s\n", result, sqlite3_errmsg(m_connection));
+        Logger::error("Error in binding data because " + std::string(sqlite3_errmsg(m_connection)));
         sqlite3_reset(m_statement);
         return false;
     }    

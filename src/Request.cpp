@@ -58,21 +58,21 @@ namespace Message
         auto request_line_end_delimiter = m_raw_request.find("\r\n");
         if (request_line_end_delimiter == std::string::npos)
         {
-            printf("Can not parse request line\n");
+            Logger::info("Can not parse request line.");
             return false;
         }
         std::string request_line = m_raw_request.substr(0, request_line_end_delimiter);
         if (!parse_request_line(request_line))
         {
-            printf("Can not parse request line\n");
+            Logger::info("Can not parse request line.");
             return false;
         }
 
-        // parse m_headers
+        // parse request headers
         auto headers_end_delimiter = m_raw_request.find("\r\n\r\n");
         if (headers_end_delimiter == std::string::npos)
         {
-            printf("Can not pare request m_headers\n");
+            Logger::info("Can not pare request headers.");
             return false;
         }
 
@@ -90,7 +90,7 @@ namespace Message
         m_headers = m_raw_request.substr(headers_begin_position, headers_size);
         if (!parse_headers(m_headers))
         {
-            printf("Can not parse m_headers\n");
+            Logger::info("Can not parse request headers.");
             return false;
         }
         

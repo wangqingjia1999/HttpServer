@@ -5,7 +5,7 @@
 
 int main()
 {
-    printf("Simple server runs in process %d\n", getpid());
+    Logger::info("Simple server runs in process " + std::to_string(getpid()));
     Server server;
     server.listen_at("0.0.0.0", 18135);
 }

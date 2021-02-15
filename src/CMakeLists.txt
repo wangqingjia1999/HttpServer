@@ -20,6 +20,7 @@ set(header_files
     ../include/ServerConfiguration.hpp
     ../include/ResourceHandler.hpp
     ../include/Connection.hpp
+    ../include/SqliteHandler.hpp
 )
 
 set(source_files
@@ -42,6 +43,7 @@ set(source_files
     ServerConfiguration.cpp
     ResourceHandler.cpp
     Connection.cpp
+    SqliteHandler.cpp
 )
 
 add_library(all_libs STATIC
@@ -99,8 +101,9 @@ add_library(server_lib STATIC
     Server.cpp
 )
 target_link_libraries(server_lib PUBLIC
-    connection_lib
+    logger_lib
     websocket_lib
+    connection_lib
     thread_pool_lib
     server_socket_lib
     sqlite_handler_lib
@@ -111,6 +114,9 @@ target_link_libraries(server_lib PUBLIC
 add_library(client_socket_lib STATIC
     ../include/ClientSocket.hpp
     ClientSocket.cpp
+)
+target_link_libraries(client_socket_lib PRIVATE
+    logger_lib
 )
 
 add_library(client_lib STATIC
