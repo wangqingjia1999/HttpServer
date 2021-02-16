@@ -235,8 +235,8 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 	m_path.push_back("");
 
 	// This is a special case,
-	// If m_host presents and m_path is empty,
-	// This m_path is absolute m_path
+	// If host presents and path is empty,
+	// This path is absolute path
 	// e.g. "https://google.com" is absolute path.
 	// Also it's same as "https://google.com/"
 	if(!m_host.empty() && uri.empty())
@@ -246,8 +246,8 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 		return true;
 	}
 	
-	// If m_host doesn't exist and m_path is empty,
-	// The m_path is relative m_path
+	// If host doesn't exist and path is empty,
+	// The path is relative path
 	m_is_relative_path = true;
 	remains = uri;
 	return true;
@@ -264,21 +264,27 @@ bool Uri::parse_query(std::string& uri, std::string& remains)
 		{
 			m_query = uri.substr(query_begin_delimiter+1, query_end_delimiter-1);
 			remains = uri.substr(query_end_delimiter);
-			return true;
 		}
 		else
 		{
 			m_query = uri.substr(query_begin_delimiter+1);
 			remains = "";
-			return true;
 		}
 	}
 	else
 	{
 		m_has_query = false;
 		remains = uri;
-		return true;
 	}
+
+	if(!parse_query_parameters(m_query))
+	{
+		m_query.clear();
+		m_has_query = false;
+		return false;
+	}
+
+	return true;
 }
 
 bool Uri::parse_fragment(std::string& uri, std::string& remains)
@@ -503,4 +509,31 @@ bool Uri::has_relative_path()
 bool Uri::operator==(const Uri& other) const
 {
 	return true;
+}
+
+bool Uri::parse_query_parameters(const std::string& query_string)
+{
+	// TODO: 
+
+	if(query_string.empty())
+		return true;
+	
+	if(query_string.find("q=") == std::string::npos)
+		return true;
+	
+	if((query_string.find('&') != std::string::npos) && (query_string.find(';') != std::string::npos))
+		return false;
+
+	std::string buffer = query_string.substr(2);
+
+	while(!buffer.empty())
+	{
+	}
+
+	return true;
+}
+
+Uri::QueryParameters& Uri::get_query_paramters()
+{
+	return m_query_parameters;
 }

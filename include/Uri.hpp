@@ -1,16 +1,20 @@
 #pragma once
 
+#include <regex>
 #include <string>
 #include <vector>
-#include <regex>
 #include <algorithm>
 #include <functional>
+#include <unordered_map>
 
 #include "CharacterSet.hpp"
 #include "PercentEncoding.hpp"
 
 class Uri
 {
+public:
+	using QueryParameters = std::unordered_map<std::string, std::string>;
+
 public:
 	~Uri() noexcept;
 	Uri();
@@ -128,7 +132,7 @@ public:
 	 */
 	bool has_relative_path();
 
-private:
+public:
 	/**
 	 * Extract the scheme from uri if any,
 	 * return the remaining string.
@@ -240,8 +244,20 @@ private:
 	 */
 	bool parse_fragment(std::string& uri, std::string& remains);
 
+	/**
+	 * Parse query parameters.
+	 * 
+	 * @param[in] query_string
+	 * 		Query string inside uri string.
+	 *
+	 * @return 
+	 * 		True if succeeds.
+	 */
+	bool parse_query_parameters(const std::string& query_string);
+
 	bool is_absolute_path();
 
+public:
 	bool set_scheme(std::string& scheme);
 	bool set_host(std::string& host);
 	bool set_port(int port);
@@ -249,11 +265,14 @@ private:
 	bool set_fragment(std::string& fragment);
 	bool set_user_info(std::string& user_info);
 
+public:
 	bool clear_port();
 	bool clear_query();
 	bool clear_fragment();
 	bool clear_scheme();
 	bool clear_path();
+
+	QueryParameters& get_query_paramters();
 	
 private:
 	std::string m_scheme;
@@ -275,4 +294,6 @@ private:
 
 	bool m_has_fragment;
 	std::string m_fragment;
+
+	QueryParameters m_query_parameters;
 };

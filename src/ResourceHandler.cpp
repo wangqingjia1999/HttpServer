@@ -38,9 +38,9 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
     else
         resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
     
-    // In this case, the *resource* is in the database :^)
     if(connection->get_request()->has_query())
     {
+        // TODO: handle query
         return true;
     }
 

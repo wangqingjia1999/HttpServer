@@ -61,8 +61,5 @@ private:
     std::string m_resource_root_directory_path;
     std::string m_log_directory_path;
 
-    /**
-     * TODO:
-     *  * Uri maximum length;
-     */
+    // TODO: Uri maximum length;
 };

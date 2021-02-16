@@ -11,7 +11,7 @@
 #include <unistd.h>
 
 /**
- * TODO:
+ * TODO: Logger
  *     * Core functions
  *         * Log formatting.
  *         * Every day, a new log file.
