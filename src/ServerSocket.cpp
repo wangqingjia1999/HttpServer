@@ -65,12 +65,14 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
     ipv4_address.sin_port = htons(port);
     int ipv4_address_length = sizeof(ipv4_address);
 
+    int enable = 1;
+    if(setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1)
+        Logger::warn("Cannot set socket " + ip + ":" + std::to_string(port) + " to be reusable.");
+
     int bind_result = bind(listen_fd, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
     {
-        int flag = 1;
-        if(setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == -1)
-            Logger::error("call to set socket reusable for " + ip + ":" + std::to_string(port) + " failed.");
+        Logger::error("Cannot bind to address: " + ip + ":" + std::to_string(port) + " because " + std::string(strerror(errno)));
         return false;
     }
 
@@ -81,7 +83,7 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
         return false;
     }
     
-    Logger::info("---Server is listening at " + ip + ":" + std::to_string(port));
+    Logger::info("Server is listening at " + ip + ":" + std::to_string(port));
 
     epoll_event epoll_event_helper;
     epoll_event_helper.data.fd = listen_fd;
