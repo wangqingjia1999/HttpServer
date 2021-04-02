@@ -230,27 +230,26 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 			return true;
 		}
 	}
-
-	// else, uri is empty
-	m_path.push_back("");
-
-	// This is a special case,
-	// If host presents and path is empty,
-	// This path is absolute path
-	// e.g. "https://google.com" is absolute path.
-	// Also it's same as "https://google.com/"
-	if(!m_host.empty() && uri.empty())
+	else // path is empty
 	{
-		m_is_relative_path = false;
-		m_path.push_back("");
-		return true;
+		// If host exists while path is empty, then we get a absolute path.
+		// e.g. "https://google.com" is absolute path, which it's same as 
+		//      "https://google.com/"
+		if(!m_host.empty())
+		{
+			m_is_relative_path = false;
+			m_path.push_back("");
+			return true;
+		}
+		else
+		{
+			// If host doesn't exist and path is empty,
+			// The path is relative path
+			m_is_relative_path = true;
+			remains = uri;
+			return true;
+		}
 	}
-	
-	// If host doesn't exist and path is empty,
-	// The path is relative path
-	m_is_relative_path = true;
-	remains = uri;
-	return true;
 }
 
 bool Uri::parse_query(std::string& uri, std::string& remains)
@@ -306,7 +305,7 @@ bool Uri::parse_fragment(std::string& uri, std::string& remains)
 	
 }
 
-// absolute m_path begins with a "/"
+// absolute path begins with a "/"
 bool Uri::is_absolute_path()
 {
 	return (!m_path.empty() && !m_is_relative_path);

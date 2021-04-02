@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(uri_tests, parseFromUrlString)
+TEST(uri_tests, parse_from_url_string)
 {
     Uri uri;
     ASSERT_TRUE(uri.parse_from_string("https://www.github.com/Bitate/httpserver"));
@@ -12,16 +12,16 @@ TEST(uri_tests, parseFromUrlString)
     ASSERT_EQ(uri.get_path_string(), "Bitate/httpserver");
 }
 
-TEST(uri_tests, parseFromStringWithPathCornerCases)
+TEST(uri_tests, parse_from_string_with_path_corner_cases)
 {
     struct TestVector
     {
-        std::string pathIn;
-        std::vector<std::string> pathOut;
+        std::string input_path;
+        std::vector<std::string> output_path;
     };
 
     const std::vector<TestVector> test_vectors{
-        {"", {""}},
+        {"", {} },
         {"/", {""}},
         {"/foo", {"foo"}},
         {"foo/", {"foo", ""}},
@@ -31,13 +31,13 @@ TEST(uri_tests, parseFromStringWithPathCornerCases)
     size_t index = 0;
     for (const auto &test_vector : test_vectors)
     {
-        ASSERT_TRUE(uri.parse_from_string(test_vector.pathIn)) << index;
-        ASSERT_EQ(uri.get_path(), test_vector.pathOut) << index;
+        ASSERT_TRUE(uri.parse_from_string(test_vector.input_path)) << index;
+        ASSERT_EQ(uri.get_path(), test_vector.output_path) << index;
         ++index;
     }
 }
 
-TEST(uri_tests, parseFromStringWithAPortNumber)
+TEST(uri_tests, parse_from_string_with_a_port_number)
 {
     Uri uri;
     ASSERT_TRUE(uri.parse_from_string("http://www.example.com:8080/foo/bar"));
@@ -46,7 +46,7 @@ TEST(uri_tests, parseFromStringWithAPortNumber)
     ASSERT_EQ(uri.get_port(), 8080);
 }
 
-TEST(uri_tests, parseFromStringWithoutAPortNumber)
+TEST(uri_tests, parse_from_string_without_a_port_number)
 {
     Uri uri;
     ASSERT_TRUE(uri.parse_from_string("http://www.example.com/foo/bar"));
@@ -54,7 +54,7 @@ TEST(uri_tests, parseFromStringWithoutAPortNumber)
     ASSERT_FALSE(uri.has_port());
 }
 
-TEST(uri_tests, parseFromStringTwiceFirstWithPortNumberThenWithout)
+TEST(uri_tests, parse_from_string_twice_first_with_port_number_then_without)
 {
     Uri uri, uri2;
     ASSERT_TRUE(uri.parse_from_string("http://www.example.com:8080/foo/bar"));
@@ -63,7 +63,7 @@ TEST(uri_tests, parseFromStringTwiceFirstWithPortNumberThenWithout)
     ASSERT_FALSE(uri2.has_port());
 }
 
-TEST(uri_tests, parseFromStringWithLargestValidPortNumber)
+TEST(uri_tests, parse_from_string_with_largest_valid_port_number)
 {
     Uri uri;
     ASSERT_TRUE(uri.parse_from_string("http://www.example.com:65535/foo/bar"));
@@ -71,7 +71,7 @@ TEST(uri_tests, parseFromStringWithLargestValidPortNumber)
     ASSERT_EQ(uri.get_port(), 65535);
 }
 
-TEST(uri_tests, parseFromStringBadPortNumberStartsNumericEndsAlphabetic)
+TEST(uri_tests, parse_from_string_bad_port_number_starts_numeric_ends_alphabetic)
 {
     Uri uri;
     ASSERT_FALSE(uri.parse_from_string("http://www.example.com:8080spam/foo/bar"));
@@ -136,7 +136,7 @@ TEST(uri_tests, parse_relative_path_and_absolute_path)
 
     Uri uri;
     size_t index = 0;
-    for (const auto &test_vector : test_vectors)
+    for (const auto& test_vector : test_vectors)
     {
         ASSERT_TRUE(uri.parse_from_string(test_vector.uri)) << index;
         ASSERT_EQ(test_vector.is_relative_reference, uri.is_relative_reference()) << index;
@@ -154,18 +154,17 @@ TEST(uri_tests, parse_relative_and_non_relative_path)
     const std::vector<TestVector> test_vectors{
         // Uri string               // has_relative_path
         {"http://www.example.com/", false},
-        // BUG:
-        {"http://www.example.com", false},
-        {"/", false},
-        {"foo", true},
+        {"http://www.example.com",  false},
+        {"/",                       false},
+        {"foo",                     true},
         //An empty Uri string IS a valid "relative reference" with an empty path.
-        {"", true},
+        {"",                        true},
     };
 
-    Uri uri;
     size_t index = 0;
-    for (const auto &test_vector : test_vectors)
+    for (const auto& test_vector : test_vectors)
     {
+        Uri uri;
         ASSERT_TRUE(uri.parse_from_string(test_vector.uri)) << index;
         ASSERT_EQ(test_vector.has_relative_path, uri.has_relative_path()) << index;
         ++index;
@@ -185,12 +184,12 @@ TEST(uri_tests, parse_query_and_fragment_elements)
     const std::vector<TestVector> test_vectors
     {
         // uriStrings                             // hosts           // query     // fragment
-        {"http://www.example.com/", "www.example.com", "", ""},
-        {"http://example.com?foo", "example.com", "foo", ""},
-        {"http://www.example.com#foo", "www.example.com", "", "foo"},
-        {"http://www.example.com?foo#bar", "www.example.com", "foo", "bar"},
-        {"http://www.example.com?earth?day#bar", "www.example.com", "earth?day", "bar"},
-        {"http://www.example.com/spam?foo#bar", "www.example.com", "foo", "bar"},
+        {"http://www.example.com/",             "www.example.com",      "",          ""},
+        {"http://example.com?foo",              "example.com",          "foo",       ""},
+        {"http://www.example.com#foo",          "www.example.com",      "",          "foo"},
+        {"http://www.example.com?foo#bar",      "www.example.com",      "foo",       "bar"},
+        {"http://www.example.com?earth?day#bar","www.example.com",      "earth?day", "bar"},
+        {"http://www.example.com/spam?foo#bar", "www.example.com",      "foo",       "bar"},
 
         /*
         * NOTE: curiously, but we think this is correct, that
@@ -201,10 +200,10 @@ TEST(uri_tests, parse_query_and_fragment_elements)
         {"http://www.example.com/?", "www.example.com", "", ""},
     };
 
-    Uri uri;
     size_t index = 0;
-    for (const auto &test_vector : test_vectors)
+    for (const auto& test_vector : test_vectors)
     {
+        Uri uri;
         ASSERT_TRUE(uri.parse_from_string(test_vector.uri)) << index;
         ASSERT_EQ(test_vector.host, uri.get_host()) << index;
         ASSERT_EQ(test_vector.query, uri.get_query()) << index;
@@ -232,10 +231,10 @@ TEST(uri_tests, parse_user_info)
         {"foo", ""}
     };
 
-    Uri uri;
     size_t index = 0;
-    for (const auto &test_vector : test_vectors)
+    for (const auto& test_vector : test_vectors)
     {
+        Uri uri;
         ASSERT_TRUE(uri.parse_from_string(test_vector.uri)) << index;
         ASSERT_EQ(test_vector.user_info, uri.get_user_info()) << index;
         ++index;
@@ -244,8 +243,6 @@ TEST(uri_tests, parse_user_info)
 
 TEST(uri_tests, parse_query_parameters)
 {
-    Uri uri;
-
     struct TestVector
     {
         std::string query_string;
@@ -254,9 +251,30 @@ TEST(uri_tests, parse_query_parameters)
 
     std::vector<TestVector> test_vectors
     {
-        { "field1=value1&field2=value2&field3=value3", { {"field1", "value1"}, {"filed2", "value2"}, {"filed3", "value3"} } },
+        { 
+            "field1=value1&field2=value2&field3=value3", 
+            {
+                {"field1", "value1"}, 
+                {"filed2", "value2"}, 
+                {"filed3", "value3"} 
+            } 
+        },
+        {
+            "name=Tom&age=22&country=China",
+            {
+                {"name", "Tom"},
+                {"age", "22"},
+                {"country", "China"}
+            }
+        }
     };
 
-    ASSERT_TRUE(uri.parse_query_parameters(test_vectors[0].query_string));
-    ASSERT_EQ(uri.get_query_paramters(), test_vectors[0].query_parameters);
+    size_t index = 0;
+    for(const auto& test_vector : test_vectors)
+    {
+        Uri uri;
+        ASSERT_TRUE(uri.parse_query_parameters(test_vector.query_string)) << index;
+        ASSERT_EQ(uri.get_query_paramters(), test_vector.query_parameters) << index;
+        ++index;
+    }
 }
