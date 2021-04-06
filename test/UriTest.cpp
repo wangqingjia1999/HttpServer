@@ -252,18 +252,36 @@ TEST(uri_tests, parse_query_parameters)
     std::vector<TestVector> test_vectors
     {
         { 
-            "field1=value1&field2=value2&field3=value3", 
+            "q=field1=value1&field2=value2&field3=value3", 
             {
                 {"field1", "value1"}, 
-                {"filed2", "value2"}, 
-                {"filed3", "value3"} 
-            } 
+                {"field2", "value2"}, 
+                {"field3", "value3"} 
+            }
         },
         {
-            "name=Tom&age=22&country=China",
+            "q=name=Tom&age=22&country=China",
             {
-                {"name", "Tom"},
                 {"age", "22"},
+                {"country", "China"},
+                {"name", "Tom"}
+            }
+        },
+        {
+            "q=name=&age=22&=China",
+            {
+                {"age","22"}
+            }
+        },
+        {
+            "q=Tom&=22&&&country=China",
+            {
+                {"country", "China"}
+            }
+        },
+        {
+            "q=country=China&=22&&&",
+            {
                 {"country", "China"}
             }
         }

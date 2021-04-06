@@ -512,21 +512,43 @@ bool Uri::operator==(const Uri& other) const
 
 bool Uri::parse_query_parameters(const std::string& query_string)
 {
-	// TODO: 
-
 	if(query_string.empty())
-		return true;
-	
-	if(query_string.find("q=") == std::string::npos)
 		return true;
 	
 	if((query_string.find('&') != std::string::npos) && (query_string.find(';') != std::string::npos))
 		return false;
 
-	std::string buffer = query_string.substr(2);
+	std::string buffer;
+	if(query_string.find("q=") == std::string::npos)
+		return true;
+	else 
+		buffer = query_string.substr(2);
 
+	auto parse_query_parameter = [&](const std::string& token){
+		auto equal_sign_position = token.find('=');
+		if((token.empty()) || (equal_sign_position == std::string::npos))
+			return;
+		
+		std::string key = token.substr(0, equal_sign_position);
+		std::string value = token.substr(equal_sign_position+1);
+
+		if(!key.empty() && !value.empty())
+			m_query_parameters.insert({key, value});
+	};
+
+	buffer += '&';
 	while(!buffer.empty())
 	{
+		auto and_sign_position = buffer.find('&');
+		if(and_sign_position != std::string::npos)
+		{
+			parse_query_parameter(buffer.substr(0, and_sign_position));
+			buffer = buffer.substr(and_sign_position+1);
+		}
+		else
+		{
+			break;
+		}
 	}
 
 	return true;
