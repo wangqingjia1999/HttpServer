@@ -236,6 +236,11 @@ std::vector<UserInfo> SqliteHandler::fetch_user_info(
     return fetch_result;
 }
 
+std::vector<UserInfo> SqliteHandler::fetch_user_info_by_name(const std::string& user_name)
+{
+    return fetch_user_info(user_name, "");
+}
+
 bool SqliteHandler::delete_user(const UserInfo& user_info)
 {
     std::string statement 

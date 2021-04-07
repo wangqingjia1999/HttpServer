@@ -1,6 +1,7 @@
 #include "ResourceHandler.hpp"
 
 ResourceHandler::ResourceHandler()
+    : m_sqlite_handler(std::make_shared<SqliteHandler>())
 {
 }
 
@@ -31,46 +32,75 @@ std::string& ResourceHandler::get_resource_directory_path()
 
 bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 {
-    std::string resource_absolute_path;
+    std::string buffer;
 
-    if(connection->get_request()->get_request_uri()->get_path_string() == "/")
-        resource_absolute_path = m_resource_root_directory_path + "index.html";
-    else
-        resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
-    
     if(connection->get_request()->has_query())
     {
-        // TODO: handle query
-        return true;
-    }
+        Logger::debug("query string: " + connection->get_request()->get_request_uri()->get_query());
 
-    if(!is_resource_exists(resource_absolute_path))
+        auto query_result = m_sqlite_handler->fetch_user_info_by_name(connection->get_request()->get_request_uri()->get_query());
+
+        // temporary respose
+        buffer = {
+            "<!DOCTYPE html>"
+            "<html lang=\"en\">"
+                "<head>"
+                    "<meta charset=\"utf-8\">"
+                    "<title>Query Result</title>"
+                "</head>"
+                "<body>"
+                    "<ul>"
+        };
+
+        for(const auto& user : query_result)
+        {
+            buffer += { "<li>" + user.m_name + "</li>" };
+        }
+
+        buffer += {
+                    "</ul>"
+                "</body>"
+            "</html>"
+        };
+
+        connection->get_response()->set_content_type("text/html");
+    }
+    else
     {
-        Logger::debug("resource [" + resource_absolute_path + "] doesn't exist.");
-        return false;
+        std::string resource_absolute_path;
+
+        if(connection->get_request()->get_request_uri()->get_path_string() == "/")
+            resource_absolute_path = m_resource_root_directory_path + "index.html";
+        else
+            resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
+        
+        if(!is_resource_exists(resource_absolute_path))
+        {
+            Logger::debug("resource [" + resource_absolute_path + "] doesn't exist.");
+            return false;
+        }
+        
+        std::ifstream resource(resource_absolute_path, std::ios_base::binary);
+        if(!resource.is_open())
+            return false;
+
+        resource.seekg(0, std::ios_base::end);
+        auto resource_size = resource.tellg();
+        resource.seekg(0);
+
+        buffer.resize(static_cast<size_t>(resource_size));
+        
+        resource.read(&buffer[0], static_cast<std::streamsize>(resource_size));
+
+        connection->get_response()->set_content_type(
+            parse_content_type(
+                connection->get_request()->get_request_uri()->get_path_string()
+            )
+        );
     }
-    
-    std::string buffer;
-    std::ifstream resource(resource_absolute_path, std::ios_base::binary);
-    if(!resource.is_open())
-        return false;
-
-    resource.seekg(0, std::ios_base::end);
-    auto resource_size = resource.tellg();
-    resource.seekg(0);
-
-    buffer.resize(static_cast<size_t>(resource_size));
-    
-    resource.read(&buffer[0], static_cast<std::streamsize>(resource_size));
 
     connection->get_response()->set_body(buffer);
     
-    connection->get_response()->set_content_type(
-        parse_content_type(
-            connection->get_request()->get_request_uri()->get_path_string()
-        )
-    );
-
     return true;
 }
 
@@ -105,7 +135,7 @@ std::string ResourceHandler::parse_content_type(const std::string& request_uri_p
         return std::string{};
     }
 
-    if ( file_extention == "txt")
+    if (file_extention == "txt")
     {
         return "text/plain";
     }

@@ -97,7 +97,7 @@ public:
     bool delete_user(const UserInfo& user_info);    
 
     /**
-     * Fetch a user record from database.
+     * Fetch user record(s) which matches either user_name or user_email from database.
      * 
      * @param[in] user_name
      *      User name.
@@ -106,13 +106,24 @@ public:
      *      User email.
      * 
      * @return
-     *      UserInfo structure(s).
+     *      UserInfo(s).
      */
     std::vector<UserInfo> fetch_user_info(
         const std::string& user_name,
         const std::string& user_email
     );
 
+    /**
+     * Fetch user record(s) which matches the given user_name from database.
+     * 
+     * @param[in] user_name
+     *      User name.
+     * 
+     * @return 
+     *      UserInfo(s).
+     */
+    std::vector<UserInfo> fetch_user_info_by_name(const std::string& user_name);
+    
 private:
     /**
      * Prepare Sqlite3 statement.

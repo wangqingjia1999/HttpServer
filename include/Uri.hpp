@@ -222,6 +222,7 @@ public:
 	 * Parse query of an URI if any.
 	 * 
 	 * @param[in] uri
+	 * 		Uri string.
 	 * 
 	 * @param[out] remains 
 	 * 		Remains after weeding out the query.
@@ -232,10 +233,20 @@ public:
 	bool parse_query(std::string& uri, std::string& remains);
 
 	/**
+	 * Parse given query string extracted from request's request line.
+	 * 	
+	 * @param[in] query_string
+	 * 
+	 * @return
+	 * 		True if succeeds.
+	 */
+	bool parse_query(const std::string& query_string);
+
+	/**
 	 * Parse fragment of an URI if any.
 	 * 
 	 * @param[in] uri
-	 * 
+	 * 		Uri string.
 	 * @param[out] remains 
 	 * 		Remains after weeding out the fragment.
 	 * 

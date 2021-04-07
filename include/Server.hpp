@@ -115,7 +115,6 @@ private:
 	std::shared_ptr< Connection > m_connection;
 	std::shared_ptr< ThreadPool > m_thread_pool;
 	std::unique_ptr< ServerSocket > m_server_socket;
-	std::unique_ptr< SqliteHandler > m_sqlite_handler;
 	std::unique_ptr< ResourceHandler > m_resource_handler;
 	std::unique_ptr< ServerConfiguration > m_configuration;
 

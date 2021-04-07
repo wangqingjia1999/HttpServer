@@ -4,7 +4,6 @@ Server::Server()
     : m_connection(std::make_shared<Connection>()),
       m_thread_pool(std::make_shared<ThreadPool>()),
       m_server_socket(new ServerSocket()),
-      m_sqlite_handler(new SqliteHandler()),
       m_resource_handler(new ResourceHandler()),
       m_configuration(new ServerConfiguration())
 {

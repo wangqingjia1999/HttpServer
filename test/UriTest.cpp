@@ -241,6 +241,40 @@ TEST(uri_tests, parse_user_info)
     }
 }
 
+TEST(uri_tests, parse_query)
+{
+    struct TestVector
+    {
+        std::string query_string;
+        std::string user_name;
+    };
+
+    std::vector<TestVector> test_vectors
+    {
+        {
+            "q=Tom",
+            "Tom"
+        },
+        {
+            "q=michael+jackson",
+            "michael jackson"
+        },
+        {
+            "/assets/html/?username=tom",
+            "tom"
+        }
+    };
+
+    size_t index = 0;
+    for(const auto& test_vector : test_vectors)
+    {
+        Uri uri;
+        ASSERT_TRUE(uri.parse_query(test_vector.query_string));
+        ASSERT_EQ(uri.get_query(), test_vector.user_name);
+    }
+    
+}
+
 TEST(uri_tests, parse_query_parameters)
 {
     struct TestVector
@@ -252,7 +286,7 @@ TEST(uri_tests, parse_query_parameters)
     std::vector<TestVector> test_vectors
     {
         { 
-            "q=field1=value1&field2=value2&field3=value3", 
+            "field1=value1&field2=value2&field3=value3", 
             {
                 {"field1", "value1"}, 
                 {"field2", "value2"}, 
@@ -260,7 +294,7 @@ TEST(uri_tests, parse_query_parameters)
             }
         },
         {
-            "q=name=Tom&age=22&country=China",
+            "name=Tom&age=22&country=China",
             {
                 {"age", "22"},
                 {"country", "China"},
@@ -268,19 +302,19 @@ TEST(uri_tests, parse_query_parameters)
             }
         },
         {
-            "q=name=&age=22&=China",
+            "name=&age=22&=China",
             {
                 {"age","22"}
             }
         },
         {
-            "q=Tom&=22&&&country=China",
+            "Tom&=22&&&country=China",
             {
                 {"country", "China"}
             }
         },
         {
-            "q=country=China&=22&&&",
+            "country=China&=22&&&",
             {
                 {"country", "China"}
             }

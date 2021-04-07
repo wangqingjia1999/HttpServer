@@ -184,7 +184,7 @@ namespace Message
     {        
         if(!m_uri->parse_from_string(uri))
         {
-            Logger::error("cannot parse uri: " + uri);
+            Logger::error("Request/cannot parse uri: " + uri);
             return false;
         }
         

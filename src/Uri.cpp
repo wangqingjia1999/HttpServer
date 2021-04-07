@@ -267,22 +267,41 @@ bool Uri::parse_query(std::string& uri, std::string& remains)
 		else
 		{
 			m_query = uri.substr(query_begin_delimiter+1);
+
+			if(m_query.find("username=") != std::string::npos)
+				return parse_query(m_query);
+			else if(m_query.find("q=") != std::string::npos)
+				return parse_query_parameters(m_query);
+
 			remains = "";
 		}
 	}
 	else
 	{
 		m_has_query = false;
+		m_query.clear();
 		remains = uri;
 	}
 
-	if(!parse_query_parameters(m_query))
-	{
-		m_query.clear();
-		m_has_query = false;
+	return true;
+}
+
+bool Uri::parse_query(const std::string& query_string)
+{
+	auto query_delimiter = query_string.find("username=");
+	
+	if(query_delimiter == std::string::npos)
 		return false;
+
+	std::string buffer = query_string.substr(query_delimiter+9);
+
+	for(auto& c : buffer)
+	{
+		if(c == '+')
+			c = ' ';
 	}
 
+	m_query = buffer;
 	return true;
 }
 
@@ -517,13 +536,7 @@ bool Uri::parse_query_parameters(const std::string& query_string)
 	
 	if((query_string.find('&') != std::string::npos) && (query_string.find(';') != std::string::npos))
 		return false;
-
-	std::string buffer;
-	if(query_string.find("q=") == std::string::npos)
-		return true;
-	else 
-		buffer = query_string.substr(2);
-
+	
 	auto parse_query_parameter = [&](const std::string& token){
 		auto equal_sign_position = token.find('=');
 		if((token.empty()) || (equal_sign_position == std::string::npos))
@@ -536,6 +549,7 @@ bool Uri::parse_query_parameters(const std::string& query_string)
 			m_query_parameters.insert({key, value});
 	};
 
+	std::string buffer = query_string;
 	buffer += '&';
 	while(!buffer.empty())
 	{

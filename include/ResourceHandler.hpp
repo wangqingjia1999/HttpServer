@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Connection.hpp"
+#include "SqliteHandler.hpp"
 
 #include <string>
 #include <memory>
@@ -76,4 +77,5 @@ public:
     
 private:
     std::string m_resource_root_directory_path;
+    std::shared_ptr< SqliteHandler > m_sqlite_handler;
 };
