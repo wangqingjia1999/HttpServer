@@ -1,33 +1,46 @@
 #!/bin/bash
 
-# Clone googletest only if it does not exist
+install_package_if_not_exists()
+{
+    if dpkg -s $1 | grep -q "Status: install ok installed";
+    then
+        echo "$1: Already Installed."
+    else
+        echo "$1: Not Installed, Install It Now."
+        sudo apt install $1
+    fi
+}
+
+install_package_if_not_exists cmake
+install_package_if_not_exists sqlite3
+install_package_if_not_exists libsqlite3-dev
+
 if [ ! -d "${PWD}/googletest" ] 
 then
-    echo "Google test does not exist."
-    echo "Clone google test framework from Github."
+    echo "Clone googletest framework."
     git clone --depth=1 https://github.com/google/googletest 
 else 
-    echo "Google test already exists :)"
+    echo "Googletest Installed."
 fi 
 
-# Install mysql and cpp connector
-sudo apt update
-sudo apt install cmake
-sudo apt install sqlite3 libsqlite3-dev
-
-# Create build directory and change directory to it.
-if [ -d "${PWD}/build" ] 
+if [ ! -d "${PWD}/build" ] 
 then
-    echo "Delete build directory"
-    rm -rf build
-else
-    echo "Create CMake build directory."
+    mkdir build && cd build
+    cmake ..
+    make
 fi
 
-mkdir build && cd build
+CONFIG_DIR_PATH=${HOME}/.config/Bitate-HttpServer
 
-# generate cmake cache
-cmake ..
+if [ ! -d "${CONFIG_DIR_PATH}" ]
+then
+    mkdir ${CONFIG_DIR_PATH}
+    cat > ${CONFIG_DIR_PATH}/config
+fi
 
-# make it
-make
+if [ ! -e "${CONFIG_DIR_PATH}/config" ]
+then
+    touch ${CONFIG_DIR_PATH}/config
+fi
+
+echo "DONE!"

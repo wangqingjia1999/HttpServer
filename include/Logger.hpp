@@ -10,21 +10,6 @@
 #include <sstream>
 #include <unistd.h>
 
-/**
- * TODO: Logger
- *     * Core functions
- *         * Log formatting.
- *         * Every day, a new log file.
- *     * Optimization
- *         * Speed up logging process.
- */
-namespace
-{
-    ServerConfiguration server_configuration;
-
-    std::string log_directory_path = server_configuration.get_log_directory_path();
-}
-
 namespace Logger
 {
     enum class LogLevel {
@@ -45,13 +30,19 @@ namespace Logger
      * 
      * @note  
      *      Store the log file into the folder, which 
-     *      can be configured in config file. If not 
-     *      specified or not found, the default path
-     *      (same path as the executable file) is used.
+     *      can be configured in `config` file under 
+     *      server's root directory. If not specified 
+     *      or not found, the default path (same path 
+     *      as the executable file) is used.
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {
-        std::ofstream log_file(log_directory_path + get_date() + ".log", std::ios_base::app);
+        ServerConfiguration server_configuration;
+
+        std::ofstream log_file(
+            server_configuration.get_log_directory_path() + get_date() + ".log", 
+            std::ios_base::app
+        );
         if(!log_file.is_open())
             return;
 
