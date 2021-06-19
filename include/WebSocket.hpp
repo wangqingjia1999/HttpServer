@@ -8,11 +8,6 @@
 #include "Response.hpp"
 #include "Request.hpp"
 
-/**
- * TODO: 
- *  1. Fragmentation
- *  2. Send/Receive to/from client.
- */
 class WebSocket
 {
 public:

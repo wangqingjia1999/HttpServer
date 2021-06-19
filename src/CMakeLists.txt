@@ -214,8 +214,7 @@ add_library(sqlite_handler_lib STATIC
 target_link_directories(sqlite_handler_lib PUBLIC
     /usr/include/
 )
-# FIXME: hardcode the Sqlite3 library path
 target_link_libraries(sqlite_handler_lib PUBLIC
-    /lib/x86_64-linux-gnu/libsqlite3.so.0
+    /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
 )

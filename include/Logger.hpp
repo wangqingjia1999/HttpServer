@@ -12,6 +12,8 @@
 
 namespace Logger
 {
+    static std::string log_directory_path = {};
+
     enum class LogLevel {
         INFO,
         WARN,
@@ -37,10 +39,14 @@ namespace Logger
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {
-        ServerConfiguration server_configuration;
-
+        if(log_directory_path.empty())
+        {
+            ServerConfiguration server_configuration;
+            log_directory_path = server_configuration.get_log_directory_path();
+        }
+        
         std::ofstream log_file(
-            server_configuration.get_log_directory_path() + get_date() + ".log", 
+            log_directory_path + get_date() + ".log", 
             std::ios_base::app
         );
         if(!log_file.is_open())
@@ -99,5 +105,16 @@ namespace Logger
     inline void debug(const std::string& debug_message)
     {
         log(LogLevel::DEBUG, debug_message);
+    }
+
+    /**
+     * Get log directory path.
+     * 
+     * @return 
+     *      Log directory path if any.
+     */
+    inline std::string get_log_directory_path()
+    {
+        return log_directory_path;
     }
 }

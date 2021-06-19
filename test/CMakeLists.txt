@@ -81,6 +81,7 @@ target_link_libraries(mysql_handler_test PUBLIC
 add_executable(logger_test LoggerTest.cpp)
 target_link_libraries(logger_test PUBLIC
     gtest_main 
+    gmock_main
     logger_lib
 )
 
