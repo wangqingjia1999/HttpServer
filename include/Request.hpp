@@ -99,6 +99,11 @@ namespace Message
 		std::string get_host();
 		std::string get_port();
 
+		/**
+		 * Clear up all the fields of a request object.
+		 */
+		void clear_up();
+
 	private:
 		/**
          * For search bar: /?Search=This+is+just+a+demo

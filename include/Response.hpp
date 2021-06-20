@@ -203,9 +203,9 @@ namespace Message
 		std::string generate_response();
 
 		/**
-		 * Clear up the header fields.
+		 * Clear up all fields.
 		 */
-		void clear_up_header_fields();
+		void clear_up();
 
 	private:
 		std::shared_ptr< Uri > m_uri;

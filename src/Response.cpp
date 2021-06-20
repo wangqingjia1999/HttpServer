@@ -289,9 +289,12 @@ namespace Message
 		return m_headers.find(name) != m_headers.cend();
 	}
 
-	void Message::Response::clear_up_header_fields()
-	{
+	void Message::Response::clear_up()
+	{			
 		m_headers.clear();
+		m_body.clear();
+		m_content_type.clear();
+		m_reason_phrase.clear();
 	}
 	
 }

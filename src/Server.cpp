@@ -3,6 +3,7 @@
 Server::Server()
     : m_connection(std::make_shared<Connection>()),
       m_thread_pool(std::make_shared<ThreadPool>()),
+      m_sqlite_handler(new SqliteHandler()),
       m_server_socket(new ServerSocket()),
       m_resource_handler(new ResourceHandler()),
       m_configuration(new ServerConfiguration())
@@ -33,6 +34,9 @@ void Server::listen_at(const std::string& host, const int port)
                 
                 if(!m_server_socket->write_to(m_connection->get_response()->generate_response()))
                     Logger::warn("Error in sending response message.");
+
+                m_connection->get_request()->clear_up();                
+                m_connection->get_response()->clear_up();
 
                 break;
             }
@@ -121,9 +125,28 @@ void Server::request_core_handler(const std::string& raw_request_string)
     }
     else if(m_connection->get_request()->get_request_method() == "POST")
     {   
-        if(m_connection->get_request()->get_request_uri()->get_path_string().find("resource/audios") == std::string::npos)
-            StatusHandler::handle_status_code(m_connection->get_response(), 405);
-    
+        if(m_connection->get_request()->get_header("Content-Type") == "application/x-www-form-urlencoded")
+        {
+            if(!handle_post_request())
+                StatusHandler::handle_status_code(m_connection->get_response(), 400);
+
+            if(post_data_map.find("username") != post_data_map.end())
+            {
+                UserInfo user_info;
+                user_info.m_name = post_data_map["username"];
+                user_info.m_password = post_data_map["password"];
+                user_info.m_age = post_data_map["age"];
+                user_info.m_email = post_data_map["email"];
+
+                if(!m_sqlite_handler->add_new_user(user_info))
+                    StatusHandler::handle_status_code(m_connection->get_response(), 400);
+                else
+                    StatusHandler::handle_status_code(m_connection->get_response(), 200);
+                
+                return;            
+            }
+        }
+        
         return;
     }
     else if(m_connection->get_request()->get_request_method() == "PUT")

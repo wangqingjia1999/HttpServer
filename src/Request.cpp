@@ -277,5 +277,14 @@ namespace Message
     {
         return m_uri->has_query();
     }
+
+    void Message::Request::clear_up()
+    {
+        m_headers.clear();
+        m_raw_request.clear();
+        m_method.clear();
+        m_headers_map.clear();
+        m_body.clear();
+    }
 }
 
