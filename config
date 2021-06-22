@@ -6,3 +6,6 @@ resource_directory_path: /home/bitate/dev/HttpServer/resource/
 
 # server's logs directory path
 log_directory_path: /home/bitate/dev/HttpServer/logs/
+
+# server's database path
+database_path: /home/bitate/Documents/abcnews.db

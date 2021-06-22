@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-TEST(sqlite_tests, has_table_test)
+TEST(sqlite3_tests, has_table_test)
 {
     SqliteHandler sqlite_handler;
     
@@ -13,7 +13,13 @@ TEST(sqlite_tests, has_table_test)
     ASSERT_TRUE(sqlite_handler.has_table("audio_table"));
 }
 
-TEST(sqlite_tests, table_column_info_test)
+TEST(sqlite3_tests, load_database_from_the_path_within_config_file)
+{
+    SqliteHandler sqlite_handler();
+    ASSERT_TRUE(sqlite_handler.has_table("abcnews"));
+}
+
+TEST(sqlite3_tests, table_column_info_test)
 {
     SqliteHandler sqlite_handler;
     /**
@@ -67,7 +73,7 @@ TEST(sqlite_tests, table_column_info_test)
     }
 }
 
-TEST(sqlite_tests, insert_into_test)
+TEST(sqlite3_tests, insert_into_test)
 {
     SqliteHandler sqlite_handler;
 
@@ -86,7 +92,7 @@ TEST(sqlite_tests, insert_into_test)
     ASSERT_TRUE(sqlite_handler.add_new_audio(audio_info));
 }
 
-TEST(sqlite_tests, delete_from_test)
+TEST(sqlite3_tests, delete_from_test)
 {
     SqliteHandler sqlite_handler;
 
@@ -98,7 +104,7 @@ TEST(sqlite_tests, delete_from_test)
     ASSERT_TRUE(sqlite_handler.delete_user(user_info));
 }
 
-TEST(sqlite_tests, fetch_user_info_test)
+TEST(sqlite3_tests, fetch_user_info_test)
 {
     SqliteHandler sqlite_handler;
 

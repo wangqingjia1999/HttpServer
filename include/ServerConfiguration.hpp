@@ -14,6 +14,7 @@ public:
     ~ServerConfiguration();
 
 public:
+    std::string get_database_path() const;
     std::string get_root_directory_path() const;
     std::string get_resource_directory_path() const;
     std::string get_log_directory_path() const;
@@ -60,6 +61,6 @@ private:
     std::string m_configuration_file_path;
     std::string m_resource_root_directory_path;
     std::string m_log_directory_path;
-
+    std::string m_database_path;
     // TODO: Uri maximum length;
 };

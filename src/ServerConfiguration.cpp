@@ -13,7 +13,8 @@ namespace
 ServerConfiguration::ServerConfiguration()
     : m_root_directory_path(generate_root_directory_path()),
       m_configuration_file_path(m_root_directory_path + "config"),
-      m_resource_root_directory_path(m_root_directory_path + "resource/")
+      m_resource_root_directory_path(m_root_directory_path + "resource/"),
+      m_database_path(m_root_directory_path + "http-server.db")
 {
     if(!has_configuration_file())
         create_configuration_file();
@@ -63,6 +64,8 @@ void ServerConfiguration::create_configuration_file()
         configuration_file_handler << "resource_directory_path: " << m_resource_root_directory_path << '\n';
         configuration_file_handler << "# server's log files directory path\n";
         configuration_file_handler << "log_directory_path: " << m_log_directory_path << '\n';
+        configuration_file_handler << "# server's database file path\n";
+        configuration_file_handler << "database_path: " << m_database_path << '\n';
     }
     else
     {
@@ -84,6 +87,11 @@ std::string ServerConfiguration::get_resource_directory_path() const
 std::string ServerConfiguration::get_log_directory_path() const
 {
     return m_log_directory_path;
+}
+
+std::string ServerConfiguration::get_database_path() const
+{
+    return m_database_path;
 }
 
 void ServerConfiguration::parse_configuration_file()
@@ -109,8 +117,8 @@ void ServerConfiguration::parse_configuration(const std::string& configuration)
     std::regex_search(
         configuration, 
         matcher, 
-        std::regex("root_directory_path:(.*?)\n")
-    );    
+        std::regex("root_directory_path:(.*?)($|\n)")
+    );
     
     if(!matcher.empty())
         m_root_directory_path = strip_leading_and_pending_spaces(matcher[1]);
@@ -118,7 +126,7 @@ void ServerConfiguration::parse_configuration(const std::string& configuration)
     std::regex_search(
         configuration,
         matcher,
-        std::regex("resource_directory_path:(.*?)\n")
+        std::regex("resource_directory_path:(.*?)($|\n)")
     );
     
     if(!matcher.empty())
@@ -127,9 +135,18 @@ void ServerConfiguration::parse_configuration(const std::string& configuration)
     std::regex_search(
         configuration,
         matcher,
-        std::regex("log_directory_path:(.*?)\n")
+        std::regex("log_directory_path:(.*?)($|\n)")
     );
 
     if(!matcher.empty())
         m_log_directory_path = strip_leading_and_pending_spaces(matcher[1]);
+
+    std::regex_search(
+        configuration,
+        matcher,
+        std::regex("database_path:(.*?)($|\n)")
+    );
+
+    if(!matcher.empty())
+        m_database_path = strip_leading_and_pending_spaces(matcher[1]);
 }

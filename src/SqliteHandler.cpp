@@ -5,7 +5,10 @@ UserInfo::UserInfo()
 }
 
 UserInfo::UserInfo(std::string name, std::string password, std::string age, std::string email)
-    : m_name(name), m_password(password), m_age(age), m_email(email) 
+    : m_name(name), 
+      m_password(password), 
+      m_age(age), 
+      m_email(email) 
 {
 }
 
@@ -14,7 +17,9 @@ AudioInfo::AudioInfo()
 }
 
 AudioInfo::AudioInfo(std::string name, std::string caption, std::string path)
-    : m_name(name), m_caption(caption), m_path(path)
+    : m_name(name), 
+      m_caption(caption), 
+      m_path(path)
 {
 }
 
@@ -37,7 +42,7 @@ SqliteHandler::SqliteHandler()
 
     if(!prepare_statement(create_user_table))
     {
-        // log: can not create user table
+        Logger::error("Can create user table within database.");
     }
         
     int result = 0;
