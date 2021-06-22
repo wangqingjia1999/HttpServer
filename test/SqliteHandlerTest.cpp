@@ -9,14 +9,12 @@ TEST(sqlite3_tests, has_table_test)
     SqliteHandler sqlite_handler;
     
     ASSERT_TRUE(sqlite_handler.has_table("user_table"));
-
-    ASSERT_TRUE(sqlite_handler.has_table("audio_table"));
 }
 
 TEST(sqlite3_tests, load_database_from_the_path_within_config_file)
 {
-    SqliteHandler sqlite_handler();
-    ASSERT_TRUE(sqlite_handler.has_table("abcnews"));
+    SqliteHandler sqlite_handler;
+    ASSERT_TRUE(sqlite_handler.has_table("abcnews_titles"));
 }
 
 TEST(sqlite3_tests, table_column_info_test)
@@ -28,11 +26,7 @@ TEST(sqlite3_tests, table_column_info_test)
      *          -------------------------------------
      *          | user_name | user_age | user_email |
      *          -------------------------------------
-     * 
-     *      audio_table:  Resources details.
-     *          -------------------------------------------
-     *          | audio_name | audio_caption | audio_path |
-     *          -------------------------------------------
+     *
      */
 
     std::vector<ColumnInfo> expected_user_table
@@ -53,24 +47,6 @@ TEST(sqlite3_tests, table_column_info_test)
             );
         }
     }
-
-    std::vector< ColumnInfo > expected_audio_table
-    {
-        { "0", "audio_name",     "text" },
-        { "1", "audio_caption",  "text" },
-        { "2", "audio_path",     "text" },
-    };
-    auto audio_table_columns = sqlite_handler.get_columns("audio_table");
-    for(int i = 0; i < audio_table_columns.size(); ++i)
-    {
-        for(int j = 0; j < audio_table_columns[i].size(); ++j)
-        {
-            EXPECT_EQ(
-                audio_table_columns[i][j],
-                expected_audio_table[i][j]
-            );
-        }       
-    }
 }
 
 TEST(sqlite3_tests, insert_into_test)
@@ -82,14 +58,6 @@ TEST(sqlite3_tests, insert_into_test)
         "Tom", "1234567890", "20", "tom@gmail.com"
     };
     ASSERT_TRUE(sqlite_handler.add_new_user(user_info));
-
-    AudioInfo audio_info
-    {
-        "24-Dec-2020-13-09-03-3soLBPh71Y.mp3",
-        "I'd have to throw myself in front of a train.",
-        "/home/bitate/HttpServer/resource/audios/14-Dec-2020-15-06-39-1xVPfvJcrg.mp3",
-    };
-    ASSERT_TRUE(sqlite_handler.add_new_audio(audio_info));
 }
 
 TEST(sqlite3_tests, delete_from_test)

@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "Logger.hpp"
+#include "ServerConfiguration.hpp"
 
 #include <sqlite3.h>
 #include <string>
@@ -21,16 +22,6 @@ struct UserInfo
 
     UserInfo();
     UserInfo(std::string name, std::string password, std::string age, std::string email);
-};
-
-struct AudioInfo
-{
-    std::string m_name;
-    std::string m_caption;
-    std::string m_path;
-
-    AudioInfo();
-    AudioInfo(std::string name, std::string caption, std::string path);
 };
 
 class SqliteHandler
@@ -73,17 +64,6 @@ public:
      *      True if succeeds.
      */
     bool add_new_user(const UserInfo& user_info);
-
-    /**
-     * Insert new audio info record into database.
-     * 
-     * @param[in] audio_info
-     *      A new audio's info.
-     * 
-     * @return 
-     *      True if succeeds.
-     */
-    bool add_new_audio(const AudioInfo& audio_info);
 
     /**
      * Delete a user record from database.

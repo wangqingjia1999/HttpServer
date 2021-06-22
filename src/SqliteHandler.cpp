@@ -12,23 +12,14 @@ UserInfo::UserInfo(std::string name, std::string password, std::string age, std:
 {
 }
 
-AudioInfo::AudioInfo()
-{
-}
-
-AudioInfo::AudioInfo(std::string name, std::string caption, std::string path)
-    : m_name(name), 
-      m_caption(caption), 
-      m_path(path)
-{
-}
-
 SqliteHandler::SqliteHandler()
     : m_connection(nullptr),
       m_statement(nullptr)
 {
-    if(sqlite3_open("http-server.db", &m_connection) != SQLITE_OK)  
-        Logger::error("can not open database");
+    ServerConfiguration server_config;
+
+    if(sqlite3_open(server_config.get_database_path().c_str(), &m_connection) != SQLITE_OK)  
+        Logger::error("can not open database file with the path: " + server_config.get_database_path());
 
     std::string create_user_table
     {
@@ -51,20 +42,6 @@ SqliteHandler::SqliteHandler()
 
     sqlite3_reset(m_statement);
 
-    std::string create_audio_table
-    {
-        "CREATE TABLE IF NOT EXISTS audio_table("
-            "audio_name text,"
-            "audio_caption text,"
-            "audio_path text"
-        ")"
-    };
-    
-    if(!prepare_statement(create_audio_table))
-    {
-        // log: can not create audio table
-    }
-        
     if((result = sqlite3_step(m_statement)) != SQLITE_DONE)
         Logger::error("can not execute statement because " + std::string(sqlite3_errmsg(m_connection)));
     
@@ -154,32 +131,6 @@ bool SqliteHandler::add_new_user(const UserInfo& user_info)
     if(!bind_text_data(":user_email", user_info.m_email))
         return false;
 
-    if(sqlite3_step(m_statement) != SQLITE_DONE)
-    {
-        sqlite3_reset(m_statement);
-        return false;
-    }
-
-    sqlite3_reset(m_statement);
-    return true;
-}
-
-bool SqliteHandler::add_new_audio(const AudioInfo& audio_info)
-{
-    std::string statement = "INSERT INTO audio_table VALUES(:audio_name, :audio_caption, :audio_path)";
-
-    if(!prepare_statement(statement))
-        return false;
-
-    if(!bind_text_data(":audio_name", audio_info.m_name))
-        return false;
-    
-    if(!bind_text_data(":audio_caption", audio_info.m_caption))
-        return false;
-    
-    if(!bind_text_data(":audio_path", audio_info.m_path))
-        return false;
-    
     if(sqlite3_step(m_statement) != SQLITE_DONE)
     {
         sqlite3_reset(m_statement);

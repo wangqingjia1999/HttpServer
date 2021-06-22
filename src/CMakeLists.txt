@@ -217,4 +217,5 @@ target_link_directories(sqlite_handler_lib PUBLIC
 target_link_libraries(sqlite_handler_lib PUBLIC
     /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
+    server_configuration_lib
 )
