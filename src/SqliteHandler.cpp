@@ -250,11 +250,52 @@ bool SqliteHandler::bind_text_data(const std::string& placeholder, const std::st
 {   
     int result = 0;
     int placeholder_index = sqlite3_bind_parameter_index(m_statement, placeholder.c_str());
-    if((result = sqlite3_bind_text(m_statement, placeholder_index, data.c_str(), -1, SQLITE_STATIC)) != SQLITE_OK)
+    if((result = sqlite3_bind_text(m_statement, placeholder_index, data.c_str(), -1, SQLITE_TRANSIENT)) != SQLITE_OK)
     {
         Logger::error("Error in binding data because " + std::string(sqlite3_errmsg(m_connection)));
         sqlite3_reset(m_statement);
         return false;
     }    
     return true;
+}
+
+std::vector<TitleEntry> SqliteHandler::search_news_title(const std::string& token)
+{
+    if(token.empty())
+        return {};
+
+    std::string statement = "SELECT * FROM abcnews_titles WHERE headline_text LIKE :token";
+
+    if(!prepare_statement(statement))
+    {
+        Logger::debug("cannot prepare statement for token: " + token);
+        return {};
+    }
+        
+    int result = 0;
+    if((result = sqlite3_bind_text(m_statement, 1, ("% " + token + " %").c_str(), -1, SQLITE_TRANSIENT)) != SQLITE_OK)
+    {
+        Logger::error("Error in binding data because " + std::string(sqlite3_errmsg(m_connection)));
+        sqlite3_reset(m_statement);
+    }
+    
+    std::vector<TitleEntry> fetched_result;
+    while(sqlite3_step(m_statement) == SQLITE_ROW)
+    {
+        TitleEntry title_entry;
+        for(int i = 0; i < sqlite3_column_count(m_statement); ++i)
+        {
+            if(i == 0)
+                title_entry.m_date = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else if(i == 1)
+                title_entry.m_headline = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else if(i == 2)
+                title_entry.m_publisher = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+            else
+                break;
+        }
+        fetched_result.push_back(title_entry);
+    }
+
+    return fetched_result;
 }

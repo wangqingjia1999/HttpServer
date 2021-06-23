@@ -11,7 +11,7 @@
 using ColumnInfo = std::vector<std::string>;
 
 /**
- * This class maintains a Sqlite3 connection during its life-cycle.
+ * A representation of a user entry retrieved/inserted from/to database.
  */
 struct UserInfo
 {
@@ -21,8 +21,24 @@ struct UserInfo
     std::string m_email;
 
     UserInfo();
-    UserInfo(std::string name, std::string password, std::string age, std::string email);
+    UserInfo(
+        std::string name, 
+        std::string password, 
+        std::string age, 
+        std::string email
+    );
 };
+
+/**
+ * A representation of a news title entry retrieved from database.
+ */
+struct TitleEntry
+{
+    std::string m_date;
+    std::string m_headline;
+    std::string m_publisher;
+};
+
 
 class SqliteHandler
 {
@@ -103,6 +119,17 @@ public:
      *      UserInfo(s).
      */
     std::vector<UserInfo> fetch_user_info_by_name(const std::string& user_name);
+
+    /**
+     * Search ABC news titles based upon given token(s).
+     * 
+     * @param[in] token
+     *      User query.
+     * 
+     * @return
+     *      TitleEntry(s).
+     */
+    std::vector<TitleEntry> search_news_title(const std::string& token);
     
 private:
     /**

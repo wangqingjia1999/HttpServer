@@ -26,7 +26,10 @@ TEST(sqlite3_tests, table_column_info_test)
      *          -------------------------------------
      *          | user_name | user_age | user_email |
      *          -------------------------------------
-     *
+     *      abcnews_titles:  ABC news titles
+     *          --------------------------------------------
+     *          | publish_date | headline_text | publisher |
+     *          --------------------------------------------
      */
 
     std::vector<ColumnInfo> expected_user_table
@@ -40,6 +43,24 @@ TEST(sqlite3_tests, table_column_info_test)
     for(int i = 0; i < user_table_columns.size(); ++i)
     {
         for(int j = 0; j < user_table_columns[i].size(); ++j)
+        {
+            ASSERT_EQ(
+                user_table_columns[i][j],
+                expected_user_table[i][j]
+            );
+        }
+    }
+
+    std::vector<ColumnInfo> expected_abcnews_titles_table
+    {
+        { "0", "publish_date",     "int"  },
+        { "1", "headline_text",    "text" },
+        { "2", "publisher",        "text" }
+    };
+    auto abcnews_titles_table_columns = sqlite_handler.get_columns("abcnews_titles");
+    for(int i = 0; i < abcnews_titles_table_columns.size(); ++i)
+    {
+        for(int j = 0; j < abcnews_titles_table_columns[i].size(); ++j)
         {
             ASSERT_EQ(
                 user_table_columns[i][j],
@@ -98,4 +119,14 @@ TEST(sqlite3_tests, fetch_user_info_test)
     ASSERT_EQ(fetch_by_user_email_result[0].m_email, user_info.m_email);
 
     ASSERT_TRUE(sqlite_handler.delete_user(user_info));
+}
+
+TEST(sqlite3_tests, search_news_titles_test)
+{
+    SqliteHandler sqlite_handler;
+
+    std::vector<TitleEntry> titles = sqlite_handler.search_news_title("fly");
+    
+    EXPECT_EQ(titles.size(), 1090);
+    EXPECT_EQ(titles[0].m_headline, "coalition planes bomb iraq no fly zones");    
 }
