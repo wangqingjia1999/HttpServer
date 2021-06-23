@@ -72,7 +72,7 @@ namespace Message
         auto headers_end_delimiter = m_raw_request.find("\r\n\r\n");
         if (headers_end_delimiter == std::string::npos)
         {
-            Logger::info("Can not pare request headers.");
+            Logger::info("Can not parse request headers.");
             return false;
         }
 

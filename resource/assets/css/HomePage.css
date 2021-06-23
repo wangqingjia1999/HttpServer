@@ -22,12 +22,9 @@ body {
 	padding: 5px;
 	border-radius: 5px 0 0 5px;
 	outline: none;
-	color: #9dbfaf;
+	color: #000000;
 }
 
-#search-bar-input:focus {
-	color: #00b4cc;
-}
 
 #search-bar-submit-button {
 	width: 40px;

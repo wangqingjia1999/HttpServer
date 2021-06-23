@@ -1,5 +1,35 @@
 #include "Uri.hpp"
 
+namespace 
+{
+	/**
+	 * Change "this+is+a+query+string" to "this is a query string".
+	 * 	
+	 * @param[in] token
+	 * 		Given token string.
+	 * 
+	 * @return
+	 * 		Modified string.
+	 */
+	std::string replace_plus_sign_with_blank(const std::string& token)
+	{
+		if(token.empty())
+		return {};
+
+		std::string buffer = token;
+
+		for(auto& c : buffer)
+		{
+			if(c == '+')
+				c = ' ';
+		}
+
+		return buffer;
+	}
+
+}
+
+
 Uri::Uri()
 	: m_has_port(false),
 	  m_is_relative_path(false),
@@ -268,9 +298,7 @@ bool Uri::parse_query(std::string& uri, std::string& remains)
 		{
 			m_query = uri.substr(query_begin_delimiter+1);
 
-			if(m_query.find("username=") != std::string::npos)
-				return parse_query(m_query);
-			else if(m_query.find("q=") != std::string::npos)
+			if(m_query.find("q=") != std::string::npos)
 				return parse_query_parameters(m_query);
 
 			remains = "";
@@ -283,25 +311,6 @@ bool Uri::parse_query(std::string& uri, std::string& remains)
 		remains = uri;
 	}
 
-	return true;
-}
-
-bool Uri::parse_query(const std::string& query_string)
-{
-	auto query_delimiter = query_string.find("username=");
-	
-	if(query_delimiter == std::string::npos)
-		return false;
-
-	std::string buffer = query_string.substr(query_delimiter+9);
-
-	for(auto& c : buffer)
-	{
-		if(c == '+')
-			c = ' ';
-	}
-
-	m_query = buffer;
 	return true;
 }
 
@@ -531,6 +540,8 @@ bool Uri::operator==(const Uri& other) const
 
 bool Uri::parse_query_parameters(const std::string& query_string)
 {
+	m_query_parameters.clear();
+
 	if(query_string.empty())
 		return true;
 	
@@ -543,7 +554,7 @@ bool Uri::parse_query_parameters(const std::string& query_string)
 			return;
 		
 		std::string key = token.substr(0, equal_sign_position);
-		std::string value = token.substr(equal_sign_position+1);
+		std::string value = replace_plus_sign_with_blank(token.substr(equal_sign_position+1));
 
 		if(!key.empty() && !value.empty())
 			m_query_parameters.insert({key, value});
@@ -553,11 +564,11 @@ bool Uri::parse_query_parameters(const std::string& query_string)
 	buffer += '&';
 	while(!buffer.empty())
 	{
-		auto and_sign_position = buffer.find('&');
-		if(and_sign_position != std::string::npos)
+		auto and_sign_index = buffer.find('&');
+		if(and_sign_index != std::string::npos)
 		{
-			parse_query_parameter(buffer.substr(0, and_sign_position));
-			buffer = buffer.substr(and_sign_position+1);
+			parse_query_parameter(buffer.substr(0, and_sign_index));
+			buffer = buffer.substr(and_sign_index+1);
 		}
 		else
 		{

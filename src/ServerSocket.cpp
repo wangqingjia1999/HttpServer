@@ -211,8 +211,6 @@ bool ServerSocket::write_to(const int peer_fd, const std::string& data_string)
         Logger::info("call to send() return 0.");
         return false;
     }
-    
-    Logger::debug("send resopnse:\n" + data_string);
 
     return true;
 }   
@@ -233,7 +231,6 @@ std::string ServerSocket::read_from(const int peer_fd)
 
     if(receive_result < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
     {
-        Logger::debug("receive request:\n" + local_receive_buffer_string);
         return local_receive_buffer_string;
     }
     
@@ -251,8 +248,6 @@ std::string ServerSocket::read_from(const int peer_fd)
         close(peer_fd);
     }
     
-    Logger::debug("receive request:\n" + local_receive_buffer_string);
-
     return local_receive_buffer_string;
 }
 

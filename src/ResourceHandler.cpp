@@ -36,11 +36,17 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 
     if(connection->get_request()->has_query())
     {
-        Logger::debug("query string: " + connection->get_request()->get_request_uri()->get_query());
+        Logger::info("user query: " + connection->get_request()->get_request_uri()->get_query_paramters()["q"]);
 
-        auto query_result = m_sqlite_handler->fetch_user_info_by_name(connection->get_request()->get_request_uri()->get_query());
+        auto titles = m_sqlite_handler->search_news_title(
+            connection->get_request()->get_request_uri()->get_query_paramters()["q"]
+        );
+        
+        if(titles.empty())
+        {
+            return false;
+        }
 
-        // temporary respose
         buffer = {
             "<!DOCTYPE html>"
             "<html lang=\"en\">"
@@ -49,16 +55,20 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
                     "<title>Query Result</title>"
                 "</head>"
                 "<body>"
-                    "<ul>"
+                    "<div>"
+                        "<a href=\"/\">Search Again</a>"
+                    "</div>"
+                    "<dl>"
         };
 
-        for(const auto& user : query_result)
+        for(const auto& title : titles)
         {
-            buffer += { "<li>" + user.m_name + "</li>" };
+            buffer += { "<dt>" + title.m_headline + "</dt>"  };
+            buffer += { "<dd>" + title.m_publisher + "</dd>" };
         }
 
         buffer += {
-                    "</ul>"
+                    "</dl>"
                 "</body>"
             "</html>"
         };
@@ -76,7 +86,7 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
         
         if(!is_resource_exists(resource_absolute_path))
         {
-            Logger::debug("resource [" + resource_absolute_path + "] doesn't exist.");
+            Logger::info("resource [" + resource_absolute_path + "] doesn't exist.");
             return false;
         }
         

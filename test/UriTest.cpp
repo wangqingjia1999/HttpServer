@@ -241,40 +241,6 @@ TEST(uri_tests, parse_user_info)
     }
 }
 
-TEST(uri_tests, parse_query)
-{
-    struct TestVector
-    {
-        std::string query_string;
-        std::string user_name;
-    };
-
-    std::vector<TestVector> test_vectors
-    {
-        {
-            "q=Tom",
-            "Tom"
-        },
-        {
-            "q=michael+jackson",
-            "michael jackson"
-        },
-        {
-            "/assets/html/?username=tom",
-            "tom"
-        }
-    };
-
-    size_t index = 0;
-    for(const auto& test_vector : test_vectors)
-    {
-        Uri uri;
-        ASSERT_TRUE(uri.parse_query(test_vector.query_string));
-        ASSERT_EQ(uri.get_query(), test_vector.user_name);
-    }
-    
-}
-
 TEST(uri_tests, parse_query_parameters)
 {
     struct TestVector

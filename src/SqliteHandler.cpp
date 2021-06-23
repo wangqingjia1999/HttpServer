@@ -268,7 +268,7 @@ std::vector<TitleEntry> SqliteHandler::search_news_title(const std::string& toke
 
     if(!prepare_statement(statement))
     {
-        Logger::debug("cannot prepare statement for token: " + token);
+        Logger::error("cannot prepare statement for token: " + token);
         return {};
     }
         
