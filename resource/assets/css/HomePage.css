@@ -2,14 +2,13 @@ body {
 	height: 100%;
 	margin: 0px;
 	background-repeat: no-repeat;
-	background-image: url("../image/milky-way.jpg");
 	background-size: cover;
 }
 
 #search-bar-wrap {
 	width: 30%;
 	position: absolute;
-	top: 50%;
+	top: 40%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
@@ -17,7 +16,7 @@ body {
 #search-bar-input {
 	width: 100%;
 	height: 44px;
-	border: 3px solid #00b4cc;
+	border: 1px solid #000000;
 	border-right: none;
 	padding: 5px;
 	border-radius: 5px 0 0 5px;
@@ -29,12 +28,22 @@ body {
 #search-bar-submit-button {
 	width: 40px;
 	height: 44px;
-	border: 1px solid #00b4cc;
+	border: 1px solid #000000;
 	background: center;
 	text-align: center;
-	color: rgb(15, 201, 207);
+	color: rgb(0, 0, 0);
 	border-radius: 0 5px 5px 0;
 	cursor: pointer;
 	font-size: 20px;
 	position: absolute;
+}
+
+#site-logo-banner {
+	text-align: center;
+}
+
+#sign-up{
+	text-align: right;
+	margin-right: 5px;
+	margin-top: 5px;
 }

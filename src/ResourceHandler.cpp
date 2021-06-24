@@ -63,8 +63,9 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
 
         for(const auto& title : titles)
         {
-            buffer += { "<dt>" + title.m_headline + "</dt>"  };
-            buffer += { "<dd>" + title.m_publisher + "</dd>" };
+            buffer += "<dt>" + title.m_headline + "</dt>";
+            buffer += "<dd>" + title.m_publisher + "</dd>";
+            buffer += "<br>";
         }
 
         buffer += {

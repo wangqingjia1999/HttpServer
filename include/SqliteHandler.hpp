@@ -37,6 +37,9 @@ struct TitleEntry
     std::string m_date;
     std::string m_headline;
     std::string m_publisher;
+
+    TitleEntry() = default;
+    TitleEntry(const std::string& date, const std::string& headline, const std::string& publisher);
 };
 
 

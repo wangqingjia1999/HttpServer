@@ -21,6 +21,8 @@ set(header_files
     ../include/ResourceHandler.hpp
     ../include/Connection.hpp
     ../include/SqliteHandler.hpp
+    ../include/HtmlBuilder.hpp
+    ../include/Sentence.hpp
 )
 
 set(source_files
@@ -44,6 +46,8 @@ set(source_files
     ResourceHandler.cpp
     Connection.cpp
     SqliteHandler.cpp
+    HtmlBuilder.cpp
+    Sentence.cpp
 )
 
 add_library(all_libs STATIC
@@ -218,4 +222,17 @@ target_link_libraries(sqlite_handler_lib PUBLIC
     /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
     server_configuration_lib
+)
+
+add_library(html_builder_lib STATIC
+    ../include/HtmlBuilder.hpp
+    HtmlBuilder.cpp
+)
+target_link_libraries(html_builder_lib PUBLIC
+    sqlite_handler_lib
+)
+
+add_library(sentence_lib STATIC
+    ../include/Sentence.hpp
+    Sentence.cpp
 )

@@ -1,5 +1,12 @@
 #include "SqliteHandler.hpp"
 
+TitleEntry::TitleEntry(const std::string& date, const std::string& headline, const std::string& publisher)
+    : m_date(date),
+      m_headline(headline),
+      m_publisher(publisher)
+{
+}
+
 UserInfo::UserInfo()
 {
 }

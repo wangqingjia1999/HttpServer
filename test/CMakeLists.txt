@@ -13,9 +13,11 @@ set(source_files
     LoggerTest.cpp
     RequestTest.cpp
     ResponseTest.cpp
+    SentenceTest.cpp
     WebSocketTest.cpp
     ThreadPoolTest.cpp
     ConnectionTest.cpp
+    HtmlBuilderTest.cpp
     ServerSocketTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
@@ -163,7 +165,22 @@ target_link_libraries(connection_test PUBLIC
 add_executable(sqlite_handler_test
     SqliteHandlerTest.cpp
 )
-target_link_libraries(sqlite_handler_test
+target_link_libraries(sqlite_handler_test PUBLIC
     gtest_main
     sqlite_handler_lib
+)
+
+add_executable(html_builder_test
+    HtmlBuilderTest.cpp
+)
+target_link_libraries(html_builder_test PUBLIC
+    gtest_main
+    html_builder_lib
+)
+
+add_executable(sentence_test
+    SentenceTest.cpp
+)
+target_link_libraries(sentence_test PUBLIC
+    gtest_main
 )

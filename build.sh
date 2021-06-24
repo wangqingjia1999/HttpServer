@@ -30,17 +30,9 @@ then
     make
 fi
 
-CONFIG_DIR_PATH=${HOME}/.config/Bitate-HttpServer
-
-if [ ! -d "${CONFIG_DIR_PATH}" ]
+if [ ! -d "${PWD}/logs" ] 
 then
-    mkdir ${CONFIG_DIR_PATH}
-    cat > ${CONFIG_DIR_PATH}/config
-fi
-
-if [ ! -e "${CONFIG_DIR_PATH}/config" ]
-then
-    touch ${CONFIG_DIR_PATH}/config
+    mkdir logs
 fi
 
 echo "DONE!"

@@ -248,6 +248,8 @@ std::string ServerSocket::read_from(const int peer_fd)
         close(peer_fd);
     }
     
+    Logger::debug("Receive: " + local_receive_buffer_string);
+
     return local_receive_buffer_string;
 }
 

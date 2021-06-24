@@ -1,11 +1,11 @@
 # server's root directory path
-root_directory_path: /home/bitate/dev/HttpServer/
+root_directory_path: /home/HttpServer/
 
 # server's resources directory path
-resource_directory_path: /home/bitate/dev/HttpServer/resource/
+resource_directory_path: /home/HttpServer/resource/
 
 # server's logs directory path
-log_directory_path: /home/bitate/dev/HttpServer/logs/
+log_directory_path: /home/HttpServer/logs/
 
 # server's database path
-database_path: /home/bitate/Documents/http-server.db
+database_path: /home/http-server.db
