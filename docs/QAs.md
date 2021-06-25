@@ -15,15 +15,15 @@ If client call shutdown(SHUT_WR), the server will receive an EOF from read() sys
 
 2. Use *ss* command to filter out all tcp connection that is in CLOSE_WAIT state. In this case, I choose the port*45080* which is used by the client socket.
 
-![ss command](../notes/screenshots/20210124114332.png)
+![ss command](../docs/screenshots/20210124114332.png)
 
 3. Open capture file in wireshark and filter out the tcp connection with *127.0.0.1:45080*. Here we can clearly find out that the server(127.0.0.1:18135) do not close the connection! 
 
-![packet info](../notes/screenshots/20210124114902.png)
+![packet info](../docs/screenshots/20210124114902.png)
 
 The server do send back an ACK to the FIN sent by client. At this time, server is in CLOSE_WAIT while client is in FIN_WAIT_2. The problem is that the server do not send a FIN after reading/writing. 
 
-![packet info](../notes/screenshots/20210124115011.png)
+![packet info](../docs/screenshots/20210124115011.png)
 
 Conclusion: The server needs to close the connection properly. 
 

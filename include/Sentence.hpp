@@ -16,10 +16,18 @@ public:
 
 public:
     Sentence(const std::string& text, const std::string& publisher);
-    Sentence(const std::string& text, const std::string& uri, const std::string& publisher);
+    Sentence(const std::string& text, const std::string& url, const std::string& publisher);
+
+public:
+    void set_body(const std::string& body);
+    void set_url(const std::string& url);
+    void set_publisher(const std::string& publisher);
+    std::string get_body();
+    std::string get_url();
+    std::string get_publisher();
 
 private:
-    std::string m_text;
-    std::string m_uri;
+    std::string m_body;
+    std::string m_url;
     std::string m_publisher;
 };

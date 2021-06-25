@@ -205,6 +205,7 @@ add_library(resource_handler_lib
     ResourceHandler.cpp
 )
 target_link_libraries(resource_handler_lib PUBLIC
+    sentence_lib    
     connection_lib
     sqlite_handler_lib
     server_configuration_lib
@@ -221,6 +222,7 @@ target_link_directories(sqlite_handler_lib PUBLIC
 target_link_libraries(sqlite_handler_lib PUBLIC
     /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
+    sentence_lib
     server_configuration_lib
 )
 
@@ -229,6 +231,7 @@ add_library(html_builder_lib STATIC
     HtmlBuilder.cpp
 )
 target_link_libraries(html_builder_lib PUBLIC
+    sentence_lib
     sqlite_handler_lib
 )
 

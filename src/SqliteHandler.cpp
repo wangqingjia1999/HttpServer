@@ -1,12 +1,5 @@
 #include "SqliteHandler.hpp"
 
-TitleEntry::TitleEntry(const std::string& date, const std::string& headline, const std::string& publisher)
-    : m_date(date),
-      m_headline(headline),
-      m_publisher(publisher)
-{
-}
-
 UserInfo::UserInfo()
 {
 }
@@ -266,42 +259,47 @@ bool SqliteHandler::bind_text_data(const std::string& placeholder, const std::st
     return true;
 }
 
-std::vector<TitleEntry> SqliteHandler::search_news_title(const std::string& token)
+std::vector<Sentence> SqliteHandler::search_sentence(const std::string& keyword)
 {
-    if(token.empty())
+    if(keyword.empty())
         return {};
 
-    std::string statement = "SELECT * FROM abcnews_titles WHERE headline_text LIKE :token";
+    std::string statement { "SELECT snippet(news_index, 0, '<mark>', '</mark>', '...', 32), url, publisher FROM news_index WHERE news_index MATCH :keyword" };
 
     if(!prepare_statement(statement))
     {
-        Logger::error("cannot prepare statement for token: " + token);
+        Logger::error("cannot prepare statement for keyword: " + keyword);
         return {};
     }
         
-    int result = 0;
-    if((result = sqlite3_bind_text(m_statement, 1, ("% " + token + " %").c_str(), -1, SQLITE_TRANSIENT)) != SQLITE_OK)
+    if(!bind_text_data(":keyword", keyword))
     {
-        Logger::error("Error in binding data because " + std::string(sqlite3_errmsg(m_connection)));
-        sqlite3_reset(m_statement);
+        Logger::error("cannot bind keyword: " + keyword + " to statement");
+        return {};
     }
     
-    std::vector<TitleEntry> fetched_result;
+    std::vector<Sentence> fetched_result;
     while(sqlite3_step(m_statement) == SQLITE_ROW)
     {
-        TitleEntry title_entry;
+        Sentence sentence;
         for(int i = 0; i < sqlite3_column_count(m_statement); ++i)
         {
             if(i == 0)
-                title_entry.m_date = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+                sentence.set_body(
+                    std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)))
+                );
             else if(i == 1)
-                title_entry.m_headline = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+                sentence.set_url(
+                    std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)))
+                );
             else if(i == 2)
-                title_entry.m_publisher = std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)));
+                sentence.set_publisher(
+                    std::string(reinterpret_cast<const char*>(sqlite3_column_text(m_statement, i)))
+                );
             else
                 break;
         }
-        fetched_result.push_back(title_entry);
+        fetched_result.push_back(sentence);
     }
 
     return fetched_result;

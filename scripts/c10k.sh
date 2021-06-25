@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Test 10000 concurrent requests.
 

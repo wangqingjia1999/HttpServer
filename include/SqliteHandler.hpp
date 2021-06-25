@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "Logger.hpp"
+#include "Sentence.hpp"
 #include "ServerConfiguration.hpp"
 
 #include <sqlite3.h>
@@ -28,20 +29,6 @@ struct UserInfo
         std::string email
     );
 };
-
-/**
- * A representation of a news title entry retrieved from database.
- */
-struct TitleEntry
-{
-    std::string m_date;
-    std::string m_headline;
-    std::string m_publisher;
-
-    TitleEntry() = default;
-    TitleEntry(const std::string& date, const std::string& headline, const std::string& publisher);
-};
-
 
 class SqliteHandler
 {
@@ -124,15 +111,15 @@ public:
     std::vector<UserInfo> fetch_user_info_by_name(const std::string& user_name);
 
     /**
-     * Search ABC news titles based upon given token(s).
+     * Search sentence(s) based upon given keyword.
      * 
      * @param[in] token
      *      User query.
      * 
      * @return
-     *      TitleEntry(s).
+     *      Sentence(s).
      */
-    std::vector<TitleEntry> search_news_title(const std::string& token);
+    std::vector<Sentence> search_sentence(const std::string& keyword);
     
 private:
     /**

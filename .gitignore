@@ -8,4 +8,6 @@ googletest/
 *.mp3
 *.cap
 *.txt
+*.csv
+*.db
 CmakeSettings.json

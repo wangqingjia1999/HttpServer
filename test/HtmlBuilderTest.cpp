@@ -8,7 +8,7 @@ TEST(html_builder_tests, highlight_keyword_test)
 
     HtmlBuilder html_builder;
     
-    std::vector<TitleEntry> titles {
+    std::vector<Sentence> sentences {
         { "20210624", "Everything You Wanted to Know About CAR and Were Too Embarrassed to Ask", "ABC" },
         { "20210624", "How To Find The Right CAR For Your Specific Product(Service).",           "ABC" },
         { "20210624", "Could This Report Be The Definitive Answer To Your CAR?",                 "ABC" },

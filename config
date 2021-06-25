@@ -8,4 +8,4 @@ resource_directory_path: /home/HttpServer/resource/
 log_directory_path: /home/HttpServer/logs/
 
 # server's database path
-database_path: /home/http-server.db
+database_path: /home/HttpServer/http-server.db

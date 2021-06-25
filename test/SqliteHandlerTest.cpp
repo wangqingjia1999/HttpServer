@@ -11,10 +11,11 @@ TEST(sqlite3_tests, has_table_test)
     ASSERT_TRUE(sqlite_handler.has_table("user_table"));
 }
 
-TEST(sqlite3_tests, load_database_from_the_path_within_config_file)
+TEST(sqlite3_tests, has_tables_test)
 {
     SqliteHandler sqlite_handler;
-    ASSERT_TRUE(sqlite_handler.has_table("abcnews_titles"));
+    ASSERT_TRUE(sqlite_handler.has_table("news"));
+    ASSERT_TRUE(sqlite_handler.has_table("news_index"));
 }
 
 TEST(sqlite3_tests, table_column_info_test)
@@ -26,10 +27,10 @@ TEST(sqlite3_tests, table_column_info_test)
      *          -------------------------------------
      *          | user_name | user_age | user_email |
      *          -------------------------------------
-     *      abcnews_titles:  ABC news titles
-     *          --------------------------------------------
-     *          | publish_date | headline_text | publisher |
-     *          --------------------------------------------
+     *      news:  news info (news body, news url, news publisher)
+     *          --------------------------
+     *          | body | url | publisher |
+     *          --------------------------
      */
 
     std::vector<ColumnInfo> expected_user_table
@@ -53,11 +54,11 @@ TEST(sqlite3_tests, table_column_info_test)
 
     std::vector<ColumnInfo> expected_abcnews_titles_table
     {
-        { "0", "publish_date",     "int"  },
-        { "1", "headline_text",    "text" },
-        { "2", "publisher",        "text" }
+        { "0", "body",      "int"  },
+        { "1", "url",       "text" },
+        { "2", "publisher", "text" }
     };
-    auto abcnews_titles_table_columns = sqlite_handler.get_columns("abcnews_titles");
+    auto abcnews_titles_table_columns = sqlite_handler.get_columns("news");
     for(int i = 0; i < abcnews_titles_table_columns.size(); ++i)
     {
         for(int j = 0; j < abcnews_titles_table_columns[i].size(); ++j)
@@ -125,8 +126,11 @@ TEST(sqlite3_tests, search_news_titles_test)
 {
     SqliteHandler sqlite_handler;
 
-    std::vector<TitleEntry> titles = sqlite_handler.search_news_title("fly");
+    std::vector<Sentence> sentences = sqlite_handler.search_sentence("fly");
     
-    EXPECT_EQ(titles.size(), 1090);
-    EXPECT_EQ(titles[0].m_headline, "coalition planes bomb iraq no fly zones");    
+    EXPECT_EQ(sentences.size(), 389);
+    EXPECT_EQ(
+        sentences[0].get_body(), 
+        "...Hours <mark>fly</mark> by like minutes, you’re feeling great, and before you know it it’s 5:30 pm and your to-do list is done.  This feeling of ‘flow’ or being..."
+    );    
 }

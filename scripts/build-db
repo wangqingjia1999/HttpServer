@@ -1,0 +1,62 @@
+CREATE TABLE news (body TEXT, url TEXT, publisher TEXT);
+CREATE VIRTUAL TABLE news_index USING fts5 (
+    body,
+    url UNINDEXED,
+    publisher UNINDEXED,
+    content='news'
+);
+
+CREATE TRIGGER after_insert_news AFTER INSERT ON news
+BEGIN
+    INSERT INTO news_index (
+        body,
+        url,
+        publisher
+    )
+    VALUES (
+        new.body,
+        new.url,
+        new.publisher
+    );
+END;
+
+CREATE TRIGGER after_update_news AFTER UPDATE ON news
+BEGIN
+    INSERT INTO news_index (
+        body,
+        url,
+        publisher
+    )
+    VALUES (
+        'delete',
+        old.body,
+        old.url,
+        old.publisher
+    );
+
+    INSERT INTO news_index(
+        body,
+        url,
+        publisher
+    )
+    VALUES(
+        new.body,
+        new.url,
+        new.publisher
+    );
+END;
+
+CREATE TRIGGER after_delete_news AFTER DELETE ON news
+BEGIN
+    INSERT INTO news_index (
+        body,
+        url,
+        publisher
+    )
+    VALUES (
+        'delete',
+        old.body,
+        old.url,
+        old.publisher
+    );
+END;

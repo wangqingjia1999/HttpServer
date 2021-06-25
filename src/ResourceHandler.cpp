@@ -38,14 +38,12 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
     {
         Logger::info("user query: " + connection->get_request()->get_request_uri()->get_query_paramters()["q"]);
 
-        auto titles = m_sqlite_handler->search_news_title(
+        auto sentences = m_sqlite_handler->search_sentence(
             connection->get_request()->get_request_uri()->get_query_paramters()["q"]
         );
         
-        if(titles.empty())
-        {
+        if(sentences.empty())
             return false;
-        }
 
         buffer = {
             "<!DOCTYPE html>"
@@ -53,23 +51,43 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
                 "<head>"
                     "<meta charset=\"utf-8\">"
                     "<title>Query Result</title>"
+                    "<style>"
+                        ".publisher {"
+                            "position: absolute;"
+                            "right: 50px"
+                        "}"
+                    "</style>"
                 "</head>"
                 "<body>"
                     "<div>"
                         "<a href=\"/\">Search Again</a>"
                     "</div>"
-                    "<dl>"
+                    "<ul>"
         };
 
-        for(const auto& title : titles)
+        // FIXME: hardcoded max sentences sent to front-end
+        int i = 0;
+        for(auto& sentence : sentences)
         {
-            buffer += "<dt>" + title.m_headline + "</dt>";
-            buffer += "<dd>" + title.m_publisher + "</dd>";
+            if((++i) > 100)
+                break;
+
+            if(sentence.get_url().empty())
+            {
+                sentence.set_url("http://101.200.88.170/");
+            }
+            if(sentence.get_publisher().empty())
+            {
+                sentence.set_publisher("Unknown");
+            }
+
+            buffer += "<li>" + sentence.get_body() + "</li>";
+            buffer += "<a class='publisher' href=" + sentence.get_url() +  ">" + sentence.get_publisher() + "</a>";
             buffer += "<br>";
         }
 
         buffer += {
-                    "</dl>"
+                    "</ul>"
                 "</body>"
             "</html>"
         };
