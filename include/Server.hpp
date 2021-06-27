@@ -18,9 +18,13 @@
 #include <iostream>
 #include <condition_variable>
 
+#include <fcntl.h>
+#include <signal.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <sys/resource.h>
 
 class Server
 {
