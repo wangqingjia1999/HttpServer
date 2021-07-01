@@ -41,3 +41,20 @@ std::string statement {
     "SELECT snippet(news_index, 0, '<mark>', '</mark>', '...', 32) FROM news_index WHERE news_index MATCH :keyword" 
 };
 ```
+
+## How to deal with 'part of speech' in English language when querying database?
+For instance, if we hope that searching for "frustration" and "frustrated" return the same result, what should we do? The answer is to use "[Porter Tokenizer](https://sqlite.org/fts5.html).
+
+    ## Tokenizer
+        * simple tokenizer
+        * port tokenizer
+
+## Exact phrase search in fts5 full-text indexing?
+Qutoe From Sqlite3 fts official documentation:
+```
+Auxiliary Function Changes
+FTS5 has no matchinfo() or offsets() function, and the snippet() function is not as fully-featured as in FTS3/4. However, since FTS5 does provide an API allowing applications to create custom auxiliary functions, any required functionality may be implemented within the application code.
+
+The set of built-in auxiliary functions provided by FTS5 may be improved upon in the future.
+```
+Alright, the latest fts5 technology comes at the expense of less functionalities. So, we have to reinvent the wheels.

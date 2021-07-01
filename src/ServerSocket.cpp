@@ -203,12 +203,11 @@ bool ServerSocket::write_to(const int peer_fd, const std::string& data_string)
     
     if(send_result < 0)
     {
-        Logger::error("call to send() failed.");
+        Logger::warn("call to send() failed.");
         return false;
     }
     else if(send_result == 0)
     {
-        Logger::info("call to send() return 0.");
         return false;
     }
 

@@ -23,6 +23,9 @@ void daemonize()
     }
     else if(pid != 0) // parent
     {
+        // terminate parent process normally to ensure the 
+        // child process is not the process group leader,
+        // so that the call to setsid() will not fail.
         exit(0);
     }
 
@@ -67,7 +70,7 @@ void daemonize()
 
 int main()
 {
-    daemonize();
+    // daemonize();
     Server server;
-    server.listen_at("0.0.0.0", 80);
+    server.listen_at("0.0.0.0", 40000);
 }
