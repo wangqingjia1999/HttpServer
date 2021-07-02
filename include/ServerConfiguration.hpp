@@ -22,7 +22,6 @@ public:
 
 private:
     std::string m_root_directory_path;
-    std::string m_configuration_file_path;
     std::string m_resource_root_directory_path;
     std::string m_log_directory_path;
     std::string m_database_path;

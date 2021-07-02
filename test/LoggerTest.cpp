@@ -7,8 +7,7 @@
 TEST(logger_tests, get_log_directory_path)
 {
     EXPECT_EQ(Logger::get_log_directory_path(), "");
-    Logger::info("Now, the log directory path has been initialized.");
-    EXPECT_EQ(Logger::get_log_directory_path(), "/var/bitate-server/logs/");
+    EXPECT_EQ(Logger::get_log_directory_path(), "/home/word-finder/logs/");
 }
 
 TEST(logger_tests, log_info_message_test)

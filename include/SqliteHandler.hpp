@@ -36,6 +36,12 @@ public:
     SqliteHandler();
     ~SqliteHandler();
 
+    SqliteHandler(const SqliteHandler& other);
+    SqliteHandler& operator=(const SqliteHandler& other);
+
+    SqliteHandler(SqliteHandler&& other) = delete;
+    SqliteHandler& operator=(SqliteHandler&& other) = delete;
+
 public:
     /**
      * Whether the table exists?

@@ -1,5 +1,7 @@
 #include "SqliteHandler.hpp"
 
+#include <stdexcept>
+
 UserInfo::UserInfo()
 {
 }
@@ -13,13 +15,16 @@ UserInfo::UserInfo(std::string name, std::string password, std::string age, std:
 }
 
 SqliteHandler::SqliteHandler()
-    : m_connection(nullptr),
-      m_statement(nullptr)
+    : m_connection{nullptr},
+      m_statement{nullptr}
 {
     ServerConfiguration server_config;
 
     if(sqlite3_open(server_config.get_database_path().c_str(), &m_connection) != SQLITE_OK)  
-        Logger::error("can not open database file with the path: " + server_config.get_database_path());
+    {
+        Logger::error("can't connect to database based on given path: " + server_config.get_database_path());
+        throw std::runtime_error("can't connect to database based on given path: " + server_config.get_database_path());
+    }
 
     std::string create_user_table
     {
@@ -57,6 +62,25 @@ SqliteHandler::~SqliteHandler()
     
     sqlite3_shutdown();
 }   
+
+SqliteHandler::SqliteHandler(const SqliteHandler& other)
+{
+    if(this != &other)
+    {
+        m_connection = other.m_connection;
+        m_statement = other.m_statement;
+    }
+}
+
+SqliteHandler& SqliteHandler::operator=(const SqliteHandler& other)
+{
+    if(this != &other)
+    {
+        m_connection = other.m_connection;
+        m_statement = other.m_statement;
+    }
+    return *this;
+}
 
 bool SqliteHandler::has_table(const std::string& table_name)
 {
