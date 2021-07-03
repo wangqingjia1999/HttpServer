@@ -1,5 +1,4 @@
-#include "../../include/ServerSocket.hpp"
-#include "../../include/Server.hpp"
+#include "Server.hpp"
 
 void daemonize()
 {
@@ -70,7 +69,7 @@ void daemonize()
 
 int main()
 {
-    // daemonize();
+    daemonize();
     Server server;
-    server.listen_at("0.0.0.0", 40000);
+    server.listen_at("0.0.0.0", 80);
 }

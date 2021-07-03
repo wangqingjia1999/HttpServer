@@ -4,6 +4,7 @@ logs/
 out/
 build/
 googletest/
+bin/
 
 *.mp3
 *.cap

@@ -2,8 +2,6 @@ include_directories(${this} PUBLIC ../include)
 
 enable_testing()
 
-add_subdirectory(server_client_test)
-
 set(source_files
     UriTest.cpp
     Utf8Test.cpp
@@ -183,4 +181,11 @@ add_executable(sentence_test
 )
 target_link_libraries(sentence_test PUBLIC
     gtest_main
+)
+
+add_executable(word_finder_main
+    WordFinderMain.cpp
+)
+target_link_libraries(word_finder_main PRIVATE
+    server_lib
 )
