@@ -60,10 +60,10 @@ public:
      * @param[in] port
      *      Port number.
      * 
-     * @return 
-     *      True if succeeds. 
+     * @note
+     *      Throw exceptions if fails.
      */
-    bool initialize_server_socket(const std::string ip, const int port);
+    void initialize_server_socket(const std::string ip, const int port);
 
     /**
      * Listen at given ip:port.

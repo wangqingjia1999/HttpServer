@@ -49,13 +49,12 @@ ServerSocket::~ServerSocket()
         Logger::warn("close() on epoll file descriptor error due to: " + std::string(strerror(errno)));
 }
 
-bool ServerSocket::initialize_server_socket(const std::string ip, const int port)
+void ServerSocket::initialize_server_socket(const std::string ip, const int port)
 {
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
     {
-        Logger::error("cannot create socket, because" + std::string(strerror(errno)));
-        return false;
+        throw std::runtime_error("can't create server listening socket, because" + std::string(strerror(errno)));
     }
 
     struct sockaddr_in ipv4_address;
@@ -76,16 +75,12 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
 
     int bind_result = bind(listen_fd, (struct sockaddr*)&ipv4_address, ipv4_address_length);
     if(bind_result == -1)
-    {
-        Logger::error("Cannot bind to address: " + ip + ":" + std::to_string(port) + " because " + std::string(strerror(errno)));
-        return false;
-    }
+        throw std::runtime_error("can't bind to address: " + ip + ":" + std::to_string(port) + " because " + std::string(strerror(errno)));
 
     int listen_result = listen(listen_fd, MAXIMUM_LISTENING_PENDING_QUEUE);
     if(listen_result == -1)
     {
-        Logger::error("call to listen() failed.");
-        return false;
+        throw std::runtime_error("server socket can't listen");
     }
     
     Logger::info("Server is listening at " + ip + ":" + std::to_string(port));
@@ -96,7 +91,6 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
     epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &epoll_event_helper);
     
     has_finished_initialization = true;
-    return true;
 }
 
 Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port)

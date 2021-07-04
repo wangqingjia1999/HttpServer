@@ -70,6 +70,16 @@ void daemonize()
 int main()
 {
     daemonize();
-    Server server;
-    server.listen_at("0.0.0.0", 80);
+    
+    try
+    {
+        Server server;
+        server.listen_at("0.0.0.0", 80);
+    }
+    catch(const std::exception& e)
+    {
+        Logger::error("exception: " + std::string{e.what()});
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
