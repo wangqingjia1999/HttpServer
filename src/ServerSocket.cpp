@@ -27,17 +27,17 @@ namespace
 }
 
 ServerSocket::ServerSocket()
-    : server_socket_state{ Server_Socket_State::UNINITIALIZED },
+    : epfd{ -1 },
       listen_fd{ -1 },
-      epfd{ -1 },
-      triggered_events{ new epoll_event() },
+      readable_fd{ -1 },
       has_finished_initialization{ false },
-      readable_fd{ -1 }
+      triggered_events{ new epoll_event() },
+      server_socket_state{ Server_Socket_State::UNINITIALIZED }
 {
     epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(epfd < 0)
     {
-        throw std::runtime_error("can't create epoll file descriptor due to " + std::string{strerror(errno)});
+        std::runtime_error("can't create epoll file descriptor due to " + std::string{strerror(errno)});
     }
 }
 
@@ -146,7 +146,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
 
                         if(!set_socket_non_blocking(client_fd))
                         {
-                            Logger::debug("can not set socket to non-blocking");
+                            Logger::debug("can't set socket to non-blocking");
                             continue;
                         }
                         else
@@ -266,15 +266,6 @@ std::vector<uint8_t>* ServerSocket::get_send_buffer()
     return &send_buffer;
 }
 
-std::string ServerSocket::generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream)
-{
-    std::string result_string;
-    for(const auto& byte : byte_stream)
-        result_string += static_cast<char>(byte);
-    
-    return result_string;
-}
-
 bool ServerSocket::set_socket_non_blocking(const int socket_fd)
 {
     if(socket_fd < 0)
@@ -286,9 +277,4 @@ bool ServerSocket::set_socket_non_blocking(const int socket_fd)
     
     file_status_flags |= O_NONBLOCK;
     return (fcntl(socket_fd, F_SETFL, file_status_flags) == 0);
-}
-
-int ServerSocket::get_readable_fd() const
-{
-    return readable_fd;
 }

@@ -89,24 +89,19 @@ public:
 
     bool set_socket_non_blocking(const int socket_fd);
 
-    int get_readable_fd() const;
-public:
-    static std::string generate_string_from_byte_stream(const std::vector<uint8_t>& byte_stream);
-
 private:
-    int readable_fd;
-    Server_Socket_State server_socket_state;
-    int listen_fd;
-
-    std::vector< uint8_t > receive_buffer;
-    std::vector< uint8_t > send_buffer;
-
     int epfd;
+    int listen_fd;
+    int readable_fd;
     epoll_event* triggered_events;
-
+    std::vector< uint8_t > send_buffer;
+    Server_Socket_State server_socket_state;
+    std::vector< uint8_t > receive_buffer;
+    
     /**
      * Contains all the file descriptors that are waiting for writing to
      */
     std::queue< int > send_fd_queue;
+
     bool has_finished_initialization;
 };
