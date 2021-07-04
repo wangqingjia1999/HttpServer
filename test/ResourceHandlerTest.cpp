@@ -7,12 +7,10 @@
 #include <vector>
 #include <iostream>
 
-TEST(resource_handler_tests, resource_info_test)
+TEST(resource_handler_tests, default_constructor_test)
 {
-    ServerConfiguration server_configuration;
-
-    ResourceHandler resource_handler{server_configuration.get_resource_directory_path()};
-    EXPECT_TRUE(resource_handler.get_resource_directory_path().find("resource") != std::string::npos);
+    ResourceHandler resource_handler{};
+    EXPECT_EQ(resource_handler.get_resource_directory_path(), "/home/word-finder/resource/");
 }
 
 TEST(resource_handler_tests, formalize_resource_path_test)

@@ -13,7 +13,7 @@
 class ResourceHandler
 {
 public:
-    ResourceHandler();
+    ResourceHandler() noexcept;
     ~ResourceHandler();
 
     ResourceHandler(const ResourceHandler& other) = default;
