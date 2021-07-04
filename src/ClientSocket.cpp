@@ -3,6 +3,9 @@
 #include <stdexcept>
 #include <iostream>
 
+#include <cstring>
+#include <errno.h>
+
 ClientSocket::ClientSocket()
     : client_fd(-1)
 {
@@ -85,8 +88,8 @@ std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
 
 void ClientSocket::close_connection()
 {
-    if(close(client_fd))
-        fprintf(stderr, "Cannot tear down client socket fd.");
+    if(close(client_fd) < 0)
+        Logger::warn("close() on client file descriptor error due to: " + std::string(strerror(errno)));
 }
 
 int ClientSocket::get_client_fd() const

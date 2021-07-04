@@ -99,6 +99,9 @@ add_library(server_socket_lib STATIC
     ../include/ServerSocket.hpp
     ServerSocket.cpp
 )
+target_link_libraries(server_socket_lib PRIVATE
+    logger_lib
+)
 
 add_library(server_lib STATIC
     ../include/Server.hpp

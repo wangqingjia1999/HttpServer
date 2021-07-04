@@ -189,3 +189,10 @@ add_executable(word_finder_main
 target_link_libraries(word_finder_main PRIVATE
     server_lib
 )
+
+add_executable(word_finder_test
+    WordFinderMain.cpp
+)
+target_link_libraries(word_finder_test PUBLIC
+    server_lib
+)

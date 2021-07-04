@@ -1,4 +1,7 @@
 #include "ServerSocket.hpp"
+#include "Logger.hpp"
+
+#include <exception>
 
 namespace
 {
@@ -24,24 +27,26 @@ namespace
 }
 
 ServerSocket::ServerSocket()
-    : server_socket_state(Server_Socket_State::UNINITIALIZED),
-      listen_fd(-1),
-      epfd(-1),
-      triggered_events(new epoll_event()),
-      has_finished_initialization(false),
-      readable_fd(-1)
+    : server_socket_state{ Server_Socket_State::UNINITIALIZED },
+      listen_fd{ -1 },
+      epfd{ -1 },
+      triggered_events{ new epoll_event() },
+      has_finished_initialization{ false },
+      readable_fd{ -1 }
 {
     epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(epfd < 0)
-        fprintf(stderr, "Failed to create epoll file descriptor.");
+    {
+        throw std::runtime_error("can't create epoll file descriptor due to " + std::string{strerror(errno)});
+    }
 }
 
 ServerSocket::~ServerSocket()
 {
-    if(close(listen_fd))
-        fprintf(stderr, "Failed to close server listening fd, please kill it manually.");
-    if(close(epfd))
-        fprintf(stderr, "Failed to close epoll file descriptor.");
+    if(close(listen_fd) < 0)
+        Logger::warn("close() on listening file descriptor error due to: " + std::string(strerror(errno)));
+    if(close(epfd) < 0)
+        Logger::warn("close() on epoll file descriptor error due to: " + std::string(strerror(errno)));
 }
 
 bool ServerSocket::initialize_server_socket(const std::string ip, const int port)
@@ -49,7 +54,7 @@ bool ServerSocket::initialize_server_socket(const std::string ip, const int port
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(listen_fd == -1)
     {
-        Logger::info("cannot create socket, because" + std::string(strerror(errno)));
+        Logger::error("cannot create socket, because" + std::string(strerror(errno)));
         return false;
     }
 
@@ -106,7 +111,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
         {
             case -1:
             {
-                Logger::info("epoll_ctl error, because " + std::string(strerror(errno)));
+                Logger::error("epoll_ctl error, because " + std::string(strerror(errno)));
                 return Server_Socket_State::ERROR;
             }
             
@@ -127,12 +132,12 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                         int client_fd = accept(listen_fd, (sockaddr*)&client_socket, &client_socket_length);
                         if(client_fd < 0)
                         {
-                            Logger::error("call to accept() failed.");
+                            Logger::warn("call to accept() failed.");
                             close(listen_fd);
                             return Server_Socket_State::ERROR;
                         }
 
-                        Logger::info(
+                        Logger::debug(
                             "accept client " 
                             + std::string(inet_ntoa(client_socket.sin_addr)) 
                             + ":" 
@@ -141,7 +146,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
 
                         if(!set_socket_non_blocking(client_fd))
                         {
-                            Logger::info("can not set socket to non-blocking");
+                            Logger::debug("can not set socket to non-blocking");
                             continue;
                         }
                         else
@@ -156,13 +161,13 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                     // Peer Error
                     if(triggered_event & EPOLLERR)
                     {
-                        Logger::info(
-                            "EPOLLERR: "
+                        Logger::debug(
+                            "peer socket error: "
                             + std::string(strerror(errno))
                         );
                         int epoll_ctl_result = epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
                         if(epoll_ctl_result < 0)
-                            Logger::info("after EPOLLERR triggered we encounter " + std::string(strerror(errno)));
+                            Logger::debug("after epoll error triggered we encounter " + std::string(strerror(errno)));
                         
                         return Server_Socket_State::ERROR;
                     }
@@ -175,10 +180,10 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                         {
                             close(triggered_fd);
                             epoll_ctl(epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
-                            Logger::info(
+                            Logger::debug(
                                 "fd " 
                                 + std::to_string(triggered_fd) 
-                                + " shutdown"
+                                + " shutdown wrting."
                             );
                             continue;
                         }
@@ -237,12 +242,11 @@ std::string ServerSocket::read_from(const int peer_fd)
     {
         epoll_ctl(epfd, EPOLL_CTL_DEL, peer_fd, nullptr);
         close(peer_fd);
-        Logger::info("Peer socket shutdown writing");
     }
 
     if(receive_result < 0)
     {
-        Logger::info("Peer socket has unexpected error in reading from.");
+        Logger::debug("Peer socket has unexpected error in reading from.");
         epoll_ctl(epfd, EPOLL_CTL_DEL, peer_fd, nullptr);
         close(peer_fd);
     }
