@@ -19,6 +19,7 @@ set(source_files
     ServerSocketTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
+    SqliteHandlerTest.cpp
     ResourceHandlerTest.cpp
     PercentEncodingTest.cpp
     ServerConfigurationTest.cpp
@@ -28,6 +29,7 @@ add_executable(all_tests ${source_files})
 target_link_libraries(all_tests PUBLIC
     gtest_main 
     all_libs
+    sqlite_handler_lib
 )
 
 add_executable(character_set_test CharacterSetTest.cpp)

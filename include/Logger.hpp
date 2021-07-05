@@ -115,6 +115,11 @@ namespace Logger
      */
     inline std::string get_log_directory_path()
     {
+        if(log_directory_path.empty())
+        {
+            ServerConfiguration server_configuration;
+            log_directory_path = server_configuration.get_log_directory_path();
+        }
         return log_directory_path;
     }
 }

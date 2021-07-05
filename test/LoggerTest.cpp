@@ -6,7 +6,6 @@
 
 TEST(logger_tests, get_log_directory_path)
 {
-    EXPECT_EQ(Logger::get_log_directory_path(), "");
     EXPECT_EQ(Logger::get_log_directory_path(), "/home/word-finder/logs/");
 }
 

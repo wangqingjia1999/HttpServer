@@ -85,10 +85,10 @@ void ServerSocket::initialize_server_socket(const std::string ip, const int port
     
     Logger::info("Server is listening at " + ip + ":" + std::to_string(port));
 
-    epoll_event epoll_event_helper;
-    epoll_event_helper.data.fd = listen_fd;
-    epoll_event_helper.events = EPOLLIN | EPOLLET;
-    epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &epoll_event_helper);
+    epoll_event new_event;
+    new_event.data.fd = listen_fd;
+    new_event.events = EPOLLIN | EPOLLET;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &new_event);
     
     has_finished_initialization = true;
 }
@@ -140,15 +140,17 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
 
                         if(!set_socket_non_blocking(client_fd))
                         {
-                            Logger::debug("can't set socket to non-blocking");
+                            Logger::error("can't set newly connected socket to non-blocking, ignore the socket's request.");
                             continue;
                         }
-                        else
+                        
+                        epoll_event new_event;
+                        new_event.events = EPOLLIN | EPOLLRDHUP | EPOLLET; // set edge-triggered
+                        new_event.data.fd = client_fd;
+                        if(epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &new_event) == -1)
                         {
-                            epoll_event epoll_event_helper;
-                            epoll_event_helper.events = EPOLLIN | EPOLLRDHUP | EPOLLET;
-                            epoll_event_helper.data.fd = client_fd;
-                            epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &epoll_event_helper);
+                            Logger::error("can't add fd: " + std::to_string(client_fd) + " to epoll interest list, ignore the fd.");
+                            continue;
                         }
                     }
                     
@@ -169,7 +171,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                     // Ready for reading
                     if((triggered_fd != listen_fd) && (triggered_event & EPOLLIN))
                     {
-                        // It peer shudown
+                        // It peer shudown wrting
                         if(triggered_event & EPOLLRDHUP)
                         {
                             close(triggered_fd);
@@ -240,12 +242,10 @@ std::string ServerSocket::read_from(const int peer_fd)
 
     if(receive_result < 0)
     {
-        Logger::debug("Peer socket has unexpected error in reading from.");
+        Logger::error("read from " + std::to_string(peer_fd));
         epoll_ctl(epfd, EPOLL_CTL_DEL, peer_fd, nullptr);
         close(peer_fd);
     }
-    
-    Logger::debug("Receive: " + local_receive_buffer_string);
 
     return local_receive_buffer_string;
 }
