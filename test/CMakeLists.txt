@@ -23,6 +23,7 @@ set(source_files
     ResourceHandlerTest.cpp
     PercentEncodingTest.cpp
     ServerConfigurationTest.cpp
+    WorkerTest.cpp
 )
 
 add_executable(all_tests ${source_files})
@@ -197,4 +198,12 @@ add_executable(word_finder_test
 )
 target_link_libraries(word_finder_test PUBLIC
     server_lib
+)
+
+add_executable(worker_test
+    WorkerTest.cpp
+)
+target_link_libraries(worker_test PUBLIC
+    worker_lib
+    gtest_main
 )

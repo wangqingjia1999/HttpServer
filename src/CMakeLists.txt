@@ -23,6 +23,7 @@ set(header_files
     ../include/SqliteHandler.hpp
     ../include/HtmlBuilder.hpp
     ../include/Sentence.hpp
+    ../include/Worker.hpp
 )
 
 set(source_files
@@ -48,6 +49,7 @@ set(source_files
     SqliteHandler.cpp
     HtmlBuilder.cpp
     Sentence.cpp
+    Worker.cpp
 )
 
 add_library(all_libs STATIC
@@ -241,4 +243,9 @@ target_link_libraries(html_builder_lib PUBLIC
 add_library(sentence_lib STATIC
     ../include/Sentence.hpp
     Sentence.cpp
+)
+
+add_library(worker_lib STATIC
+    ../include/Worker.hpp
+    Worker.cpp
 )

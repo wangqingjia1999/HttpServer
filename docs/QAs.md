@@ -1,5 +1,33 @@
-## When is the EPOLLHUP triggered?
 
+
+# Challenging Issues
+## Server Architecture ?
+One master process and N worker processes. (Where N equals the number of cores in the CPU). Each worker is single-threaded.
+
+* One worker process per CPU core to reduce the cost of context switching.
+* Non-blocking ( Non-waiting ) event-driven architecture;
+* Listening fd and epfd is shared among workers;
+* All processes use shared-memory IPC;
+* The master process runs at `root` privilege while others run in unprivileged level.
+
+Master process's role:
+* Create, maintain, and ternimate worker processes;
+* Create, bind, and close sockets;
+
+Worker process's role:
+* Accept and process connections;
+
+## HTTP State Machine ?
+
+
+
+# Lessons Learned
+
+## Multithreads VS Multiprocesses in Linux ?
+* In Linux, thread == process == task.
+* Major difference: the degree to which thread and process share memory.
+
+## When is the EPOLLHUP triggered?
 Use **tcpdump** to trace down into TCP transactions.
 
 
