@@ -1,6 +1,6 @@
 #pragma once
 
-#include <signal.h>
+#include "Connection.hpp"
 
 class Worker
 {
@@ -13,6 +13,10 @@ public:
 
     Worker(Worker&& other);
     Worker& operator=(Worker&& other);
+
+public:
+    
+
 
 private:
     

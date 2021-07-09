@@ -14,7 +14,7 @@ set(header_files
     ../include/Sha1.hpp
     ../include/Utf8.hpp
     ../include/StatusHandler.hpp
-    ../include/ThreadPool.hpp
+    ../include/ProcessPool.hpp
     ../include/Timer.hpp
     ../include/ServerSocket.hpp
     ../include/ServerConfiguration.hpp
@@ -40,7 +40,7 @@ set(source_files
     Sha1.cpp
     Utf8.cpp
     StatusHandler.cpp
-    ThreadPool.cpp
+    ProcessPool.cpp
     Timer.cpp
     ServerSocket.cpp
     ServerConfiguration.cpp
@@ -113,7 +113,7 @@ target_link_libraries(server_lib PUBLIC
     logger_lib
     websocket_lib
     connection_lib
-    thread_pool_lib
+    process_pool_lib
     server_socket_lib
     sqlite_handler_lib
     resource_handler_lib
@@ -155,9 +155,12 @@ target_link_libraries(percent_encoding_lib PUBLIC
     character_set_lib
 )
 
-add_library(thread_pool_lib STATIC
-    ../include/ThreadPool.hpp
-    ThreadPool.cpp
+add_library(process_pool_lib STATIC
+    ../include/ProcessPool.hpp
+    ProcessPool.cpp
+)
+target_link_libraries(process_pool_lib PRIVATE
+    worker_lib
 )
 
 add_library(timer_lib STATIC

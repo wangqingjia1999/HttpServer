@@ -1,6 +1,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
-#include "ThreadPool.hpp"
+#include "ProcessPool.hpp"
 
 #include <gtest/gtest.h>
 #include <string>

@@ -99,7 +99,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
         initialize_server_socket(ip, port);
 
     int number_of_triggered_events;
-    for (;;)
+    for(;;)
     {
         switch(number_of_triggered_events = epoll_wait(epfd, triggered_events, TRIGGERED_EVENTS_MAX_SIZE, -1))
         {

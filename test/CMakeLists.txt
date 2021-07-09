@@ -13,7 +13,7 @@ set(source_files
     ResponseTest.cpp
     SentenceTest.cpp
     WebSocketTest.cpp
-    ThreadPoolTest.cpp
+    ProcessPoolTest.cpp
     ConnectionTest.cpp
     HtmlBuilderTest.cpp
     ServerSocketTest.cpp
@@ -118,10 +118,10 @@ target_link_libraries(status_handler_test PUBLIC
     status_handler_lib
 )
 
-add_executable(thread_pool_test ThreadPoolTest.cpp)
-target_link_libraries(thread_pool_test PUBLIC
+add_executable(process_pool_test ProcessPoolTest.cpp)
+target_link_libraries(process_pool_test PUBLIC
     gtest_main
-    thread_pool_lib
+    process_pool_lib
 )
 
 add_executable(timer_test TimerTest.cpp)
