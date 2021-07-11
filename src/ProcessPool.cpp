@@ -12,18 +12,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
-
-
-void terniamtion_handler(int signum)
-{
-    std::cout << "custom handler gets called" << std::endl;
-    signal(signum, SIG_DFL);
-}
+#include <stdio.h>
+#include <semaphore.h>
 
 ProcessPool::ProcessPool()
 {
     m_cpu_cores = get_nprocs(); 
-
+    
     std::vector<pid_t> children;
 
     for(int i = 0; i < m_cpu_cores; ++i)
@@ -36,41 +31,24 @@ ProcessPool::ProcessPool()
                 throw std::runtime_error("can't fork worker process");
             }
 
-            case 0:
+            case 0: 
             {
-                struct sigaction new_action;
-                new_action.sa_flags = SA_RESTART;
-                new_action.sa_handler = terniamtion_handler;
-                sigemptyset(&new_action.sa_mask);
-
-                sigaction(SIGTERM, &new_action, NULL);
-
-                for(;;)
-                {
-                }
+                
+                pause();
             }
 
             default:
             {
                 children.push_back(child);
-                exit;
+                break;
             }
         }
     }
-
-    for(const auto& c : children)
-    {
-        kill(c, SIGTERM);
-    }
-
-    wait(NULL);
-
-    exit(EXIT_SUCCESS);
 }
 
 ProcessPool::~ProcessPool()
 {
-
+    
 }
 
 

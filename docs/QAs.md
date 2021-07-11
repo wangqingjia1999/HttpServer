@@ -9,6 +9,7 @@ One master process and N worker processes. (Where N equals the number of cores i
 * Listening fd and epfd is shared among workers;
 * All processes use shared-memory IPC;
 * The master process runs at `root` privilege while others run in unprivileged level.
+* Use domain sockets to pass fds among processes;
 
 Master process's role:
 * Create, maintain, and ternimate worker processes;
