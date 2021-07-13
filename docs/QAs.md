@@ -12,8 +12,7 @@ One master process and N worker processes. (Where N equals the number of cores i
 * Use domain sockets to pass fds among processes;
 
 Master process's role:
-* Create, maintain, and ternimate worker processes;
-* Create, bind, and close sockets;
+* Add worker sockets into epoll instance. If one worker obtains the accpet_mutex, that worker will sendmsg to master. Thus, the master send one fd from queue that contains the fds ready to be accepted to the worker. The worker maintain its own epoll instance. If the worker receive socket from master, then it accepts and process it.
 
 Worker process's role:
 * Accept and process connections;

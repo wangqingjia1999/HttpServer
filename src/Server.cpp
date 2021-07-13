@@ -22,12 +22,12 @@ void Server::listen_at(const std::string& host, const int port)
         server_socket_state = m_server_socket->listen_at(host, port);
         switch(server_socket_state)
         {
-            case Server_Socket_State::UNINITIALIZED:
+            case Server_Socket_State::UNKNOWN_SOCKET:
             {
                 continue;
             }
                 
-            case Server_Socket_State::READABLE:
+            case Server_Socket_State::NEW_SOCKET:
             {   
                 request_core_handler(m_server_socket->read_from());
                 
@@ -40,7 +40,7 @@ void Server::listen_at(const std::string& host, const int port)
                 break;
             }
                             
-            case Server_Socket_State::ERROR:
+            case Server_Socket_State::ERROR_SOCKET:
             {
                 break;
             }

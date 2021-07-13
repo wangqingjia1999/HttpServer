@@ -24,6 +24,7 @@ set(header_files
     ../include/HtmlBuilder.hpp
     ../include/Sentence.hpp
     ../include/Worker.hpp
+    ../include/Channel.hpp
 )
 
 set(source_files
@@ -50,6 +51,7 @@ set(source_files
     HtmlBuilder.cpp
     Sentence.cpp
     Worker.cpp
+    Channel.cpp
 )
 
 add_library(all_libs STATIC
@@ -161,6 +163,10 @@ add_library(process_pool_lib STATIC
 )
 target_link_libraries(process_pool_lib PRIVATE
     worker_lib
+    logger_lib
+    channel_lib
+    server_socket_lib
+    rt
 )
 
 add_library(timer_lib STATIC
@@ -251,4 +257,12 @@ add_library(sentence_lib STATIC
 add_library(worker_lib STATIC
     ../include/Worker.hpp
     Worker.cpp
+)
+target_link_libraries(worker_lib PRIVATE
+    rt
+)
+
+add_library(channel_lib STATIC
+    ../include/Channel.hpp
+    Channel.cpp
 )

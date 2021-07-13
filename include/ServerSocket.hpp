@@ -22,10 +22,9 @@
  */
 enum class Server_Socket_State 
 {
-    ERROR,          // Ready for sending responses
-    WRITABLE,       // Ready for accepting requests
-    READABLE,       // Error occurs
-    UNINITIALIZED,  // Uninitialized 
+    NEW_SOCKET,
+    ERROR_SOCKET,
+    UNKNOWN_SOCKET
 };
 
 /**
@@ -43,7 +42,10 @@ public:
 
     ServerSocket(const ServerSocket&&) = delete;
     ServerSocket& operator=(const ServerSocket&&) = delete;
-    
+
+public:
+    ServerSocket(const std::string ip, const int port);
+
 public:
     bool write_to(const std::string& data_string);
     bool write_to(const int peer_fd, const std::string& data_string);
@@ -83,13 +85,18 @@ public:
      *      Error occurs
      */
     Server_Socket_State listen_at(const std::string ip, const int port);
+    Server_Socket_State listen_at();
 
     std::vector<uint8_t>* get_receive_buffer();
     std::vector<uint8_t>* get_send_buffer();
 
+private:
     bool set_socket_non_blocking(const int socket_fd);
 
 private:
+    int m_listening_port;
+    std::string m_listening_ip;
+
     int epfd;
     int listen_fd;
     int readable_fd;
@@ -97,7 +104,7 @@ private:
     std::vector< uint8_t > send_buffer;
     Server_Socket_State server_socket_state;
     std::vector< uint8_t > receive_buffer;
-    
+
     /**
      * Contains all the file descriptors that are waiting for writing to
      */

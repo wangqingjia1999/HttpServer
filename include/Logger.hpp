@@ -3,6 +3,9 @@
 #include "Timer.hpp"
 #include "ServerConfiguration.hpp"
 
+#include <cstring>
+#include <cerrno>
+
 #include <chrono>
 #include <memory>
 #include <string>
