@@ -90,6 +90,7 @@ public:
     std::vector<uint8_t>* get_receive_buffer();
     std::vector<uint8_t>* get_send_buffer();
 
+    int get_readable_fd();
 private:
     bool set_socket_non_blocking(const int socket_fd);
 

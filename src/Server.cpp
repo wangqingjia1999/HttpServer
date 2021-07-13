@@ -2,7 +2,6 @@
 
 Server::Server()
     : m_connection{ std::make_shared<Connection>() },
-      m_thread_pool{ std::make_shared<ProcessPool>() },
       m_sqlite_handler{ new SqliteHandler() },
       m_server_socket{ new ServerSocket() },
       m_resource_handler{ new ResourceHandler() },

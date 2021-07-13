@@ -3,7 +3,6 @@
 #include "Logger.hpp"
 #include "WebSocket.hpp"
 #include "Connection.hpp"
-#include "ProcessPool.hpp"
 #include "ServerSocket.hpp"
 #include "SqliteHandler.hpp"
 #include "StatusHandler.hpp"
@@ -117,7 +116,6 @@ private:
 
 private:
 	std::shared_ptr< Connection > m_connection;
-	std::shared_ptr< ProcessPool > m_thread_pool;
 	std::unique_ptr< ServerSocket > m_server_socket;
 	std::unique_ptr< SqliteHandler > m_sqlite_handler;
 	std::unique_ptr< ResourceHandler > m_resource_handler;

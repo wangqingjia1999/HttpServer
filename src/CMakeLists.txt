@@ -14,7 +14,7 @@ set(header_files
     ../include/Sha1.hpp
     ../include/Utf8.hpp
     ../include/StatusHandler.hpp
-    ../include/ProcessPool.hpp
+    ../include/Master.hpp
     ../include/Timer.hpp
     ../include/ServerSocket.hpp
     ../include/ServerConfiguration.hpp
@@ -25,6 +25,7 @@ set(header_files
     ../include/Sentence.hpp
     ../include/Worker.hpp
     ../include/Channel.hpp
+    ../include/UnixDomainHelper.hpp
 )
 
 set(source_files
@@ -41,7 +42,7 @@ set(source_files
     Sha1.cpp
     Utf8.cpp
     StatusHandler.cpp
-    ProcessPool.cpp
+    Master.cpp
     Timer.cpp
     ServerSocket.cpp
     ServerConfiguration.cpp
@@ -52,6 +53,7 @@ set(source_files
     Sentence.cpp
     Worker.cpp
     Channel.cpp
+    UnixDomainHelper.cpp
 )
 
 add_library(all_libs STATIC
@@ -157,15 +159,16 @@ target_link_libraries(percent_encoding_lib PUBLIC
     character_set_lib
 )
 
-add_library(process_pool_lib STATIC
-    ../include/ProcessPool.hpp
-    ProcessPool.cpp
+add_library(master_lib STATIC
+    ../include/Master.hpp
+    Master.cpp
 )
-target_link_libraries(process_pool_lib PRIVATE
+target_link_libraries(master_lib PRIVATE
     worker_lib
     logger_lib
     channel_lib
     server_socket_lib
+    unix_domain_helper_lib
     rt
 )
 
@@ -265,4 +268,12 @@ target_link_libraries(worker_lib PRIVATE
 add_library(channel_lib STATIC
     ../include/Channel.hpp
     Channel.cpp
+)
+
+add_library(unix_domain_helper_lib STATIC
+    ../include/UnixDomainHelper.hpp
+    UnixDomainHelper.cpp
+)
+target_link_libraries(unix_domain_helper_lib PRIVATE
+    logger_lib
 )

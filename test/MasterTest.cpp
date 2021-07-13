@@ -1,4 +1,4 @@
-#include "ProcessPool.hpp"
+#include "Master.hpp"
 
 #include <gtest/gtest.h>
 
@@ -9,6 +9,6 @@
 
 TEST(process_pool_tests, demo)
 {
-    ProcessPool pp;
+    Master master;
     
 }

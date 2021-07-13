@@ -75,12 +75,7 @@ void ServerSocket::initialize_server_socket(const std::string ip, const int port
     struct sockaddr_in ipv4_address;
     memset(&ipv4_address, 0 , sizeof(ipv4_address));
     ipv4_address.sin_family = AF_INET;
-    
-    if(ip == "localhost" || ip == "0.0.0.0")
-        ipv4_address.sin_addr.s_addr = INADDR_ANY;
-    else
-        ipv4_address.sin_addr.s_addr = inet_addr(ip.c_str());
-    
+    ipv4_address.sin_addr.s_addr = (ip == "0.0.0.0") || (ip == "localhost") ? INADDR_ANY : inet_addr(ip.c_str());
     ipv4_address.sin_port = htons(port);
     int ipv4_address_length = sizeof(ipv4_address);
 
@@ -130,6 +125,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                 for(; i < number_of_triggered_events; ++i)
                 {
                     int triggered_fd = triggered_events[i].data.fd;
+                    readable_fd = triggered_fd;
                     uint32_t triggered_event = triggered_events[i].events;
 
                     if((triggered_fd == listen_fd) && (triggered_event & EPOLLIN)) // new client
@@ -163,7 +159,7 @@ Server_Socket_State ServerSocket::listen_at(const std::string ip, const int port
                         new_event.data.fd = client_fd;
                         if(epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &new_event) == -1)
                         {
-                            Logger::error("can't add fd: " + std::to_string(client_fd) + " to epoll interest list, ignore the fd.");
+                            Logger::error("epoll add fd error: " + std::string{ strerror(errno) });
                             continue;
                         }
                     }
@@ -267,4 +263,9 @@ bool ServerSocket::set_socket_non_blocking(const int socket_fd)
     
     file_status_flags |= O_NONBLOCK;
     return (fcntl(socket_fd, F_SETFL, file_status_flags) == 0);
+}
+
+int ServerSocket::get_readable_fd()
+{
+    return readable_fd;
 }

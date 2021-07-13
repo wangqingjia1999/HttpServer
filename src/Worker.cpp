@@ -5,40 +5,6 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 
-namespace
-{
-    int read_message(const int master_socket)
-    {
-        struct msghdr message = { 0 };
-
-        char data_buffer[2];
-
-        struct iovec io_vector = {
-            .iov_base = data_buffer,
-            .iov_len = sizeof(data_buffer)
-        };
-
-        message.msg_iov = &io_vector;
-        message.msg_iovlen = 1;
-
-        char control_message_buffer[sizeof(int)];
-        message.msg_control = &control_message_buffer;
-        message.msg_controllen = sizeof(control_message_buffer);
-
-        if(recvmsg(master_socket, &message, 0) == -1)
-        {
-            Logger::error("recvmsg() error: " + std::string{ strerror(errno) });
-            return -1;
-        }
-
-        struct cmsghdr* control_message = CMSG_FIRSTHDR(&message);
-        int accept_event_fd = static_cast<int>( *(CMSG_DATA(control_message)) );
-        delete control_message;
-        control_message = nullptr;
-        return accept_event_fd;
-    }
-}
-
 Worker::Worker(
     const int domain_socket[2], 
     const std::string& accept_mutex_name,
