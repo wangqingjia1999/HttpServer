@@ -6,7 +6,7 @@
 
 namespace UnixDomainHelper
 {
-    bool send_fd(const int peer_socket, const int fd)
+    bool send_fd(const int socket, const int fd)
     {
         char data_buffer[] = " ";
         struct iovec io_vector = {
@@ -34,20 +34,20 @@ namespace UnixDomainHelper
 
         memcpy(CMSG_DATA(first_control_message), &fd, sizeof(fd));
 
-        if(sendmsg(peer_socket, &message, 0) != 0)
+        if(sendmsg(socket, &message, 0) == -1)
         {
-            Logger::error("sendmsg() in master error: " + std::string{ strerror(errno) });
+            Logger::error("sendmsg() error: " + std::string{ strerror(errno) });
             return false;
         }
         
         return true;
     }
 
-    int read_fd(const int peer_socket)
+    int read_fd(const int socket)
     {
         struct msghdr message = { 0 };
 
-        char data_buffer[2];
+        char data_buffer[256];
 
         struct iovec io_vector = {
             .iov_base = data_buffer,
@@ -57,20 +57,19 @@ namespace UnixDomainHelper
         message.msg_iov = &io_vector;
         message.msg_iovlen = 1;
 
-        char control_message_buffer[sizeof(int)];
+        char control_message_buffer[256];
         message.msg_control = &control_message_buffer;
         message.msg_controllen = sizeof(control_message_buffer);
 
-        if(recvmsg(peer_socket, &message, 0) == -1)
+        int length = recvmsg(socket, &message, MSG_DONTWAIT);
+        if(length != 2) // because sendmsg will sends exactly 2 bytes as payload
         {
             Logger::error("recvmsg() error: " + std::string{ strerror(errno) });
             return -1;
         }
-
+        
         struct cmsghdr* control_message = CMSG_FIRSTHDR(&message);
-        int accept_event_fd = static_cast<int>( *(CMSG_DATA(control_message)) );
-        delete control_message;
-        control_message = nullptr;
-        return accept_event_fd;
+        unsigned char* data = CMSG_DATA(control_message);
+        return *((int*)data);
     }
 };

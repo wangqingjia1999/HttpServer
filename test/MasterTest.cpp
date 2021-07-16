@@ -2,13 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-
-#include <unistd.h>
-#include <sys/types.h>
-
-TEST(process_pool_tests, demo)
+TEST(master_tests, demo)
 {
-    Master master;
-    
+    Master master("0.0.0.0", 80);
 }

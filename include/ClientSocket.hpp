@@ -61,6 +61,6 @@ public:
     
 private:
     int client_fd;
-    std::vector<uint8_t> receive_buffer;
+    std::vector<uint8_t> m_receive_buffer;
     std::vector<uint8_t> send_buffer;
 };

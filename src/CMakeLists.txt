@@ -6,7 +6,6 @@ set(header_files
     ../include/PercentEncoding.hpp
     ../include/Request.hpp
     ../include/Response.hpp
-    ../include/Server.hpp
     ../include/Uri.hpp
     ../include/Logger.hpp
     ../include/WebSocket.hpp
@@ -16,7 +15,7 @@ set(header_files
     ../include/StatusHandler.hpp
     ../include/Master.hpp
     ../include/Timer.hpp
-    ../include/ServerSocket.hpp
+    ../include/WorkerSocket.hpp
     ../include/ServerConfiguration.hpp
     ../include/ResourceHandler.hpp
     ../include/Connection.hpp
@@ -34,7 +33,6 @@ set(source_files
     PercentEncoding.cpp
     Request.cpp
     Response.cpp
-    Server.cpp
     Uri.cpp
     Logger.cpp
     WebSocket.cpp
@@ -44,7 +42,7 @@ set(source_files
     StatusHandler.cpp
     Master.cpp
     Timer.cpp
-    ServerSocket.cpp
+    WorkerSocket.cpp
     ServerConfiguration.cpp
     ResourceHandler.cpp
     Connection.cpp
@@ -101,27 +99,12 @@ target_link_libraries(request_lib PUBLIC
     logger_lib
 )
 
-add_library(server_socket_lib STATIC
-    ../include/ServerSocket.hpp
-    ServerSocket.cpp
+add_library(worker_socket_lib STATIC
+    ../include/WorkerSocket.hpp
+    WorkerSocket.cpp
 )
-target_link_libraries(server_socket_lib PRIVATE
+target_link_libraries(worker_socket_lib PRIVATE
     logger_lib
-)
-
-add_library(server_lib STATIC
-    ../include/Server.hpp
-    Server.cpp
-)
-target_link_libraries(server_lib PUBLIC
-    logger_lib
-    websocket_lib
-    connection_lib
-    process_pool_lib
-    server_socket_lib
-    sqlite_handler_lib
-    resource_handler_lib
-    server_configuration_lib
 )
 
 add_library(client_socket_lib STATIC
@@ -167,7 +150,7 @@ target_link_libraries(master_lib PRIVATE
     worker_lib
     logger_lib
     channel_lib
-    server_socket_lib
+    worker_socket_lib
     unix_domain_helper_lib
     rt
 )
@@ -261,8 +244,17 @@ add_library(worker_lib STATIC
     ../include/Worker.hpp
     Worker.cpp
 )
+target_link_libraries(worker_lib PUBLIC
+    connection_lib
+    worker_socket_lib
+    resource_handler_lib
+    server_configuration_lib
+)
 target_link_libraries(worker_lib PRIVATE
     rt
+    logger_lib
+    status_handler_lib
+    unix_domain_helper_lib
 )
 
 add_library(channel_lib STATIC

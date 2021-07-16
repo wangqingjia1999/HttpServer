@@ -23,6 +23,34 @@ Worker process's role:
 
 # Lessons Learned
 
+## accept() keeps returning '0'
+Original code. It takes me nearly two hours to google why this happened. Normally, 0 means I closed the standard input. But I did'n close that fd. Finally... It turns out that I forget to add a pair of parentheses.
+```cpp
+sockaddr_in accepted_socket;
+socklen_t accepted_socket_length = sizeof(sockaddr_in);
+if(accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length) == -1)
+{
+    Logger::error("master accept() error: " + std::string{ strerror(errno) });
+    continue;
+}
+```
+
+Change it to:
+```
+if((accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length)) == -1)
+{
+    Logger::error("master accept() error: " + std::string{ strerror(errno) });
+    continue;
+}
+```
+
+
+## POSIX Semaphore
+* The process who firstly call sem_open() must use O_EXCL to make sure the semaphore is a brand-new one. If first call to sem_open() returns EEXIST, call sem_unlin() then recall sem_open() again to create the new semaphore. Otherwise, the semaphore you create may has the wrong init value, which is unpredictable.
+
+## How to add Unix Domain Socket to epoll fd?
+Add it as normal Internet sockets.
+
 ## Multithreads VS Multiprocesses in Linux ?
 * In Linux, thread == process == task.
 * Major difference: the degree to which thread and process share memory.

@@ -63,8 +63,8 @@ bool ClientSocket::write_to(const int peer_fd, const std::vector<uint8_t>& data,
 
 std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
 {
-    if(!receive_buffer.empty())
-        receive_buffer.clear();
+    if(!m_receive_buffer.empty())
+        m_receive_buffer.clear();
 
     char local_receive_buffer[8192] = { 0 };
     
@@ -76,14 +76,14 @@ std::vector<uint8_t>* ClientSocket::read_from(const int peer_fd)
     }
 
     for(int i = 0; i < sizeof(local_receive_buffer); ++i)
-        receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
+        m_receive_buffer.push_back( (uint8_t)local_receive_buffer[i] );
 
     std::string receive_buffer_string;
-    for(const auto& byte : receive_buffer)
+    for(const auto& byte : m_receive_buffer)
         receive_buffer_string += (char)byte;
     Logger::info("receive: " + receive_buffer_string);
 
-    return &receive_buffer;
+    return &m_receive_buffer;
 }
 
 void ClientSocket::close_connection()
@@ -110,7 +110,7 @@ std::vector<uint8_t>* ClientSocket::get_send_buffer()
 
 std::vector<uint8_t>* ClientSocket::get_receive_buffer()
 {
-    return &receive_buffer;
+    return &m_receive_buffer;
 }
 
 bool ClientSocket::write_to()

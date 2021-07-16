@@ -5,16 +5,22 @@
 class Channel
 {
 public:
-    Channel(const pid_t pid, const int socket);
+    Channel() = delete;
 
 public:
-    void set_worker_pid(const pid_t pid);
-    void set_worker_socket(const int socket);
+    Channel(
+        const int master_socket,
+        const int worker_socket,
+        const pid_t pid
+    );
 
+public:
+    int get_master_socket();
     int get_worker_socket();
     pid_t get_worker_pid();
 
 private:
+    int m_master_socket;
     int m_worker_socket;
     pid_t m_worker_pid;
 };

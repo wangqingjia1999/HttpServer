@@ -27,8 +27,8 @@ public:
 
 public:
     void event_loop();
-    int listen_at();
-    int listen_at(const std::string& ip, const int port);
+    void listen_at();
+    void listen_at(const std::string& ip, const int port);
 
 private:
     void initialize();
@@ -39,11 +39,6 @@ private:
     int m_cpu_cores;
 
     std::vector<Channel> m_worker_channels;
-
-    std::string m_ready_worker_socket_shared_name;
-
-    int m_ready_worker_socket_fd;
-    int* m_ready_worker_socket;
 
     std::string m_accept_mutex_name;
     sem_t* m_accept_mutex;
@@ -57,7 +52,6 @@ private:
     std::queue<int> m_accept_queue;
 
     int m_epfd;
-    struct epoll_event* m_triggered_events;
 
-    std::unordered_set<int> m_worker_sockets;
+    std::unordered_set<int> m_master_sockets;
 };

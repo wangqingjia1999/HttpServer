@@ -16,7 +16,7 @@ set(source_files
     MasterTest.cpp
     ConnectionTest.cpp
     HtmlBuilderTest.cpp
-    ServerSocketTest.cpp
+    WorkerSocketTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
     SqliteHandlerTest.cpp
@@ -24,6 +24,7 @@ set(source_files
     PercentEncodingTest.cpp
     ServerConfigurationTest.cpp
     WorkerTest.cpp
+    UnixDomainHelperTest.cpp
 )
 
 add_executable(all_tests ${source_files})
@@ -61,12 +62,6 @@ add_executable(response_test ResponseTest.cpp)
 target_link_libraries(response_test PUBLIC
     gtest_main 
     response_lib
-)
-
-add_executable(server_test ServerTest.cpp)
-target_link_libraries(server_test PUBLIC
-    gtest_main 
-    server_lib
 )
 
 add_executable(client_test ClientTest.cpp)
@@ -130,12 +125,11 @@ target_link_libraries(timer_test PUBLIC
     timer_lib
 )
 
-add_executable(server_socket_test
-    ServerSocketTest.cpp
+add_executable(worker_socket_test
+    WorkerSocketTest.cpp
 )
-target_link_libraries(server_socket_test PUBLIC
-    server_socket_lib
-    client_socket_lib
+target_link_libraries(worker_socket_test PUBLIC
+    worker_socket_lib
     gtest_main
 )
 
@@ -205,5 +199,13 @@ add_executable(worker_test
 )
 target_link_libraries(worker_test PUBLIC
     worker_lib
+    gtest_main
+)
+
+add_executable(unix_domain_helper_test 
+    UnixDomainHelperTest.cpp
+)
+target_link_libraries(unix_domain_helper_test PUBLIC
+    unix_domain_helper_lib
     gtest_main
 )
