@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "Master.hpp"
 #include <exception>
 #include <iostream>
 
@@ -6,8 +6,7 @@ int main()
 {
     try
     {
-        Server server;
-        server.listen_at("0.0.0.0", 40000);
+        Master master("0.0.0.0", 80);
     }
     catch(const std::exception& e)
     {

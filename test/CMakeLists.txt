@@ -16,7 +16,6 @@ set(source_files
     MasterTest.cpp
     ConnectionTest.cpp
     HtmlBuilderTest.cpp
-    WorkerSocketTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
     SqliteHandlerTest.cpp
@@ -125,14 +124,6 @@ target_link_libraries(timer_test PUBLIC
     timer_lib
 )
 
-add_executable(worker_socket_test
-    WorkerSocketTest.cpp
-)
-target_link_libraries(worker_socket_test PUBLIC
-    worker_socket_lib
-    gtest_main
-)
-
 add_executable(server_configuration_test
     ServerConfigurationTest.cpp
 )
@@ -184,14 +175,14 @@ add_executable(word_finder_main
     WordFinderMain.cpp
 )
 target_link_libraries(word_finder_main PRIVATE
-    server_lib
+    master_lib
 )
 
 add_executable(word_finder_test
     WordFinderTest.cpp
 )
 target_link_libraries(word_finder_test PUBLIC
-    server_lib
+    master_lib
 )
 
 add_executable(worker_test

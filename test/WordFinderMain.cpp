@@ -1,4 +1,6 @@
-#include "Server.hpp"
+#include "Master.hpp"
+#include <sys/resource.h>
+#include <sys/signal.h>
 
 void daemonize()
 {
@@ -73,8 +75,7 @@ int main()
     
     try
     {
-        Server server;
-        server.listen_at("0.0.0.0", 80);
+        Master master("0.0.0.0", 80);
     }
     catch(const std::exception& e)
     {

@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
+#include <sys/epoll.h>
 
 namespace
 {
@@ -105,10 +106,16 @@ void Worker::event_loop()
             sem_wait(m_worker_mutex);
 
             char send_buffer[] = "";
-            // TODO: error check
             int send_result = send(m_worker_socket, &send_buffer, sizeof(send_buffer), 0);
-
-            has_accepted_fd = true;
+            if(send_result == -1)
+            {
+                Logger::error("worker send() for accepted fd error: " + std::string(strerror(errno)));
+                has_accepted_fd = false;
+            }
+            else
+            {
+                has_accepted_fd = true;
+            }
         }
         
         // wait for master's response;
@@ -127,7 +134,8 @@ void Worker::event_loop()
                 {
                     int triggered_fd = triggered_events[i].data.fd;
                     uint32_t triggered_event =  triggered_events[i].events;
-
+                    
+                    // master dispatches fd
                     if((triggered_event & EPOLLIN) && (triggered_fd == m_worker_socket))
                     {
                         int accepted_socket = UnixDomainHelper::read_fd(m_worker_socket);
@@ -150,18 +158,27 @@ void Worker::event_loop()
                         }
                     }
 
+                    // accepted fd is readable
                     if((triggered_event & EPOLLIN) && (triggered_fd != m_worker_socket))
                     {
                         // It peer shudown wrting
                         if(triggered_event & EPOLLRDHUP)
                         {
-                            epoll_ctl(m_epfd, EPOLL_CTL_DEL, triggered_fd, nullptr);
                             close(triggered_fd);
                             Logger::debug("client shutdown wrting.");
                             continue;
                         }
 
-                        request_core_handler(m_worker_socket_handler->read_from(triggered_fd));
+                        if(m_worker_socket_handler->read_from(triggered_fd))
+                        {
+                            request_core_handler(m_worker_socket_handler->get_receive_buffer_string());
+                        }
+                        else
+                        {
+                            close(triggered_fd);
+                            has_accepted_fd = false;
+                            continue;
+                        }
 
                         if(!m_server_socket->write_to(triggered_fd, m_connection->get_response()->generate_response()))
                             Logger::error("write to client error");
@@ -169,8 +186,6 @@ void Worker::event_loop()
                         m_connection->get_request()->clear_up();                
                         m_connection->get_response()->clear_up();
 
-                        if(epoll_ctl(m_epfd, EPOLL_CTL_DEL, triggered_fd, nullptr) == -1)
-                            Logger::error("epoll delete error: " + std::string{ strerror(errno) });
                         close(triggered_fd);
                         has_accepted_fd = false;
                     }
@@ -178,8 +193,6 @@ void Worker::event_loop()
                     if(triggered_event & EPOLLERR)
                     {
                         Logger::error("triggered socket event error: "+ std::string{ strerror(errno) });
-                        if(epoll_ctl(m_epfd, EPOLL_CTL_DEL, triggered_fd, nullptr) == -1)
-                            Logger::error("epoll delete error: " + std::string{ strerror(errno) });
                         close(triggered_fd);
                         has_accepted_fd = false;
                     }
