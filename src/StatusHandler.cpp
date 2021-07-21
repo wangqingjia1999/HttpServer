@@ -123,14 +123,23 @@ namespace StatusHandler
              */
             case 400:   // bad request
             {
+                /**
+                 * The request could not be parsed by server due to the malformed request message.
+                 */
                 response->set_body("<html> Bad Request :< </html>");
                 response->add_header("Content-Type", "text/html");
                 response->add_header("Content-Length", response->get_body_length());
                 break;
             }
 
-            case 401:   // 
+            case 401:   // Unauthorized
             {
+                /**
+                 * The request requires user authentication.
+                 * The response MUST include a 'WWW-Authenticate' header containing at least one challenge.
+                 */
+                response->add_header("WWW-Authenticate", "");
+
                 break;
             }
 

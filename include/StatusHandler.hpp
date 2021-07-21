@@ -12,7 +12,7 @@
 namespace StatusHandler
 {
     /**
-	 * Handle given status code.
+	 * Add appropriate fields to response message based on given status code.
 	 * 
      * @param[in] response  
 	 * 		Pointer to response object.

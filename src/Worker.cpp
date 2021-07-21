@@ -108,14 +108,9 @@ void Worker::event_loop()
             char send_buffer[] = "";
             int send_result = send(m_worker_socket, &send_buffer, sizeof(send_buffer), 0);
             if(send_result == -1)
-            {
-                Logger::error("worker send() for accepted fd error: " + std::string(strerror(errno)));
                 has_accepted_fd = false;
-            }
             else
-            {
                 has_accepted_fd = true;
-            }
         }
         
         // wait for master's response;

@@ -1,0 +1,1 @@
+siege 127.0.0.1:80 -l'/home/word-finder/logs/siege.log' -c 255 -t 5s

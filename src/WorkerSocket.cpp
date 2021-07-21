@@ -29,6 +29,8 @@ bool WorkerSocket::write_to(const int client_socket, const std::string& data_str
         return false;
     }
     
+    Logger::debug(data_string);
+
     return true;
 }
 

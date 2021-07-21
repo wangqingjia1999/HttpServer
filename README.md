@@ -1,9 +1,6 @@
 # Overview
-` Be strict in what you send and tolerant in what you receive. `  
 
-This is an implementation of HTTP/1.1 protocol (rfc2616). 
-  
-Just for self-learning purpose to gain a deep insight into the mechanisims of HTTP servers.
+High performance HTTP/1.1 server on Linux.
 
 # Contents
   * [Features](#features)
@@ -19,10 +16,8 @@ Just for self-learning purpose to gain a deep insight into the mechanisims of HT
   - [ ] PATCH
   - [ ] DELETE
 
-- [x] Customized Configuration
-- [ ] HTTPS
-- [ ] DNS
-- [ ] WebSocket
+* Benchmark
+* I/O Multiplexing
 
 ## Build Environment
 * Linux Operating System
