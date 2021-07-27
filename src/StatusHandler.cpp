@@ -138,7 +138,7 @@ namespace StatusHandler
                  * The request requires user authentication.
                  * The response MUST include a 'WWW-Authenticate' header containing at least one challenge.
                  */
-                response->add_header("WWW-Authenticate", "");
+                response->add_header("WWW-Authenticate", "Basic; realm=\"Secured area\"");
 
                 break;
             }

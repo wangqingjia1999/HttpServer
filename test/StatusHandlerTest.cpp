@@ -239,22 +239,6 @@ TEST(status_handler_tests, status_code_400_test)
     );
 }
 
-TEST(status_handler_tests, status_code_400_test)
-{
-    std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();
-    StatusHandler::handle_status_code(response, 400);
-    
-    std::string expected_response
-    {
-        "HTTP/1.1 400 Bad Request\r\nContent-Length: 29\r\nContent-Type: text/html\r\nServer: Bitate\r\n\r\n<html> Bad Request :< </html>"
-    };
-
-    ASSERT_EQ( 
-        weed_out_http_date_header(response->generate_response()),
-        weed_out_http_date_header(expected_response)
-    );
-}
-
 TEST(status_handler_tests, status_code_404_test)
 {
     std::shared_ptr< Message::Response > response = std::make_shared< Message::Response >();

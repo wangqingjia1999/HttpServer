@@ -2,7 +2,6 @@
 
 #include "Request.hpp"
 #include "Response.hpp"
-#include "ClientSocket.hpp"
 
 class Client
 {
@@ -68,5 +67,5 @@ public:
 	std::string get_generated_request();
 
 private:
-	std::shared_ptr< ClientSocket > m_client_socket;
+	
 };

@@ -13,7 +13,6 @@
 #include <sys/socket.h>
 
 Client::Client()
-    : m_client_socket(std::make_shared< ClientSocket >())
 {
 }
 

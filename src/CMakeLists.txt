@@ -8,7 +8,6 @@ set(header_files
     ../include/Response.hpp
     ../include/Uri.hpp
     ../include/Logger.hpp
-    ../include/WebSocket.hpp
     ../include/Base64.hpp
     ../include/Sha1.hpp
     ../include/Utf8.hpp
@@ -35,7 +34,6 @@ set(source_files
     Response.cpp
     Uri.cpp
     Logger.cpp
-    WebSocket.cpp
     Base64.cpp
     Sha1.cpp
     Utf8.cpp
@@ -57,17 +55,6 @@ set(source_files
 add_library(all_libs STATIC
     ${header_files}
     ${source_files}
-)
-
-add_library(websocket_lib STATIC
-    ../include/WebSocket.hpp
-    WebSocket.cpp
-)
-target_link_libraries(websocket_lib PUBLIC
-    sha1_lib
-    base64_lib
-    request_lib
-    response_lib
 )
 
 add_library(sha1_lib STATIC
@@ -104,14 +91,6 @@ add_library(worker_socket_lib STATIC
     WorkerSocket.cpp
 )
 target_link_libraries(worker_socket_lib PRIVATE
-    logger_lib
-)
-
-add_library(client_socket_lib STATIC
-    ../include/ClientSocket.hpp
-    ClientSocket.cpp
-)
-target_link_libraries(client_socket_lib PRIVATE
     logger_lib
 )
 

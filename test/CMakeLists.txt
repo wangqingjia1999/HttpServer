@@ -7,12 +7,10 @@ set(source_files
     Utf8Test.cpp
     Sha1Test.cpp
     Base64Test.cpp
-    ClientTest.cpp
     LoggerTest.cpp
     RequestTest.cpp
     ResponseTest.cpp
     SentenceTest.cpp
-    WebSocketTest.cpp
     MasterTest.cpp
     ConnectionTest.cpp
     HtmlBuilderTest.cpp
@@ -63,12 +61,6 @@ target_link_libraries(response_test PUBLIC
     response_lib
 )
 
-add_executable(client_test ClientTest.cpp)
-target_link_libraries(client_test PUBLIC
-    gtest_main 
-    client_lib
-)
-
 add_executable(mysql_handler_test MysqlHandlerTest.cpp)
 target_link_libraries(mysql_handler_test PUBLIC
     gtest_main 
@@ -80,12 +72,6 @@ target_link_libraries(logger_test PUBLIC
     gtest_main 
     gmock_main
     logger_lib
-)
-
-add_executable(websocket_test WebSocketTest.cpp)
-target_link_libraries(websocket_test PUBLIC
-    gtest_main 
-    websocket_lib
 )
 
 add_executable(base64_test Base64Test.cpp)

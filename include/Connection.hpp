@@ -29,7 +29,6 @@ public:
     RequestPtr& get_request();
     ResponsePtr& get_response();
 
-    // Operator overloading
 public:
     bool operator==(const Connection& other) const;
     bool operator!=(const Connection& other) const;
