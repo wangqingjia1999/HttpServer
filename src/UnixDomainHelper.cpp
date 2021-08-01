@@ -36,7 +36,7 @@ namespace UnixDomainHelper
 
         if(sendmsg(socket, &message, 0) == -1)
         {
-            Logger::error("sendmsg() error: " + std::string{ strerror(errno) });
+            Logger::error("sendmsg() error");
             return false;
         }
         
@@ -64,7 +64,7 @@ namespace UnixDomainHelper
         int length = recvmsg(socket, &message, MSG_DONTWAIT);
         if(length != 2) // because sendmsg will sends exactly 2 bytes as payload
         {
-            Logger::error("recvmsg() error: " + std::string{ strerror(errno) });
+            Logger::error("recvmsg() error");
             return -1;
         }
         

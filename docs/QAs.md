@@ -30,7 +30,7 @@ sockaddr_in accepted_socket;
 socklen_t accepted_socket_length = sizeof(sockaddr_in);
 if(accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length) == -1)
 {
-    Logger::error("master accept() error: " + std::string{ strerror(errno) });
+    Logger::error("master accept() error");
     continue;
 }
 ```
@@ -39,7 +39,7 @@ Change it to:
 ```
 if((accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length)) == -1)
 {
-    Logger::error("master accept() error: " + std::string{ strerror(errno) });
+    Logger::error("master accept() error");
     continue;
 }
 ```

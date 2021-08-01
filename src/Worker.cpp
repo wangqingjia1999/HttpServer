@@ -51,7 +51,7 @@ Worker::Worker(
     m_epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(m_epfd == -1)
     {
-        Logger::error("worker epoll_create() error: " + std::string{ strerror(errno) });
+        Logger::error("worker epoll_create() error");
         throw std::runtime_error("worker epoll_create() error");
     }
 
@@ -60,21 +60,21 @@ Worker::Worker(
     worker_socket_event.events = EPOLLIN | EPOLLET;
     if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, m_worker_socket, &worker_socket_event) == -1)
     {
-        Logger::error("worker epoll add error: " + std::string{ strerror(errno) });
-        throw std::runtime_error("worker epoll add error: " + std::string{ strerror(errno) });
+        Logger::error("worker epoll add error");
+        throw std::runtime_error("worker epoll add error");
     }
 
     m_accept_mutex = sem_open(accept_mutex_name.c_str(), 0);
     if(m_accept_mutex == SEM_FAILED)
     {
-        Logger::error("sem_open() in worker error: " + std::string{ strerror(errno) });
+        Logger::error("sem_open() in worker error");
         throw std::runtime_error("sem_open() error");
     }
 
     m_worker_mutex = sem_open(m_worker_mutex_name.c_str(), 0);
     if(m_worker_mutex == SEM_FAILED)
     {
-        Logger::error("sem_open() in worker error: " + std::string{ strerror(errno) });
+        Logger::error("sem_open() in worker error");
         throw std::runtime_error("sem_open() in worker error");
     }
 }
@@ -119,7 +119,7 @@ void Worker::event_loop()
         {
             case -1:
             {
-                Logger::error("worker epoll_ctl() error: " + std::string(strerror(errno)));
+                Logger::error("worker epoll_ctl() error");
                 continue;
             }
 
@@ -147,7 +147,7 @@ void Worker::event_loop()
 
                         if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, accepted_socket, &new_client_event) == -1)
                         {
-                            Logger::error("worker epoll add error: " + std::string{ strerror(errno) });
+                            Logger::error("worker epoll add error");
                             close(accepted_socket);
                             has_accepted_fd = false;
                         }
@@ -187,7 +187,7 @@ void Worker::event_loop()
 
                     if(triggered_event & EPOLLERR)
                     {
-                        Logger::error("triggered socket event error: "+ std::string{ strerror(errno) });
+                        Logger::error("triggered socket event error");
                         close(triggered_fd);
                         has_accepted_fd = false;
                     }

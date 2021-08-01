@@ -25,7 +25,8 @@ namespace Logger
     };
 
     /**
-     * Log a message based on given logging level.
+     * Log a message based on given level and messsage
+     * and interpret errno if it's set by OS.
      * 
      * @param[in] log_level  
      *      Denote the logging level/urgency/priority.
@@ -64,7 +65,16 @@ namespace Logger
             log_file << " [error] ";
         else
             log_file << " [debug] ";
-        log_file << log_message << '\n';
+        
+        log_file << log_message;
+        
+        // errno is positive if it's set.
+        if(errno > 0)
+        {
+            log_file << " : " << std::string{ strerror(errno) };
+        }
+
+        log_file << '\n';
 
         log_file.close();
     }   

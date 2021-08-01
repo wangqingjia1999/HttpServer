@@ -25,7 +25,7 @@ bool WorkerSocket::write_to(const int client_socket, const std::string& data_str
     
     if(send_result < 0)
     {
-        Logger::error("send() error: " + std::string{ strerror(errno) });
+        Logger::error("send() error");
         return false;
     }
     
@@ -49,14 +49,14 @@ bool WorkerSocket::read_from(const int client_socket)
         }
         else
         {
-            Logger::error("worker read() error " + std::string{ strerror(errno) });
+            Logger::error("worker read() error ");
             return false;
         }
     }
 
     if(receive_result == 0)
     {
-        Logger::error("client prematurely closed connection" + std::string{ strerror(errno) });
+        Logger::error("client prematurely closed connection");
         return false;
     }
     

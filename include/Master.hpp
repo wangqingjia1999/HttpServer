@@ -33,7 +33,7 @@ public:
 private:
     void initialize();
     int get_cpu_cores() const;
-    void spawn_worker();
+    void spawn_worker(const size_t number_of_worker);
 
 private:
     int m_cpu_cores;
