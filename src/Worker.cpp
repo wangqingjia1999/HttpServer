@@ -253,6 +253,7 @@ void Worker::request_core_handler(const std::string& raw_request_string)
 {
     if(!parse_request(raw_request_string))
     {
+        Logger::error("worker parse request error with original request being: \n" + raw_request_string);
         StatusHandler::handle_status_code(m_connection->get_response(), 400);
         return;
     }

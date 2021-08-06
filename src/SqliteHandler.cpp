@@ -295,7 +295,7 @@ std::vector<Sentence> SqliteHandler::search_sentence(const std::string& keyword)
         Logger::error("cannot prepare statement for keyword: " + keyword);
         return {};
     }
-        
+
     if(!bind_text_data(":keyword", keyword))
     {
         Logger::error("cannot bind keyword: " + keyword + " to statement");

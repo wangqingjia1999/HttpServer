@@ -1,6 +1,12 @@
 
 
 # Challenging Issues
+
+## How to send large html file to client?
+Compression + chunked encoding
+
+With Sqlite3 each step, send the result to client.
+
 ## Server Architecture ?
 One master process and N worker processes. (Where N equals the number of cores in the CPU). Each worker is single-threaded.
 

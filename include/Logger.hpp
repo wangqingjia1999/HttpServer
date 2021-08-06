@@ -25,21 +25,13 @@ namespace Logger
     };
 
     /**
-     * Log a message based on given level and messsage
-     * and interpret errno if it's set by OS.
+     * Log a message based on given level and messsage.
      * 
      * @param[in] log_level  
      *      Denote the logging level/urgency/priority.
      * 
      * @param[in] log_message
      *      Message to be logged.
-     * 
-     * @note  
-     *      Store the log file into the folder, which 
-     *      can be configured in `config` file under 
-     *      server's root directory. If not specified 
-     *      or not found, the default path (same path 
-     *      as the executable file) is used.
      */
     inline void log(const LogLevel& log_level, const std::string& log_message)
     {
@@ -68,12 +60,6 @@ namespace Logger
         
         log_file << log_message;
         
-        // errno is positive if it's set.
-        if(errno > 0)
-        {
-            log_file << " : " << std::string{ strerror(errno) };
-        }
-
         log_file << '\n';
 
         log_file.close();

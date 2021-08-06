@@ -58,13 +58,14 @@ namespace Message
         auto request_line_end_delimiter = m_raw_request.find("\r\n");
         if (request_line_end_delimiter == std::string::npos)
         {
-            Logger::info("Can not parse request line.");
+            Logger::error("can't find CRLF in request line");
             return false;
         }
+
         std::string request_line = m_raw_request.substr(0, request_line_end_delimiter);
         if (!parse_request_line(request_line))
         {
-            Logger::info("Can not parse request line.");
+            Logger::error("can't parse request line: " + request_line);
             return false;
         }
 
@@ -72,7 +73,7 @@ namespace Message
         auto headers_end_delimiter = m_raw_request.find("\r\n\r\n");
         if (headers_end_delimiter == std::string::npos)
         {
-            Logger::info("Can not parse request headers.");
+            Logger::error("can't parse request headers: " + m_raw_request);
             return false;
         }
 

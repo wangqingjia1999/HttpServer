@@ -11,7 +11,6 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/prctl.h>
 #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -62,12 +61,6 @@ namespace
         }
         return semaphore;
     }
-
-    void change_process_name(const std::string& new_name)
-    {
-        if (prctl(PR_SET_NAME, (unsigned long)new_name.c_str()) < 0)
-            Logger::error("change worker process name error");
-    }
 }
 
 Master::Master(const std::string& ip, const int port)
@@ -114,8 +107,6 @@ Master::~Master()
 
 void Master::initialize()
 {
-    change_process_name("wf-master");
-
     m_worker_mutex = sem_open(m_worker_mutex_name.c_str(), O_CREAT | O_EXCL, S_IRWXG | S_IRWXU | S_IRWXO, 1);
     if(m_worker_mutex == SEM_FAILED)
     {
@@ -189,7 +180,6 @@ void Master::spawn_worker(const size_t number_of_worker)
 
             case 0:
             {
-                change_process_name("wf-worker");
                 Worker worker(
                     fds[1], 
                     m_accept_mutex_name, 

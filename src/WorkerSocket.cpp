@@ -28,8 +28,6 @@ bool WorkerSocket::write_to(const int client_socket, const std::string& data_str
         Logger::error("send() error");
         return false;
     }
-    
-    Logger::debug(data_string);
 
     return true;
 }
