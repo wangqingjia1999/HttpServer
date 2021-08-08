@@ -12,14 +12,14 @@ void daemonize()
 
     if(getrlimit(RLIMIT_NOFILE, &rl) < 0)
     {
-        Logger::error("can't get file limit");
+        Logger::error("can't get file limit", errno);
         return;
     }
 
     // become a session leader to lose controlling TTY.
     if((pid = fork()) < 0)
     {
-        Logger::error("can't fork");
+        Logger::error("can't fork", errno);
         return;
     }
     else if(pid != 0) // parent
@@ -38,13 +38,13 @@ void daemonize()
     sa.sa_flags = 0;
     if(sigaction(SIGHUP, &sa, NULL) < 0)
     {
-        Logger::error("can't ignore SIGHUP");
+        Logger::error("can't ignore SIGHUP", errno);
         return;
     }
 
     if((pid = fork()) < 0)
     {
-        Logger::error("can't fork");
+        Logger::error("can't fork", errno);
         return;
     }
     else if(pid != 0) // parent
@@ -56,7 +56,7 @@ void daemonize()
     // so we won't prevent file system from being unmounted.
     if(chdir("/home/HttpServer") < 0)
     {
-        Logger::error("can't change directory");
+        Logger::error("can't change directory", errno);
         return;
     }
 

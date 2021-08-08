@@ -25,7 +25,7 @@ bool WorkerSocket::write_to(const int client_socket, const std::string& data_str
     
     if(send_result < 0)
     {
-        Logger::error("send() error");
+        Logger::error("worker send() error", errno);
         return false;
     }
 
@@ -47,7 +47,7 @@ bool WorkerSocket::read_from(const int client_socket)
         }
         else
         {
-            Logger::error("worker read() error ");
+            Logger::error("worker read() error", errno);
             return false;
         }
     }
