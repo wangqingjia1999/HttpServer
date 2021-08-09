@@ -253,3 +253,7 @@ add_library(compressor_lib STATIC
     ../include/Compressor.hpp
     Compressor.cpp
 )
+# zlib is named as "libz.so" not "zlib"
+target_link_libraries(compressor_lib PRIVATE
+    libz.so
+)
