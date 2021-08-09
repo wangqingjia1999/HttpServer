@@ -288,7 +288,7 @@ std::vector<Sentence> SqliteHandler::search_sentence(const std::string& keyword)
     if(keyword.empty())
         return {};
 
-    std::string statement { "SELECT snippet(news_index, 0, '<mark>', '</mark>', '...', 32), url, publisher FROM news_index WHERE news_index MATCH :keyword ORDER BY rank" };
+    std::string statement { "SELECT snippet(news_index, 0, '<mark>', '</mark>', '...', 32), url, publisher FROM news_index WHERE news_index MATCH :keyword ORDER BY rank LIMIT 100" };
 
     if(!prepare_statement(statement))
     {

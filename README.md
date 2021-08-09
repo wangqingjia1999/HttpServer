@@ -1,15 +1,33 @@
 # Overview
 
-High performance HTTP/1.1 server on Linux.
+High performance HTTP/1.1 server on Linux. 
 
 # Contents
+  * [Background](#background)
+  * [Demo](#demo)
   * [Features](#features)
-  * [Benchmark](#becnmark)
-  * [Build Environment](#requirements)
+  * [Benchmark](#benchmark)
+  * [Build Environment](#build-environment)
   * [How to build?](#how-to-build)
+
+## Background
+Originally, this repo is just a barebone HTTP/1.1 server with terribly performance. One day, an idea hit me. I wanna a website that can display the real-life usage of words or phrases that appeared in reliable materials like news websites because I've beening learning English for many years and I stillllll have so much uncertainty in the language. Because I major in English not Computer Science, English language is really important in my daily life :stuck_out_tongue:. And by the way, the news database is downloaded from [2.7 million news articles and essays](https://components.one/datasets/all-the-news-2-news-articles-dataset/). The Sqlite3 database used in demo is just a tiny part of this huge dataset.
+
+# Demo
+
+Click [demo](http://101.200.88.170/) to play with the server.
+
+You can easily look up an English word/phrase by typing it into the search bar( Ignore the bad-looking home page ) and click "Go" to search for it.
+
+![home-page](docs/screenshots/home_page.png)
+
+It will highlights the word/phrase that you search. And you can further go into the original page by clicking on the hyper-link at the right side of each entity.
+
+![query-result](docs/screenshots/query_result.png)
 
 ## Features
 - [x] HTTP/1.1 Deflate Compression
+- [ ] Order Query Results By Relevence
 
 ## Benchmark
 Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)

@@ -69,13 +69,9 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
                     "<ul>"
         };
 
-        // FIXME: hardcoded max sentences sent to front-end
         int i = 0;
         for(auto& sentence : sentences)
         {
-            if((++i) > 100)
-                break;
-
             if(sentence.get_url().empty())
             {
                 sentence.set_url("http://101.200.88.170/");

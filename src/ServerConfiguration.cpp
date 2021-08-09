@@ -82,7 +82,8 @@ namespace
 
                 "<span id=\"site-logo-banner\">"
                     "<h1>Word/Phrase Finder</h1>"
-                    "<p>Find real-life English sentences taken from reliable sources to facilitate English learning.</p>"
+                    "<p>Find real-life English sentences taken from reliable news websites to facilitate English learning.</p>"
+                    "<p>The keywords inside research result will be highlighted to save your time. :^)"
                 "</span>"
                 
                 "<div id=\"search-bar-wrap\">"
