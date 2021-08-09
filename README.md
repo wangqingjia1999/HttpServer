@@ -4,23 +4,34 @@ High performance HTTP/1.1 server on Linux.
 
 # Contents
   * [Features](#features)
-  * [Requirements](#requirements)
+  * [Benchmark](#becnmark)
+  * [Build Environment](#requirements)
   * [How to build?](#how-to-build)
-  * [Examples](#examples)
 
 ## Features
-* HTTP Methods
-  - [x] POST
-  - [x] GET
-  - [ ] PUT
-  - [ ] PATCH
-  - [ ] DELETE
+- [ ] HTTP Compression
 
-* Benchmark
-* I/O Multiplexing
+## Benchmark
+Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)
+
+Recent benchmark with terribly bad performance :^)
+```text
+Transactions:                    538 hits
+Availability:                 100.00 %
+Elapsed time:                  59.71 secs
+Data transferred:              15.94 MB
+Response time:                 14.18 secs
+Transaction rate:               9.01 trans/sec
+Throughput:                     0.27 MB/sec
+Concurrency:                  127.80
+Successful transactions:         538
+Failed transactions:               0
+Longest transaction:           19.79
+Shortest transaction:           0.17
+```
 
 ## Build Environment
-* Linux Operating System
+* Ubuntu 20.04.2 LTS
 * GCC 9.3.0
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)

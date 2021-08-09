@@ -22,6 +22,7 @@ set(source_files
     ServerConfigurationTest.cpp
     WorkerTest.cpp
     UnixDomainHelperTest.cpp
+    CompressorTest.cpp
 )
 
 add_executable(all_tests ${source_files})
@@ -184,5 +185,13 @@ add_executable(unix_domain_helper_test
 )
 target_link_libraries(unix_domain_helper_test PUBLIC
     unix_domain_helper_lib
+    gtest_main
+)
+
+add_executable(compressor_test
+    CompressorTest.cpp
+)
+target_link_libraries(compressor_test PUBLIC
+    compressor_lib
     gtest_main
 )

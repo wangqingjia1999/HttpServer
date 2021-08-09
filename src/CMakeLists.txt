@@ -248,3 +248,8 @@ add_library(unix_domain_helper_lib STATIC
 target_link_libraries(unix_domain_helper_lib PRIVATE
     logger_lib
 )
+
+add_library(compressor_lib STATIC
+    ../include/Compressor.hpp
+    Compressor.cpp
+)

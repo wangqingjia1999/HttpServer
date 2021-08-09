@@ -180,15 +180,20 @@ void Master::spawn_worker(const size_t number_of_worker)
 
             case 0:
             {
-                Worker worker(
-                    fds[1], 
-                    m_accept_mutex_name, 
-                    m_worker_mutex_name
-                );
+                try
+                {
+                    Worker worker(
+                        fds[1], 
+                        m_accept_mutex_name, 
+                        m_worker_mutex_name
+                    );
 
-                worker.event_loop();
-                
-                exit(EXIT_SUCCESS);
+                    worker.event_loop();
+                } catch (const std::exception& e)
+                {
+                    Logger::error("master exists with exception: " + std::string{e.what()});
+                    exit(EXIT_FAILURE);
+                }
                 break;
             }
 
