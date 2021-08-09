@@ -186,6 +186,7 @@ add_library(resource_handler_lib
 target_link_libraries(resource_handler_lib PUBLIC
     sentence_lib    
     connection_lib
+    compressor_lib
     sqlite_handler_lib
     server_configuration_lib
 )

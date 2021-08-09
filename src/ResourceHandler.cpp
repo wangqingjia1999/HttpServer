@@ -1,3 +1,4 @@
+#include "Compressor.hpp"
 #include "ResourceHandler.hpp"
 #include "ServerConfiguration.hpp"
 
@@ -131,7 +132,15 @@ bool ResourceHandler::fetch_resource(std::shared_ptr<Connection>& connection)
         );
     }
 
-    connection->get_response()->set_body(buffer);
+    if(connection->get_request()->get_header("Accept-Encoding").find("deflate") != std::string::npos)
+    {
+        connection->get_response()->set_body(Compressor::compress(buffer));
+        connection->get_response()->add_header("Content-Encoding", "deflate");
+    }
+    else
+    {
+        connection->get_response()->set_body(buffer);
+    }
     
     return true;
 }

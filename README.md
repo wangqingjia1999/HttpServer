@@ -9,7 +9,7 @@ High performance HTTP/1.1 server on Linux.
   * [How to build?](#how-to-build)
 
 ## Features
-- [ ] HTTP Compression
+- [x] HTTP/1.1 Deflate Compression
 
 ## Benchmark
 Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)

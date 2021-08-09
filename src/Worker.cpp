@@ -295,13 +295,12 @@ void Worker::request_core_handler(const std::string& raw_request_string)
     }
     else if(m_connection->get_request()->get_request_method() == "PUT")
     {
-        if(m_connection->get_request()->get_request_uri()->get_path_string().find("resource/audios") == std::string::npos)
-            StatusHandler::handle_status_code(m_connection->get_response(), 405);
-
+        StatusHandler::handle_status_code(m_connection->get_response(), 501);
         return;
     }
     else if(m_connection->get_request()->get_request_method() == "HEAD")
     {
+        StatusHandler::handle_status_code(m_connection->get_response(), 501);
         return;
     }
 }

@@ -325,8 +325,11 @@ namespace StatusHandler
                 break;
             }
 
-            case 501:   //
+            case 501:   // Not Implemented
             {
+                response->set_body("<html> Request Method Not Implemented. </html>");
+                response->add_header("Content-Type", "text/html");
+                response->add_header("Content-Length", response->get_body_length());
                 break;
             }
 
