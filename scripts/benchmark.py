@@ -1,12 +1,11 @@
 import os
+import fileinput
 
 # Check https://www.systutorials.com/docs/linux/man/1-siege/ for siege reference
 
 siege_config_folder_path = os.environ['HOME'] + "/.siege/"
 
 siege_config_file_path = siege_config_folder_path + "siege.conf"
-
-siege_config_string = "limit = 255\ngmethod = HEAD\nprotocol = HTTP/1.1\nconcurrent = 255\nbenchmark = true\nconnection = close\n"
 
 if not os.path.exists(siege_config_file_path):
     print("create siege config file at: " + siege_config_file_path)
@@ -15,8 +14,26 @@ if not os.path.exists(siege_config_file_path):
     if not os.path.exists(siege_config_folder_path):
         os.mkdir(siege_config_folder_path)
 
-    # write siege config file
-    with open(siege_config_file_path, "w") as siege_config:
-        siege_config.write(siege_config_string)
+    # generate default siege config file
+    os.system("siege.config")
 
-os.system("siege -c255 -t1M 127.0.0.1:80/?q=word")
+# change default config
+for line in fileinput.input([siege_config_file_path], inplace=True):
+    if "gmethod = HEAD\n" in line:
+        print(line.replace('gmethod = HEAD', 'gmethod = GET'), end='')
+        continue
+    if "verbose = false\n" in line:
+        print(line.replace('verbose = false', 'verbose = true'), end='')
+        continue
+    if "chunked = true\n" in line:
+        print(line.replace('chunked = true', 'chunked = false'), end='')
+        continue
+    if "concurrent = 25\n" in line:
+        print(line.replace('concurrent = 25', 'concurrent = 255'), end='')
+        continue
+    if "benchmark = false\n" in line:
+        print(line.replace('benchmark = false', 'benchmark = true'), end='')
+        continue
+    print(line, end='')
+
+os.system("siege -t5S -u 127.0.0.1:40000/?q=word")
