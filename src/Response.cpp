@@ -1,7 +1,6 @@
 #include "Response.hpp"
 #include "Logger.hpp"
 #include "Timer.hpp"
-#include "MysqlHandler.hpp"
 
 #include <memory>
 

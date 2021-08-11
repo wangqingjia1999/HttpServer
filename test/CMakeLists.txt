@@ -62,12 +62,6 @@ target_link_libraries(response_test PUBLIC
     response_lib
 )
 
-add_executable(mysql_handler_test MysqlHandlerTest.cpp)
-target_link_libraries(mysql_handler_test PUBLIC
-    gtest_main 
-    mysql_handler_lib
-)
-
 add_executable(logger_test LoggerTest.cpp)
 target_link_libraries(logger_test PUBLIC
     gtest_main 

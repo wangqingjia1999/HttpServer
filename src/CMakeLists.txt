@@ -72,11 +72,6 @@ add_library(base64_lib STATIC
     Base64.cpp
 )
 
-add_library(mysql_handler_lib STATIC
-    ../include/MysqlHandler.hpp
-    MysqlHandler.cpp
-)
-
 add_library(request_lib STATIC
     ../include/Request.hpp
     Request.cpp
