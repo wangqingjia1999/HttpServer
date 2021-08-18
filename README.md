@@ -34,6 +34,7 @@ It will highlights the word/phrase that you search. And you can further go into 
 - [ ] Performance Optimization
   - [x] Compression
   - [ ] Caching
+  - [ ] Timer per connection
 - [ ] Content Relevance
   - [ ] Order Query Results By Relevence
 
@@ -42,18 +43,18 @@ Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)
 
 Recent benchmark with terribly bad performance :^)
 ```text
-Transactions:                    541 hits
+Transactions:                   1271 hits
 Availability:                 100.00 %
-Elapsed time:                   4.94 secs
-Data transferred:               6.12 MB
-Response time:                  0.73 secs
-Transaction rate:             109.51 trans/sec
-Throughput:                     1.24 MB/sec
-Concurrency:                   80.33
-Successful transactions:         541
+Elapsed time:                  10.10 secs
+Data transferred:              14.38 MB
+Response time:                  1.76 secs
+Transaction rate:             125.84 trans/sec
+Throughput:                     1.42 MB/sec
+Concurrency:                  221.97
+Successful transactions:        1271
 Failed transactions:               0
-Longest transaction:            0.98
-Shortest transaction:           0.01
+Longest transaction:            2.45
+Shortest transaction:           0.03
 ```
 
 ## Build Environment

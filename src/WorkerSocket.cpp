@@ -36,29 +36,27 @@ bool WorkerSocket::read_from(const int client_socket)
 {
     memset(&m_receive_buffer, 0, sizeof(m_receive_buffer));
 
-    ssize_t receive_result = recv(client_socket, &m_receive_buffer, sizeof(m_receive_buffer), MSG_DONTWAIT);
-    
-    if(receive_result == -1)
+    for(;;)
     {
-        if((errno == EAGAIN) || (errno == EWOULDBLOCK))
+        ssize_t receive_result = recv(client_socket, &m_receive_buffer, sizeof(m_receive_buffer), MSG_DONTWAIT);
+
+        if(receive_result == -1)
         {
-            Logger::error("worker recv() EAGAIN");
-            return false;
-        }
-        else
-        {
-            Logger::error("worker read() error", errno);
-            return false;
+            // read error
+            if((errno != EAGAIN) && (errno != EWOULDBLOCK))
+            {
+                Logger::error("worker recv() error", errno);
+                close(client_socket);
+                return false;
+            }
+            else
+            {
+                // read the whole buffer
+                return true;
+            }
         }
     }
 
-    if(receive_result == 0)
-    {
-        Logger::error("client prematurely closed connection");
-        return false;
-    }
-    
-    m_receive_buffer[receive_result] = '\0';
     return true;
 }
 

@@ -22,11 +22,7 @@ public:
     Worker& operator=(Worker&& other);
 
 public:
-    Worker(
-        const int worker_socket, 
-        const std::string& accept_mutex_name,
-        const std::string& worker_mutex_name
-    );
+    Worker(const int worker_socket);
 
 public:
     /**
@@ -88,20 +84,12 @@ private:
     int m_epfd;
 
     int m_worker_socket;
-
-    std::string m_accept_mutex_name;
-    sem_t* m_accept_mutex;
-
-    std::string m_worker_mutex_name;
-    sem_t* m_worker_mutex;
     
     std::unique_ptr< WorkerSocket > m_worker_socket_handler;
-
     std::shared_ptr< Connection > m_connection;
 	std::unique_ptr< WorkerSocket > m_server_socket;
 	std::unique_ptr< SqliteHandler > m_sqlite_handler;
 	std::unique_ptr< ResourceHandler > m_resource_handler;
 	std::unique_ptr< ServerConfiguration > m_configuration;
-
 	std::map< std::string, std::string > post_data_map;
 };

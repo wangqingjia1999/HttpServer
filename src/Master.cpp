@@ -20,7 +20,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
-#include <semaphore.h>
 #include <cstdio>
 
 
@@ -42,37 +41,13 @@ namespace
     constexpr size_t MAXIMUM_LISTENING_PENDING_QUEUE = 4096;
 }
 
-namespace
-{
-    sem_t* reopen_semaphore(const std::string& semaphore_name, const int initial_value)
-    {
-        if(sem_unlink(semaphore_name.c_str()) == -1)
-        {
-            Logger::error("master sem_unlink() error", errno);
-            throw std::runtime_error("master sem_unlink() error");
-        }
-
-
-        sem_t* semaphore = sem_open(semaphore_name.c_str(), O_CREAT | O_EXCL , S_IRWXG | S_IRWXU | S_IRWXO, initial_value);
-        if(semaphore == SEM_FAILED)
-        {
-            Logger::error("rerun sem_open() error", errno);
-            throw std::runtime_error("rerun sem_open() error");
-        }
-        return semaphore;
-    }
-}
-
 Master::Master(const std::string& ip, const int port)
     : m_cpu_cores{ get_nprocs() },
-      m_accept_mutex_name{ "/worker_accept_mutex" },
-      m_worker_mutex_name{ "/worker_mutex" },
       m_listening_ip{ ip },
       m_listening_port{ port },
       m_listening_socket{ -1 },
       m_epfd{ -1 }
 {
-    initialize();
     spawn_worker(m_cpu_cores);
     listen_at();
     event_loop();
@@ -88,64 +63,6 @@ Master::~Master()
     }
 
     wait(NULL);
-
-    sem_close(m_worker_mutex);
-    sem_close(m_accept_mutex);
-
-    if(sem_unlink(m_worker_mutex_name.c_str()) < 0)
-        Logger::error("sem_unlink() worker mutex error", errno);
-
-    if(sem_unlink(m_accept_mutex_name.c_str()) < 0)
-        Logger::error("sem_unlink() accept mutex error", errno);
-
-    delete m_accept_mutex;
-    m_accept_mutex = nullptr;
-
-    delete m_worker_mutex;
-    m_worker_mutex = nullptr;
-}
-
-void Master::initialize()
-{
-    m_worker_mutex = sem_open(m_worker_mutex_name.c_str(), O_CREAT | O_EXCL, S_IRWXG | S_IRWXU | S_IRWXO, 1);
-    if(m_worker_mutex == SEM_FAILED)
-    {
-        if(errno == EEXIST)
-        {
-            m_worker_mutex = reopen_semaphore(m_worker_mutex_name.c_str(), 1);
-
-            if(m_worker_mutex == SEM_FAILED)
-            {
-                Logger::error("sem_open() error", errno);
-                throw std::runtime_error("sem_open() error");
-            }
-        }
-        else
-        {
-            Logger::error("sem_open() error", errno);
-            throw std::runtime_error("sem_open() error");
-        }   
-    }
-
-    m_accept_mutex = sem_open(m_accept_mutex_name.c_str(), O_CREAT | O_EXCL, S_IRWXG | S_IRWXU | S_IRWXO, 0);
-    if(m_accept_mutex == SEM_FAILED)
-    {
-        if(errno == EEXIST)
-        {
-            m_accept_mutex = reopen_semaphore(m_accept_mutex_name.c_str(), 0);
-
-            if(m_accept_mutex == SEM_FAILED)
-            {
-                Logger::error("sem_open() error", errno);
-                throw std::runtime_error("sem_open() error");
-            }
-        }
-        else
-        {
-            Logger::error("sem_open() error", errno);
-            throw std::runtime_error("sem_open() error");
-        }   
-    }
 }
 
 int Master::get_cpu_cores() const
@@ -182,11 +99,7 @@ void Master::spawn_worker(const size_t number_of_worker)
             {
                 try
                 {
-                    Worker worker(
-                        fds[1], 
-                        m_accept_mutex_name, 
-                        m_worker_mutex_name
-                    );
+                    Worker worker(fds[1]);
 
                     worker.event_loop();
                 } catch (const std::exception& e)
@@ -200,7 +113,6 @@ void Master::spawn_worker(const size_t number_of_worker)
             default:
             {
                 m_worker_channels.push_back( Channel{ fds[0], fds[1], child_pid } );
-                m_master_sockets.insert(fds[0]);
                 break;
             }
         }
@@ -254,31 +166,23 @@ void Master::listen_at(const std::string& ip, const int port)
     listening_event.events = EPOLLIN | EPOLLET;
     if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, m_listening_socket, &listening_event) == -1)
     {
-        Logger::error("master epoll add error", errno);
-        throw std::runtime_error("master epoll add error");
+        Logger::error("master epoll adds listening socket error", errno);
+        throw std::runtime_error("master epoll adds listening socket error");
     }
-    
-    // monitor workers' requests
-    if(m_master_sockets.empty())
+
+    for(auto worker_channel : m_worker_channels)
     {
-        Logger::error("master sockets set is empty. worker process is not created correctly");
-        throw std::runtime_error("master sockets set is empty.");
-    }
-    else
-    {
-        for(const int master_socket : m_master_sockets)
+        epoll_event worker_writable_event;
+        worker_writable_event.data.fd = worker_channel.get_master_socket();
+
+        // Level-triggered mode for monitoring worker's readiness.
+        worker_writable_event.events = EPOLLOUT;
+        if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, worker_channel.get_master_socket(), &worker_writable_event) == -1)
         {
-            epoll_event worker_event;
-            worker_event.data.fd = master_socket;
-            worker_event.events = EPOLLIN | EPOLLET;
-            if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, master_socket, &worker_event) == -1)
-            {
-                Logger::error("master epoll add error", errno);
-                throw std::runtime_error("master epoll add error");
-            }
+            Logger::error("master epoll adds monitor for worker's writability error", errno);
+            throw std::runtime_error("master epoll adds monitor for worker's writability error");
         }
     }
-    
 }
 
 void Master::listen_at()
@@ -304,7 +208,6 @@ void Master::event_loop()
             {
                 for(int i = 0; i < sum; ++i)
                 {
-                    int accepted_fd = 0;
                     int triggered_fd = triggered_events[i].data.fd;
                     uint32_t triggered_event =  triggered_events[i].events;
                     
@@ -313,34 +216,37 @@ void Master::event_loop()
                     {
                         sockaddr_in accepted_socket;
                         socklen_t accepted_socket_length;
-                        if((accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length)) == -1)
+                        
+                        int accepted_fd = 0;
+                        
+                        for(;;)
                         {
-                            Logger::error("master accept() error", errno);
-                            continue;
+                            accepted_fd = accept(m_listening_socket, (sockaddr*)(&accepted_socket), &accepted_socket_length);
+                            if(accepted_fd > 0)
+                                pending_client_sockets.push(accepted_fd);
+                            else
+                                break;
                         }
-                                            
-                        m_accept_queue.push(accepted_fd);
-                        sem_post(m_accept_mutex);
                     }
 
-                    // if one worker obtains the accept lock, pass one fd to the worker.
-                    if((triggered_event & EPOLLIN) && (m_master_sockets.find(triggered_fd) != m_master_sockets.end()))
+                    // worker is ready for processing
+                    if((triggered_event & EPOLLOUT) && (triggered_fd != m_listening_socket) && (!pending_client_sockets.empty()))
                     {
-                        if(!m_accept_queue.empty())
-                        {
-                            if(!UnixDomainHelper::send_fd(triggered_fd, m_accept_queue.front()))
-                                Logger::error("master sends fd error");
-                            close(m_accept_queue.front());
-                            m_accept_queue.pop();
-                        }
+                        int pending_client_socket = pending_client_sockets.front();
+
+                        UnixDomainHelper::send_fd(triggered_fd, pending_client_socket);
+
+                        close(pending_client_socket);
+                        
+                        pending_client_sockets.pop();
+                        
+                        continue;
                     }
 
                     if(triggered_event & EPOLLERR)
                     {
-                        Logger::error("triggered socket event error", errno);
-                        if(epoll_ctl(m_epfd, EPOLL_CTL_DEL, triggered_fd, nullptr) == -1)
-                            Logger::error("epoll delete error");
-                        
+                        Logger::error("master: close() triggered socket in error status", errno);
+                        close(triggered_fd);
                         continue;
                     }
                 }
