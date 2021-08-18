@@ -43,18 +43,18 @@ Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)
 
 Recent benchmark with terribly bad performance :^)
 ```text
-Transactions:                   1271 hits
+Transactions:                   6732 hits
 Availability:                 100.00 %
-Elapsed time:                  10.10 secs
-Data transferred:              14.38 MB
-Response time:                  1.76 secs
-Transaction rate:             125.84 trans/sec
-Throughput:                     1.42 MB/sec
-Concurrency:                  221.97
-Successful transactions:        1271
+Elapsed time:                  59.89 secs
+Data transferred:              76.16 MB
+Response time:                  8.23 secs
+Transaction rate:             112.41 trans/sec
+Throughput:                     1.27 MB/sec
+Concurrency:                  925.22
+Successful transactions:        6732
 Failed transactions:               0
-Longest transaction:            2.45
-Shortest transaction:           0.03
+Longest transaction:           11.36
+Shortest transaction:           0.00
 ```
 
 ## Build Environment

@@ -36,4 +36,4 @@ for line in fileinput.input([siege_config_file_path], inplace=True):
         continue
     print(line, end='')
 
-os.system("siege -t10S -u 127.0.0.1:40000/?q=word")
+os.system("siege -t1M -u 127.0.0.1:40000/?q=word")

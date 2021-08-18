@@ -46,6 +46,7 @@ Master::Master(const std::string& ip, const int port)
       m_listening_ip{ ip },
       m_listening_port{ port },
       m_listening_socket{ -1 },
+      m_is_monitor_worker{ false },
       m_epfd{ -1 }
 {
     spawn_worker(m_cpu_cores);
@@ -169,20 +170,6 @@ void Master::listen_at(const std::string& ip, const int port)
         Logger::error("master epoll adds listening socket error", errno);
         throw std::runtime_error("master epoll adds listening socket error");
     }
-
-    for(auto worker_channel : m_worker_channels)
-    {
-        epoll_event worker_writable_event;
-        worker_writable_event.data.fd = worker_channel.get_master_socket();
-
-        // Level-triggered mode for monitoring worker's readiness.
-        worker_writable_event.events = EPOLLOUT;
-        if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, worker_channel.get_master_socket(), &worker_writable_event) == -1)
-        {
-            Logger::error("master epoll adds monitor for worker's writability error", errno);
-            throw std::runtime_error("master epoll adds monitor for worker's writability error");
-        }
-    }
 }
 
 void Master::listen_at()
@@ -227,6 +214,24 @@ void Master::event_loop()
                             else
                                 break;
                         }
+
+                        if(!m_is_monitor_worker)
+                        {
+                            for(auto worker_channel : m_worker_channels)
+                            {
+                                epoll_event worker_writable_event;
+                                worker_writable_event.data.fd = worker_channel.get_master_socket();
+
+                                // Level-triggered mode for monitoring worker's readiness.
+                                worker_writable_event.events = EPOLLOUT;
+                                if(epoll_ctl(m_epfd, EPOLL_CTL_ADD, worker_channel.get_master_socket(), &worker_writable_event) == -1)
+                                {
+                                    Logger::error("master epoll adds monitor for worker's writability error", errno);
+                                    throw std::runtime_error("master epoll adds monitor for worker's writability error");
+                                }
+                            }
+                            m_is_monitor_worker = true;
+                        }
                     }
 
                     // worker is ready for processing
@@ -240,6 +245,13 @@ void Master::event_loop()
                         
                         pending_client_sockets.pop();
                         
+                        if(pending_client_sockets.empty())
+                        {
+                            for(auto worker_channel : m_worker_channels)
+                                epoll_ctl(m_epfd, EPOLL_CTL_DEL, worker_channel.get_master_socket(), nullptr);
+                            m_is_monitor_worker = false;
+                        }
+
                         continue;
                     }
 

@@ -38,6 +38,7 @@ private:
     int m_cpu_cores;
 
     std::vector<Channel> m_worker_channels;
+    bool m_is_monitor_worker;
 
     std::queue<int> pending_client_sockets;
 
