@@ -30,6 +30,7 @@ target_link_libraries(all_tests PUBLIC
     gtest_main 
     all_libs
     sqlite_handler_lib
+    compressor_lib
 )
 
 add_executable(character_set_test CharacterSetTest.cpp)

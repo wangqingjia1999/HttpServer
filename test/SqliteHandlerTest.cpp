@@ -128,6 +128,6 @@ TEST(sqlite3_tests, search_news_titles_test)
 
     std::vector<Sentence> sentences = sqlite_handler.search_sentence("fly");
     
-    EXPECT_EQ(sentences.size(), 389);
+    EXPECT_EQ(sentences.size(), 100);
     EXPECT_TRUE(sentences[0].get_body().find("fly") != std::string::npos);    
 }
