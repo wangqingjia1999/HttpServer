@@ -75,7 +75,8 @@ void Worker::event_loop()
         {
             case -1:
             {
-                Logger::error("worker epoll_wait() error", errno);
+                if(errno != EINTR)
+                    Logger::error("worker epoll_wait() error", errno);
                 continue;
             }
 

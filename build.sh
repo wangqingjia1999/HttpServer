@@ -14,6 +14,7 @@ install_package_if_not_exists()
 install_package_if_not_exists cmake
 install_package_if_not_exists sqlite3
 install_package_if_not_exists libsqlite3-dev
+install_package_if_not_exists libz-dev
 
 if [ ! -d "${PWD}/googletest" ] 
 then

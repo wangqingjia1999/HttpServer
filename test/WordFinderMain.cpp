@@ -75,7 +75,7 @@ int main()
     
     try
     {
-        Master master("0.0.0.0", 80);
+        Master::listen_at("0.0.0.0", 80);
     }
     catch(const std::exception& e)
     {

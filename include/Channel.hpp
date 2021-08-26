@@ -2,6 +2,9 @@
 
 #include <sys/types.h>
 
+/**
+ * @brief Socket pair/channel between master and worker process.
+ */
 class Channel
 {
 public:
