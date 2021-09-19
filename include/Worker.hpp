@@ -90,6 +90,5 @@ private:
 	std::unique_ptr< WorkerSocket > m_server_socket;
 	std::unique_ptr< SqliteHandler > m_sqlite_handler;
 	std::unique_ptr< ResourceHandler > m_resource_handler;
-	std::unique_ptr< ServerConfiguration > m_configuration;
 	std::map< std::string, std::string > post_data_map;
 };

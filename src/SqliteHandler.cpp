@@ -18,12 +18,10 @@ SqliteHandler::SqliteHandler()
     : m_connection{nullptr},
       m_statement{nullptr}
 {
-    ServerConfiguration server_config;
-
-    if(sqlite3_open(server_config.get_database_path().c_str(), &m_connection) != SQLITE_OK)  
+    if(sqlite3_open(ServerConfiguration::instance()->get_database_path().c_str(), &m_connection) != SQLITE_OK)  
     {
-        Logger::error("can't connect to database based on given path: " + server_config.get_database_path());
-        throw std::runtime_error("can't connect to database based on given path: " + server_config.get_database_path());
+        Logger::error("can't connect to database based on given path: " + ServerConfiguration::instance()->get_database_path());
+        throw std::runtime_error("can't connect to database based on given path: " + ServerConfiguration::instance()->get_database_path());
     }
 
     std::string create_user_table

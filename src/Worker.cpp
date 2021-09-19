@@ -39,8 +39,7 @@ Worker::Worker(const int worker_socket)
       m_connection{ std::make_shared<Connection>() },
       m_sqlite_handler{ new SqliteHandler() },
       m_server_socket{ new WorkerSocket() },
-      m_resource_handler{ new ResourceHandler() },
-      m_configuration{ new ServerConfiguration() }
+      m_resource_handler{ new ResourceHandler() }
 {
     m_epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(m_epfd == -1)

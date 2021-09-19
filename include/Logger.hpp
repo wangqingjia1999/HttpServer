@@ -40,8 +40,7 @@ namespace
     {
         if(m_log_directory_path.empty())
         {
-            ServerConfiguration server_configuration;
-            m_log_directory_path = server_configuration.get_log_directory_path();
+            m_log_directory_path = ServerConfiguration::instance()->get_log_directory_path();
         }
         
         std::ofstream log_file(
@@ -126,8 +125,7 @@ namespace Logger
     {
         if(m_log_directory_path.empty())
         {
-            ServerConfiguration server_configuration;
-            m_log_directory_path = server_configuration.get_log_directory_path();
+            m_log_directory_path = ServerConfiguration::instance()->get_log_directory_path();
         }
         return m_log_directory_path;
     }

@@ -5,8 +5,7 @@
 ResourceHandler::ResourceHandler() noexcept
     : m_sqlite_handler{ std::make_shared<SqliteHandler>() }
 {
-    ServerConfiguration config;
-    m_resource_root_directory_path = config.get_resource_directory_path();
+    m_resource_root_directory_path = ServerConfiguration::instance()->get_resource_directory_path();
 }
 
 ResourceHandler::~ResourceHandler()

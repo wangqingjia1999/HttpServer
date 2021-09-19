@@ -188,3 +188,15 @@ std::string ServerConfiguration::get_database_path() const
 {
     return m_database_path;
 }
+
+ServerConfiguration* ServerConfiguration::m_instance = 0;
+
+ServerConfiguration* ServerConfiguration::instance()
+{
+    if(!m_instance)
+    {
+        m_instance = new ServerConfiguration();
+    }
+
+    return m_instance;
+}
