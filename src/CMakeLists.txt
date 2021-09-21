@@ -19,7 +19,6 @@ set(header_files
     ../include/ResourceHandler.hpp
     ../include/Connection.hpp
     ../include/SqliteHandler.hpp
-    ../include/HtmlBuilder.hpp
     ../include/Sentence.hpp
     ../include/Worker.hpp
     ../include/Channel.hpp
@@ -45,7 +44,6 @@ set(source_files
     ResourceHandler.cpp
     Connection.cpp
     SqliteHandler.cpp
-    HtmlBuilder.cpp
     Sentence.cpp
     Worker.cpp
     Channel.cpp
@@ -199,15 +197,6 @@ target_link_libraries(sqlite_handler_lib PUBLIC
     logger_lib
     sentence_lib
     server_configuration_lib
-)
-
-add_library(html_builder_lib STATIC
-    ../include/HtmlBuilder.hpp
-    HtmlBuilder.cpp
-)
-target_link_libraries(html_builder_lib PUBLIC
-    sentence_lib
-    sqlite_handler_lib
 )
 
 add_library(sentence_lib STATIC

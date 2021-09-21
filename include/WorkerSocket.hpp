@@ -18,8 +18,8 @@ public:
     WorkerSocket(const WorkerSocket&) = delete;
     WorkerSocket& operator=(const WorkerSocket&) = delete;
 
-    WorkerSocket(const WorkerSocket&&) = delete;
-    WorkerSocket& operator=(const WorkerSocket&&) = delete;
+    WorkerSocket(WorkerSocket&&) = delete;
+    WorkerSocket& operator=(WorkerSocket&&) = delete;
 
 public:
     bool write_to(const int client_socket, const std::string& data_string);

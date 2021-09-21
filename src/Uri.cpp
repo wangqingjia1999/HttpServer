@@ -238,7 +238,6 @@ bool Uri::parse_path(std::string& uri, std::string& remains)
 				auto path_elelment_delimiter = uri.find("/");
 				if(path_elelment_delimiter != std::string::npos)
 				{
-					// TODO: difference between push_back and emplace_back
 					m_path.emplace_back(uri.begin(), uri.begin() + path_elelment_delimiter);
 					uri = uri.substr(path_elelment_delimiter+1);
 				}

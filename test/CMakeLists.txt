@@ -13,7 +13,6 @@ set(source_files
     SentenceTest.cpp
     MasterTest.cpp
     ConnectionTest.cpp
-    HtmlBuilderTest.cpp
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
     SqliteHandlerTest.cpp
@@ -136,14 +135,6 @@ add_executable(sqlite_handler_test
 target_link_libraries(sqlite_handler_test PUBLIC
     gtest_main
     sqlite_handler_lib
-)
-
-add_executable(html_builder_test
-    HtmlBuilderTest.cpp
-)
-target_link_libraries(html_builder_test PUBLIC
-    gtest_main
-    html_builder_lib
 )
 
 add_executable(sentence_test

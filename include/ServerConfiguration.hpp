@@ -5,17 +5,17 @@
 class ServerConfiguration
 {
 public:
-    ~ServerConfiguration() = default;
+    ~ServerConfiguration();
+
+    ServerConfiguration(const ServerConfiguration& other) = delete;
+    ServerConfiguration& operator=(const ServerConfiguration& other) = delete;
+    
+    ServerConfiguration(ServerConfiguration&& other) = delete;
+    ServerConfiguration& operator=(ServerConfiguration&& other) = delete;
 
 protected:
     ServerConfiguration();
     
-    ServerConfiguration(const ServerConfiguration& other) = default;
-    ServerConfiguration& operator=(const ServerConfiguration& other) = default;
-    
-    ServerConfiguration(ServerConfiguration&& other) = default;
-    ServerConfiguration& operator=(ServerConfiguration&& other) = default;
-
 public:
     std::string get_database_path() const;
     std::string get_root_directory_path() const;

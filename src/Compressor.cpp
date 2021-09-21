@@ -11,7 +11,7 @@ namespace Compressor
         if(deflateInit(&stream, Z_BEST_COMPRESSION) != Z_OK)
             return {};
 
-        stream.next_in = (Bytef*)( data_string.data() ); // TODO: fix this bad coding style
+        stream.next_in = (Bytef*)( data_string.data() );
         stream.avail_in = data_string.size();
 
         std::string compressed_data;

@@ -131,16 +131,8 @@ namespace Message
 		 */
 		bool set_protocol_version(const std::string protocol_version);
 		
-		/**
-		 * Set response body.
-		 * 
-		 * @param[in]  body  
-		 * 		Response body string.
-		 * 
-		 * @return  
-		 * 		True if succeeds.
-		 */
-		bool set_body(const std::string& body);
+		void set_body(const std::string& body);
+		void set_body(std::string&& body);
 		
 		/**
 		 * Set response body length.
@@ -166,17 +158,6 @@ namespace Message
 		 * 		True if add successfully.
 		 */
 		bool add_header(const std::string& name, const std::string& value);
-
-		/**
-		 * Set Content-Length header.
-		 * 
-		 * @param[in] content_length  
-		 * 		Length of response body.
-		 * 
-		 * @return  
-		 * 		True if succeeds.
-		 */
-		bool set_content_length(const size_t& new_content_length);
 		
 		/**
 		 * Set content type.
@@ -225,9 +206,6 @@ namespace Message
 		// Body of response message
 		std::string m_body;
 		
-		// Length of body of response message
-		size_t m_body_length;
-
 		// Content type
 		std::string m_content_type;
 	};

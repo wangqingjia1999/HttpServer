@@ -169,6 +169,12 @@ ServerConfiguration::ServerConfiguration()
     create_file_if_not_exist(css_directory_path + "HomePage.css", default_home_css);
 }
 
+ServerConfiguration::~ServerConfiguration()
+{
+    delete m_instance;
+    m_instance = nullptr;
+}
+
 std::string ServerConfiguration::get_root_directory_path() const
 {
     return m_root_directory_path;

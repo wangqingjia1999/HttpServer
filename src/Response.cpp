@@ -91,8 +91,7 @@ namespace Message
 	Message::Response::Response()
 		: m_uri(std::make_shared<Uri> ()),
 		  m_status_code(0),
-		  m_protocol_version("HTTP/1.1"),
-		  m_body_length(0)
+		  m_protocol_version("HTTP/1.1")
 	{
 	}
 
@@ -103,7 +102,6 @@ namespace Message
 		m_reason_phrase = other.m_reason_phrase;
 		m_headers = other.m_headers;
 		m_body = other.m_body;
-		m_body_length = other.m_body_length;
 		m_content_type = other.m_content_type;
     }
 
@@ -116,7 +114,6 @@ namespace Message
 			m_reason_phrase = other.m_reason_phrase;
 			m_headers = other.m_headers;
 			m_body = other.m_body;
-			m_body_length = other.m_body_length;
 			m_content_type = other.m_content_type;
 		}
 		return *this;
@@ -160,12 +157,6 @@ namespace Message
 		return status_code_map[status_code];
 	}
 
-	std::string Message::Response::get_body_length()
-	{
-		m_body_length = m_body.size();
-		return std::to_string(m_body_length);
-	}
-
 	std::string Message::Response::get_content_type()
 	{
 		return m_content_type;
@@ -184,27 +175,14 @@ namespace Message
 		return true;
 	}
 	
-	bool Message::Response::set_body(const std::string& body)
+	void Message::Response::set_body(const std::string& body)
 	{
-		if (!m_body.empty())
-			m_body.clear();
-
 		m_body = body;
-		m_body_length = body.size();
-		return true;
 	}
 
-	bool Message::Response::set_body_length(const std::streamoff body_length)
+	void Message::Response::set_body(std::string&& body)
 	{
-		if (body_length != -1)
-		{
-			m_body_length = body_length;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		m_body = std::move(body);
 	}
 
 	void Message::Response::set_content_type(const std::string& content_type)
@@ -223,20 +201,6 @@ namespace Message
 		// insert new or update existing header
 		m_headers[name] = value;
 		return true;
-	}
-
-	bool Message::Response::set_content_length(const size_t& new_content_length)
-	{
-		if (new_content_length < 0)
-		{
-			return false;
-		}
-		else
-		{
-			m_body_length = new_content_length;
-			add_header("Content-Length", std::to_string(new_content_length));
-			return true;
-		}
 	}
 
 	bool Message::Response::set_reason_phrase(const int status_code)

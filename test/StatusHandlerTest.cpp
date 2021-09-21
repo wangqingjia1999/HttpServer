@@ -36,6 +36,7 @@ TEST(status_handler_tests, status_code_100_test)
     {
         "HTTP/1.1 100 Continue\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -56,6 +57,7 @@ TEST(status_handler_tests, status_code_101_test)
         "HTTP/1.1 101 Switching Protocol\r\n"
         "Connection: upgrade\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "Upgrade: HTTP/2.0\r\n"
         "\r\n"
@@ -77,6 +79,7 @@ TEST(status_handler_tests, status_code_200_test)
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 0\r\n"
 	    "Content-Type: \r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -96,6 +99,7 @@ TEST(status_handler_tests, status_code_201_test)
     {
         "HTTP/1.1 201 Created\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -115,6 +119,7 @@ TEST(status_handler_tests, status_code_202_test)
     {
         "HTTP/1.1 202 Accepted\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -134,6 +139,7 @@ TEST(status_handler_tests, status_code_203_test)
     {
         "HTTP/1.1 203 Non-Authoritative Information\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -153,6 +159,7 @@ TEST(status_handler_tests, status_code_204_test)
     {
         "HTTP/1.1 204 No Content\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -172,6 +179,7 @@ TEST(status_handler_tests, status_code_205_test)
     {
         "HTTP/1.1 205 Reset Content\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -191,6 +199,7 @@ TEST(status_handler_tests, status_code_206_test)
     {
         "HTTP/1.1 206 Partial Content\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -213,6 +222,7 @@ TEST(status_handler_tests, status_code_301_test)
     {
         "HTTP/1.1 301 Moved Permanently\r\n"
         "Content-Length: 0\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
@@ -230,7 +240,13 @@ TEST(status_handler_tests, status_code_400_test)
     
     std::string expected_response
     {
-        "HTTP/1.1 400 Bad Request\r\nContent-Length: 29\r\nContent-Type: text/html\r\nServer: Bitate\r\n\r\n<html> Bad Request :< </html>"
+        "HTTP/1.1 400 Bad Request\r\n"
+        "Content-Length: 29\r\n"
+        "Content-Type: text/html\r\n"
+        "Host: www.bitate.com\r\n"
+        "Server: Bitate\r\n"
+        "\r\n"
+        "<html> Bad Request :< </html>"
     };
 
     ASSERT_EQ( 
@@ -250,6 +266,7 @@ TEST(status_handler_tests, status_code_404_test)
         "Content-Length: 154\r\n"
         "Content-Type: text/html\r\n"
         "Date: Thu, 12 Nov 2020 13:41:37 GMT\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
         "<html>"
@@ -289,6 +306,7 @@ TEST(status_handler_tests, status_code_405_test)
         "Content-Length: 222\r\n"
         "Content-Type: text/html\r\n"
         "Date: Thu, 12 Nov 2020 13:41:37 GMT\r\n"
+        "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
         "<html>"

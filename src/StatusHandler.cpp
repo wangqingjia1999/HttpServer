@@ -1,4 +1,5 @@
 #include "StatusHandler.hpp"
+#include "ServerConfiguration.hpp"
 
 namespace StatusHandler
 {                           
@@ -9,9 +10,12 @@ namespace StatusHandler
 
         // The Date header MUST be sent if the server is capable of generating accurate date.
         response->add_header("Date", Timer::get_current_http_time());
-        // Generally, a server should have the following headers despite the status.
+
+        // Generally, a server should have the Server header despite the status.
         response->add_header("Server", "Bitate");
 
+        response->add_header("Host", "www.bitate.com");
+        
         switch(status_code)
         {
             /**
@@ -28,6 +32,8 @@ namespace StatusHandler
                  * https://stackoverflow.com/a/61122084/11850070
                  */
                 response->add_header("Connection", "upgrade");
+
+                // TODO: Support HTTP/2.0
                 response->add_header("Upgrade", "HTTP/2.0");
                 
                 break;
@@ -38,39 +44,37 @@ namespace StatusHandler
              */
             case 200:   // OK
             {
-                response->add_header("Content-Length", response->get_body_length());
                 response->add_header("Content-Type", response->get_content_type());
                 
                 break;
             }
 
-            case 201:   //
+            case 201:   // Created
             { 
-    
                 break;
             }
 
-            case 202:   //
+            case 202:   // Accepted
             {
                 break;
             }
 
-            case 203:   //
+            case 203:   // Non-Authoritative Information
             {
                 break;
             }
 
-            case 204:   //
+            case 204:   // No Content
             {
                 break;
             }
             
-            case 205:   //
+            case 205:   // Reset Content
             {
                 break;
             }
             
-            case 206:   //
+            case 206:   // Partial Content
             {
                 break;
             }
@@ -78,42 +82,37 @@ namespace StatusHandler
             /**
              * 3xx: redirection
              */
-            case 301:   //
+            case 300:   // Multiple Choices
+            {
+
+            }
+
+            case 301:   // Moved Permanently
             {
                 break;
             }
 
-            case 302:   //
+            case 302:   // Found
             {
                 break;
             }
 
-            case 303:   //
+            case 303:   // See Other
             {
                 break;
             }
 
-            case 304:   //
+            case 304:   // Not Modified
             {
                 break;
             }
 
-            case 305:   //
-            {
-                break;
-            }
-
-            case 306:   //
+            case 307:   // Temporary Redirect
             {
                 break;
             }
             
-            case 307:   //
-            {
-                break;
-            }
-            
-            case 308:   //
+            case 308:   // Permanent Redirect
             {
                 break;
             }
@@ -128,7 +127,6 @@ namespace StatusHandler
                  */
                 response->set_body("<html> Bad Request :< </html>");
                 response->add_header("Content-Type", "text/html");
-                response->add_header("Content-Length", response->get_body_length());
                 break;
             }
 
@@ -143,17 +141,12 @@ namespace StatusHandler
                 break;
             }
 
-            case 402:   // 
+            case 403:   // Forbidden
             {
                 break;
             }
 
-            case 403:   // 
-            {
-                break;
-            }
-
-            case 404:   // 
+            case 404:   // Not Found
             {
                 response->set_body(
                     "<html>"
@@ -178,7 +171,7 @@ namespace StatusHandler
                 break;
             }
 
-            case 405:   // 
+            case 405:   // Method Not Allowed
             {
                 response->add_header("Allow", "GET");
                 response->set_body(
@@ -202,117 +195,87 @@ namespace StatusHandler
                 break;
             }
 
-            case 406:   // 
+            case 406:   // Not Acceptable
             {
                 break;
             }
 
-            case 407:   // 
+            case 407:   // Proxy Authentication Required
             {
                 break;
             }
 
-            case 408:   // 
+            case 408:   // Request Timeout
             {
                 break;
             }
 
-            case 409:   // 
+            case 409:   // Conflict
             {
                 break;
             }
 
-            case 410:   // 
+            case 410:   // Gone
             {
                 break;
             }
 
-            case 411:   // 
+            case 411:   // Length Required
             {
                 break;
             }
 
-            case 412:   // 
+            case 412:   // Precondition Failed
             {
                 break;
             }
 
-            case 413:   // 
+            case 413:   // Payload Too Large
             {
                 break;
             }
 
-            case 414:   // 
+            case 414:   // URI Too Long
             {
                 break;
             }
             
-            case 415:	// 
+            case 415:	// Unsupported Media Type
             {
                 break;
             }
 
-            case 416:	// 
+            case 416:	// Range Not Satisfiable
             {
                 break;
             }
 
-            case 417:	// 
+            case 417:	// Expected Failed
             {
                 break;
             }
 
-            case 418:	// 
+            case 418:	// I'm A Teapot(Not Coffee Pot)
             {
                 break;
             }
 
-            case 421:	// 
+            case 426:	// Upgrade Required
             {
                 break;
             }
 
-            case 422:	// 
+            case 428:	// Precondition Required
             {
                 break;
             }
 
-            case 423:	// 
+            case 429:	// Too Many Requests
             {
                 break;
             }
 
-            case 424:	// 
-            {
-                break;
-            }
-
-            case 425:	// 
-            {
-                break;
-            }
-
-            case 426:	// 
-            {
-                break;
-            }
-
-            case 428:	// 
-            {
-                break;
-            }
-
-            case 429:	// 
-            {
-                break;
-            }
-
-            case 431:	//  
-            {
-                break;
-            }
-
-            case 451:	//  
+            case 431:	// Request Header Field Too Large
             {
                 break;
             }
@@ -322,6 +285,7 @@ namespace StatusHandler
              */
             case 500:	// Internal Server Error
             {
+                response->set_body("<html> Internal server error! </html>");
                 break;
             }
 
@@ -329,56 +293,30 @@ namespace StatusHandler
             {
                 response->set_body("<html> Request Method Not Implemented. </html>");
                 response->add_header("Content-Type", "text/html");
-                response->add_header("Content-Length", response->get_body_length());
                 break;
             }
 
-            case 502:   //
+            case 502:   // Bad Gateway
             {
                 break;
             }
 
-            case 503:   //
+            case 503:   // Service Unavailable
             {
                 break;
             }
 
-            case 504:   //
+            case 504:   // Gateway Timeout
             {
                 break;
             }
 
-            case 505:   //
-            {
-                break;
-            }
-
-            case 506:   //
-            {
-                break;
-            }
-
-            case 507:   //
-            {
-                break;
-            }
-
-            case 508:   //
-            {
-                break;
-            }
-
-            case 510:   //
-            {
-                break;
-            }
-
-            case 511:   //
+            case 505:   // HTTP Version Not Supported
             {
                 break;
             }
         }
 
-        response->add_header("Content-Length", response->get_body_length());
+        response->add_header("Content-Length", std::to_string(response->get_body().size()));
     }
 }

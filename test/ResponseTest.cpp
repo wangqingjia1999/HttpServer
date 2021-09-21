@@ -4,6 +4,30 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+namespace
+{
+    /**
+     * Weed out dynamically generated http date to facilitate the checking of two http messages.
+     * 
+     * @param[in] message
+     *      Http request/response message.
+     * 
+     * @return
+     *      Http request/response message without date header.
+     */
+    inline std::string weed_out_http_date_header(const std::string& message)
+    {
+        // Weed out: "Date: Thu, 12 Nov 2020 13:41:37 GMT\r\n"
+        if(message.find("Date:") != std::string::npos && message.find("GMT") != std::string::npos)
+        {
+            std::string before = message.substr(0, message.find("Date:"));
+            std::string after = message.substr(message.find("GMT")+5);
+            return before + after;
+        }
+        return message;
+    }
+}
+
 TEST(response_tests, add_headers) {
     Message::Response response;
 
@@ -22,7 +46,6 @@ TEST(response_tests, generate_200_response)
     std::string body = "Hello World! My payload includes a trailing CRLF.\r\n";
     response->set_body(body);
     response->set_content_type("text/html");
-    response->set_body_length(body.size());
     StatusHandler::handle_status_code(response, 200);
 
     std::string expected_result
@@ -30,12 +53,13 @@ TEST(response_tests, generate_200_response)
         "HTTP/1.1 200 OK\r\n"
         "Content-Length: 51\r\n"
         "Content-Type: text/html\r\n"
-        "Date: Sun, 08 Nov 2020 12:25:15 GMT\r\n"
+        "Host: www.bitate.com\r\n"
+        "Server: Bitate\r\n"
         "\r\n"
         "Hello World! My payload includes a trailing CRLF.\r\n",
     };
 
-    std::cout << response->generate_response() << std::endl;
+    EXPECT_EQ(weed_out_http_date_header(response->generate_response()), expected_result);
 }
 
 TEST(response_tests, map_status_code_to_reaseon_phrase)
