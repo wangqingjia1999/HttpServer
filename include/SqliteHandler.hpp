@@ -2,6 +2,7 @@
 
 #include "Logger.hpp"
 #include "Sentence.hpp"
+#include "IResourceHandler.hpp"
 #include "ServerConfiguration.hpp"
 
 #include <sqlite3.h>
@@ -30,7 +31,7 @@ struct UserInfo
     );
 };
 
-class SqliteHandler
+class SqliteHandler : public IResourceHandler
 {
 public:
     SqliteHandler();
@@ -43,6 +44,8 @@ public:
     SqliteHandler& operator=(SqliteHandler&& other) = delete;
 
 public:
+    virtual bool fetch_resource(const std::shared_ptr<Connection> connection) override;
+    
     /**
      * Whether the table exists?
      * 
@@ -160,4 +163,5 @@ private:
 private:
     sqlite3* m_connection;
     sqlite3_stmt* m_statement;
+    std::string m_resource_root_directory_path;
 };

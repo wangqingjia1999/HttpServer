@@ -1,7 +1,8 @@
 #include "Worker.hpp"
 #include "Logger.hpp"
-#include "UnixDomainHelper.hpp"
 #include "StatusHandler.hpp"
+#include "SqliteHandler.hpp"
+#include "UnixDomainHelper.hpp"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -37,9 +38,8 @@ Worker::Worker(const int worker_socket)
       m_worker_socket{ worker_socket },
       m_worker_socket_handler{ new WorkerSocket() },
       m_connection{ std::make_shared<Connection>() },
-      m_sqlite_handler{ new SqliteHandler() },
-      m_server_socket{ new WorkerSocket() },
-      m_resource_handler{ new ResourceHandler() }
+      m_resource_handler{ new SqliteHandler() },
+      m_server_socket{ new WorkerSocket() }
 {
     m_epfd = epoll_create(EPOLL_INTEREST_LIST_SIZE);
     if(m_epfd == -1)
@@ -227,10 +227,9 @@ void Worker::request_core_handler(const std::string& raw_request_string)
                 user_info.m_age = post_data_map["age"];
                 user_info.m_email = post_data_map["email"];
 
-                if(!m_sqlite_handler->add_new_user(user_info))
-                    StatusHandler::handle_status_code(m_connection->get_response(), 400);
-                else
-                    StatusHandler::handle_status_code(m_connection->get_response(), 200);
+                // TODO: Add user (user as resource)
+
+                StatusHandler::handle_status_code(m_connection->get_response(), 200);
                 
                 return;            
             }

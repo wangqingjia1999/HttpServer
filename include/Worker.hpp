@@ -2,7 +2,7 @@
 
 #include "Connection.hpp"
 #include "WorkerSocket.hpp"
-#include "ResourceHandler.hpp"
+#include "IResourceHandler.hpp"
 #include "ServerConfiguration.hpp"
 
 #include <memory>
@@ -22,7 +22,7 @@ public:
     Worker& operator=(Worker&& other);
 
 public:
-    Worker(const int worker_socket);
+    explicit Worker(const int worker_socket);
 
 public:
     /**
@@ -88,7 +88,6 @@ private:
     std::unique_ptr< WorkerSocket > m_worker_socket_handler;
     std::shared_ptr< Connection > m_connection;
 	std::unique_ptr< WorkerSocket > m_server_socket;
-	std::unique_ptr< SqliteHandler > m_sqlite_handler;
-	std::unique_ptr< ResourceHandler > m_resource_handler;
+	std::unique_ptr< IResourceHandler > m_resource_handler;
 	std::map< std::string, std::string > post_data_map;
 };

@@ -16,7 +16,6 @@ set(source_files
     CharacterSetTest.cpp
     StatusHandlerTest.cpp
     SqliteHandlerTest.cpp
-    ResourceHandlerTest.cpp
     PercentEncodingTest.cpp
     ServerConfigurationTest.cpp
     WorkerTest.cpp
@@ -111,14 +110,6 @@ add_executable(server_configuration_test
 target_link_libraries(server_configuration_test PUBLIC
     gtest_main
     server_configuration_lib
-)
-
-add_executable(resource_handler_test
-    ResourceHandlerTest.cpp
-)
-target_link_libraries(resource_handler_test PUBLIC
-    gtest_main
-    resource_handler_lib
 )
 
 add_executable(connection_test

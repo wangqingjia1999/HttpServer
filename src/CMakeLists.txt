@@ -16,7 +16,6 @@ set(header_files
     ../include/Timer.hpp
     ../include/WorkerSocket.hpp
     ../include/ServerConfiguration.hpp
-    ../include/ResourceHandler.hpp
     ../include/Connection.hpp
     ../include/SqliteHandler.hpp
     ../include/Sentence.hpp
@@ -41,7 +40,6 @@ set(source_files
     Timer.cpp
     WorkerSocket.cpp
     ServerConfiguration.cpp
-    ResourceHandler.cpp
     Connection.cpp
     SqliteHandler.cpp
     Sentence.cpp
@@ -172,19 +170,8 @@ target_link_libraries(connection_lib PUBLIC
     response_lib
 )
 
-add_library(resource_handler_lib
-    ../include/ResourceHandler.hpp
-    ResourceHandler.cpp
-)
-target_link_libraries(resource_handler_lib PUBLIC
-    sentence_lib    
-    connection_lib
-    compressor_lib
-    sqlite_handler_lib
-    server_configuration_lib
-)
-
 add_library(sqlite_handler_lib STATIC
+    ../include/IResourceHandler.hpp
     ../include/SqliteHandler.hpp
     SqliteHandler.cpp
 )
@@ -196,6 +183,7 @@ target_link_libraries(sqlite_handler_lib PUBLIC
     /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
     sentence_lib
+    compressor_lib
     server_configuration_lib
 )
 
@@ -211,7 +199,7 @@ add_library(worker_lib STATIC
 target_link_libraries(worker_lib PUBLIC
     connection_lib
     worker_socket_lib
-    resource_handler_lib
+    sqlite_handler_lib
     server_configuration_lib
 )
 target_link_libraries(worker_lib PRIVATE
