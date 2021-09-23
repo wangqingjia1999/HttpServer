@@ -1,21 +1,37 @@
 #include "StatusHandler.hpp"
 #include "ServerConfiguration.hpp"
 
+#include <cstdarg>
+
+#define add_header(header_name, header_value)           \
+    response->add_header(header_name, header_value)
+
+#define add_body(body_content_string)                   \
+    response->set_body(body_content_string)
+
 namespace StatusHandler
 {                           
-    void handle_status_code(std::shared_ptr< Message::Response >& response, const int status_code)
+    void handle_status_code(
+        std::shared_ptr< Message::Response >& response, 
+        const int status_code, 
+        const std::string& additional_info
+    )
     {
         response->set_status(status_code);
         response->set_reason_phrase(status_code);
 
         // The Date header MUST be sent if the server is capable of generating accurate date.
-        response->add_header("Date", Timer::get_current_http_time());
+        add_header("Date", Timer::get_current_http_time());
 
         // Generally, a server should have the Server header despite the status.
-        response->add_header("Server", "Bitate");
+        add_header("Server", "Bitate");
 
-        response->add_header("Host", "www.bitate.com");
+        add_header("Host", "www.bitate.com");
         
+        /**
+         * The handling logic of status codes is based on 
+         * the ref: @link https://httpstatuses.com/
+         */
         switch(status_code)
         {
             /**
@@ -31,10 +47,10 @@ namespace StatusHandler
                 /**
                  * https://stackoverflow.com/a/61122084/11850070
                  */
-                response->add_header("Connection", "upgrade");
+                add_header("Connection", "upgrade");
 
                 // TODO: Support HTTP/2.0
-                response->add_header("Upgrade", "HTTP/2.0");
+                add_header("Upgrade", "HTTP/2.0");
                 
                 break;
             }
@@ -44,7 +60,7 @@ namespace StatusHandler
              */
             case 200:   // OK
             {
-                response->add_header("Content-Type", response->get_content_type());
+                add_header("Content-Type", response->get_content_type());
                 
                 break;
             }
@@ -82,38 +98,46 @@ namespace StatusHandler
             /**
              * 3xx: redirection
              */
-            case 300:   // Multiple Choices
-            {
-
-            }
-
             case 301:   // Moved Permanently
             {
+                add_header("Location", additional_info);
                 break;
             }
 
-            case 302:   // Found
+            case 302:   // Found (Moved Temporarily)
             {
+                add_header("Location", additional_info);
                 break;
             }
 
             case 303:   // See Other
             {
+                add_header("Location", additional_info);
                 break;
             }
 
             case 304:   // Not Modified
             {
+                // TODO: to be implemented
+                add_header("Cache-Control", "");
+                add_header("Content-Location", "");
+                add_header("Date", "");
+                add_header("ETag", "");
+                add_header("Expires", "");
+                add_header("Last-Modified", "");
+                add_header("Vary", "");
                 break;
             }
 
             case 307:   // Temporary Redirect
             {
+                add_header("Location", additional_info);
                 break;
             }
             
             case 308:   // Permanent Redirect
             {
+                add_header("Location", additional_info);
                 break;
             }
 
@@ -125,8 +149,8 @@ namespace StatusHandler
                 /**
                  * The request could not be parsed by server due to the malformed request message.
                  */
-                response->set_body("<html> Bad Request :< </html>");
-                response->add_header("Content-Type", "text/html");
+                add_body("<html> Bad Request :< </html>");
+                add_header("Content-Type", "text/html");
                 break;
             }
 
@@ -136,7 +160,7 @@ namespace StatusHandler
                  * The request requires user authentication.
                  * The response MUST include a 'WWW-Authenticate' header containing at least one challenge.
                  */
-                response->add_header("WWW-Authenticate", "Basic; realm=\"Secured area\"");
+                add_header("WWW-Authenticate", "Basic; realm=\"Secured area\"");
 
                 break;
             }
@@ -148,7 +172,7 @@ namespace StatusHandler
 
             case 404:   // Not Found
             {
-                response->set_body(
+                add_body(
                     "<html>"
                         "<head>"
                             "<title>"
@@ -167,14 +191,14 @@ namespace StatusHandler
                         "</body>"
                     "</html>"
                 );
-                response->add_header("Content-Type", "text/html");
+                add_header("Content-Type", "text/html");
                 break;
             }
 
             case 405:   // Method Not Allowed
             {
-                response->add_header("Allow", "GET");
-                response->set_body(
+                add_header("Allow", "GET");
+                add_body(
                     "<html>"
                         "<head>"
                             "<title>"
@@ -191,7 +215,7 @@ namespace StatusHandler
                         "</body>"
                     "</html>"
                 );
-                response->add_header("Content-Type", "text/html");
+                add_header("Content-Type", "text/html");
                 break;
             }
 
@@ -285,14 +309,14 @@ namespace StatusHandler
              */
             case 500:	// Internal Server Error
             {
-                response->set_body("<html> Internal server error! </html>");
+                add_body("<html> Internal server error! </html>");
                 break;
             }
 
             case 501:   // Not Implemented
             {
-                response->set_body("<html> Request Method Not Implemented. </html>");
-                response->add_header("Content-Type", "text/html");
+                add_body("<html> Request Method Not Implemented. </html>");
+                add_header("Content-Type", "text/html");
                 break;
             }
 
@@ -317,6 +341,6 @@ namespace StatusHandler
             }
         }
 
-        response->add_header("Content-Length", std::to_string(response->get_body().size()));
+        add_header("Content-Length", std::to_string(response->get_body().size()));
     }
 }

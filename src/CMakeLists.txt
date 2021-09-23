@@ -1,52 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-set(header_files
-    ../include/CharacterSet.hpp
-    ../include/Client.hpp
-    ../include/PercentEncoding.hpp
-    ../include/Request.hpp
-    ../include/Response.hpp
-    ../include/Uri.hpp
-    ../include/Logger.hpp
-    ../include/Base64.hpp
-    ../include/Sha1.hpp
-    ../include/Utf8.hpp
-    ../include/StatusHandler.hpp
-    ../include/Master.hpp
-    ../include/Timer.hpp
-    ../include/WorkerSocket.hpp
-    ../include/ServerConfiguration.hpp
-    ../include/Connection.hpp
-    ../include/SqliteHandler.hpp
-    ../include/Sentence.hpp
-    ../include/Worker.hpp
-    ../include/Channel.hpp
-    ../include/UnixDomainHelper.hpp
-)
-
-set(source_files
-    CharacterSet.cpp
-    Client.cpp
-    PercentEncoding.cpp
-    Request.cpp
-    Response.cpp
-    Uri.cpp
-    Logger.cpp
-    Base64.cpp
-    Sha1.cpp
-    Utf8.cpp
-    StatusHandler.cpp
-    Master.cpp
-    Timer.cpp
-    WorkerSocket.cpp
-    ServerConfiguration.cpp
-    Connection.cpp
-    SqliteHandler.cpp
-    Sentence.cpp
-    Worker.cpp
-    Channel.cpp
-    UnixDomainHelper.cpp
-)
+file(GLOB header_files include/*.hpp)
+file(GLOB source_files *.cpp)
 
 add_library(all_libs STATIC
     ${header_files}

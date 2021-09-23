@@ -19,6 +19,13 @@ namespace StatusHandler
 	 * 
 	 * @param[in] status_code  
 	 * 		Status code integer.
+	 * 
+	 * @param[in] variadic arguments
+	 * 		Possible arguments of specific status code for the convenience of processing status.
 	 */
-	void handle_status_code(std::shared_ptr< Message::Response >& response, const int status_code);
+	void handle_status_code(
+		std::shared_ptr< Message::Response >& response, 
+		const int status_code, 
+		const std::string& additional_info = ""
+	);
 }

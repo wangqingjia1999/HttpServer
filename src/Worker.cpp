@@ -10,6 +10,11 @@
 #include <sys/socket.h>
 #include <sys/epoll.h>
 
+#define get_request \
+    m_connection->get_request()
+#define get_response \
+    m_connection->get_response()
+
 namespace
 {
     /**
@@ -118,10 +123,10 @@ void Worker::event_loop()
                         {
                             request_core_handler(m_worker_socket_handler->get_receive_buffer_string());
                             
-                            m_server_socket->write_to(triggered_fd, m_connection->get_response()->generate_response());
+                            m_server_socket->write_to(triggered_fd, get_response->generate_response());
               
-                            m_connection->get_request()->clear_up();
-                            m_connection->get_response()->clear_up();
+                            get_request->clear_up();
+                            get_response->clear_up();
                         }
                         else
                         {
@@ -144,23 +149,23 @@ void Worker::event_loop()
 
 bool Worker::parse_request(const std::string& raw_request_string)
 {
-    m_connection->get_request()->set_raw_request(raw_request_string);
-    return m_connection->get_request()->parse_raw_request();
+    get_request->set_raw_request(raw_request_string);
+    return get_request->parse_raw_request();
 }
 
 std::string Worker::get_raw_request()
 {
-    return m_connection->get_request()->get_raw_request();
+    return get_request->get_raw_request();
 }
 
 std::string Worker::get_raw_response()
 {
-    return m_connection->get_response()->generate_response();
+    return get_response->generate_response();
 }
 
 void Worker::set_raw_request(const std::string& raw_request)
 {
-    m_connection->get_request()->set_raw_request(raw_request);
+    get_request->set_raw_request(raw_request);
 }
 
 bool Worker::handle_post_request()
@@ -170,7 +175,7 @@ bool Worker::handle_post_request()
     /**
      * Append an additional '&', so that each name=value pair has a trailing '&'
      */
-    std::string body_buffer = percent_encoding.decode(m_connection->get_request()->get_body()) + '&';
+    std::string body_buffer = percent_encoding.decode(get_request->get_body()) + '&';
 
     while(!body_buffer.empty())
     {
@@ -199,25 +204,25 @@ void Worker::request_core_handler(const std::string& raw_request_string)
     if(!parse_request(raw_request_string))
     {
         Logger::error("worker parse request error with original request being: \n" + raw_request_string);
-        StatusHandler::handle_status_code(m_connection->get_response(), 400);
+        StatusHandler::handle_status_code(get_response, 400);
         return;
     }
 
-    if(m_connection->get_request()->get_request_method() == "GET")
+    if(get_request->get_request_method() == "GET")
     {
         if(!m_resource_handler->fetch_resource(m_connection))
-            StatusHandler::handle_status_code(m_connection->get_response(), 404);
+            StatusHandler::handle_status_code(get_response, 404);
         else
-            StatusHandler::handle_status_code(m_connection->get_response(), 200);
+            StatusHandler::handle_status_code(get_response, 200);
 
         return;
     }
-    else if(m_connection->get_request()->get_request_method() == "POST")
+    else if(get_request->get_request_method() == "POST")
     {   
-        if(m_connection->get_request()->get_header("Content-Type") == "application/x-www-form-urlencoded")
+        if(get_request->get_header("Content-Type") == "application/x-www-form-urlencoded")
         {
             if(!handle_post_request())
-                StatusHandler::handle_status_code(m_connection->get_response(), 400);
+                StatusHandler::handle_status_code(get_response, 400);
 
             if(post_data_map.find("username") != post_data_map.end())
             {
@@ -229,7 +234,7 @@ void Worker::request_core_handler(const std::string& raw_request_string)
 
                 // TODO: Add user (user as resource)
 
-                StatusHandler::handle_status_code(m_connection->get_response(), 200);
+                StatusHandler::handle_status_code(get_response, 200);
                 
                 return;            
             }
@@ -237,14 +242,14 @@ void Worker::request_core_handler(const std::string& raw_request_string)
         
         return;
     }
-    else if(m_connection->get_request()->get_request_method() == "PUT")
+    else if(get_request->get_request_method() == "PUT")
     {
-        StatusHandler::handle_status_code(m_connection->get_response(), 501);
+        StatusHandler::handle_status_code(get_response, 501);
         return;
     }
-    else if(m_connection->get_request()->get_request_method() == "HEAD")
+    else if(get_request->get_request_method() == "HEAD")
     {
-        StatusHandler::handle_status_code(m_connection->get_response(), 501);
+        StatusHandler::handle_status_code(get_response, 501);
         return;
     }
 }
