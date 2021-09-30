@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cache.hpp"
 #include "Connection.hpp"
 #include "WorkerSocket.hpp"
 #include "IResourceHandler.hpp"
@@ -86,7 +87,7 @@ private:
     int m_worker_socket;
     
     std::unique_ptr< WorkerSocket > m_worker_socket_handler;
-    std::shared_ptr< Connection > m_connection;
+    std::shared_ptr< HTTP::Connection > m_connection;
 	std::unique_ptr< WorkerSocket > m_server_socket;
 	std::unique_ptr< IResourceHandler > m_resource_handler;
 	std::map< std::string, std::string > post_data_map;

@@ -135,6 +135,8 @@ target_link_directories(sqlite_handler_lib PUBLIC
     /usr/include/
 )
 target_link_libraries(sqlite_handler_lib PUBLIC
+    connection_lib
+    cache_lib
     /usr/lib/x86_64-linux-gnu/libsqlite3.so
     logger_lib
     sentence_lib
@@ -185,3 +187,18 @@ add_library(compressor_lib STATIC
 target_link_libraries(compressor_lib PRIVATE
     libz.so
 )
+
+add_library(cache_lib STATIC
+    ../include/Cache.hpp
+    Cache.cpp
+)
+
+find_path(hiredis_header hiredis)
+target_include_directories(cache_lib PUBLIC ${hiredis_header})
+find_library(hiredis_lib hiredis)
+target_link_libraries(cache_lib PUBLIC ${hiredis_lib})
+
+find_path(redis_plus_plus_header sw)
+target_include_directories(cache_lib PUBLIC ${redis_plus_plus_header})
+find_library(redis_plus_plus_lib redis++)
+target_link_libraries(cache_lib PUBLIC ${redis_plus_plus_lib})

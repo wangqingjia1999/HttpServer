@@ -92,6 +92,7 @@ namespace Message
 		std::string get_raw_request();
 		std::string get_request_method();
 		std::shared_ptr<Uri> get_request_uri();
+		std::string get_request_uri_string();
 		std::string get_http_version();
 		std::string get_header(const std::string& header_name);
 		std::string get_body();
@@ -118,7 +119,10 @@ namespace Message
         // Request method. e.g. GET, POST
         std::string m_method;
         
-        // default http_version
+		// Request uri string
+		std::string m_request_uri;
+
+        // Default http_version
         std::string m_http_version;
 
         // Store the generated/received raw headers
@@ -127,7 +131,7 @@ namespace Message
         // Contain the header {key: value} pairs
         std::map< std::string, std::string> m_headers_map;
 
-        // request body string
+        // Request body string
         std::string m_body;
 	};
 }

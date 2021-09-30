@@ -188,6 +188,20 @@ namespace Message
 		 */
 		void clear_up();
 
+		/**
+		 * @brief Serialize headers for the purpose of caching.
+		 * 
+		 * @return std::string 
+		 */
+		std::string serialize_headers();
+
+		/**
+		 * @brief Deserialize caches message to generate the response.
+		 * 
+		 * @param message Serialized respone obtained from cache.
+		 */
+		void deserialize(const std::string& message);
+		
 	private:
 		std::shared_ptr< Uri > m_uri;
 		

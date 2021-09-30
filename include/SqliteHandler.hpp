@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "Cache.hpp"
 #include "Logger.hpp"
 #include "Sentence.hpp"
 #include "IResourceHandler.hpp"
@@ -14,6 +15,8 @@ using ColumnInfo = std::vector<std::string>;
 
 /**
  * A representation of a user entry retrieved/inserted from/to database.
+ * 
+ * // TODO: fix User sign up and login in function.
  */
 struct UserInfo
 {
@@ -44,7 +47,7 @@ public:
     SqliteHandler& operator=(SqliteHandler&& other) = delete;
 
 public:
-    virtual bool fetch_resource(const std::shared_ptr<Connection> connection) override;
+    virtual bool fetch_resource(const std::shared_ptr<HTTP::Connection> connection) override;
     
     /**
      * Whether the table exists?
@@ -164,4 +167,5 @@ private:
     sqlite3* m_connection;
     sqlite3_stmt* m_statement;
     std::string m_resource_root_directory_path;
+    std::unique_ptr< HTTP::Cache > m_cache;
 };

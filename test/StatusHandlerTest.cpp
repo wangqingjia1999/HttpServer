@@ -38,7 +38,6 @@ TEST(status_handler_tests, status_code_100_test)
     std::string expected_response
     {
         "HTTP/1.1 100 Continue\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -59,7 +58,6 @@ TEST(status_handler_tests, status_code_101_test)
     {
         "HTTP/1.1 101 Switching Protocol\r\n"
         "Connection: upgrade\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "Upgrade: HTTP/2.0\r\n"
@@ -80,8 +78,6 @@ TEST(status_handler_tests, status_code_200_test)
     std::string expected_response
     {
         "HTTP/1.1 200 OK\r\n"
-        "Content-Length: 0\r\n"
-	    "Content-Type: \r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -101,7 +97,6 @@ TEST(status_handler_tests, status_code_201_test)
     std::string expected_response
     {
         "HTTP/1.1 201 Created\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -121,7 +116,6 @@ TEST(status_handler_tests, status_code_202_test)
     std::string expected_response
     {
         "HTTP/1.1 202 Accepted\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -141,7 +135,6 @@ TEST(status_handler_tests, status_code_203_test)
     std::string expected_response
     {
         "HTTP/1.1 203 Non-Authoritative Information\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -161,7 +154,6 @@ TEST(status_handler_tests, status_code_204_test)
     std::string expected_response
     {
         "HTTP/1.1 204 No Content\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -181,7 +173,6 @@ TEST(status_handler_tests, status_code_205_test)
     std::string expected_response
     {
         "HTTP/1.1 205 Reset Content\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -201,7 +192,6 @@ TEST(status_handler_tests, status_code_206_test)
     std::string expected_response
     {
         "HTTP/1.1 206 Partial Content\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
@@ -222,7 +212,6 @@ TEST(status_handler_tests, status_code_301_test)
     std::string expected_response
     {
         "HTTP/1.1 301 Moved Permanently\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Location: www.google.com\r\n"
         "Server: Bitate\r\n"
@@ -244,13 +233,12 @@ TEST(status_handler_tests, status_code_304_test)
     std::string expected_response
     {
         "HTTP/1.1 304 Not Modified\r\n"
-        "Content-Length: 0\r\n"
         "Host: www.bitate.com\r\n"
         "Server: Bitate\r\n"
         "\r\n"
     };
     
-    // TODO: to be implemented
+    // TODO: HTTP 304 test
     // ASSERT_EQ(
     //     weed_out_http_date_header(response->generate_response()), 
     //     expected_response

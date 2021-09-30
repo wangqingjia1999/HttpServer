@@ -60,8 +60,6 @@ namespace StatusHandler
              */
             case 200:   // OK
             {
-                add_header("Content-Type", response->get_content_type());
-                
                 break;
             }
 
@@ -118,7 +116,7 @@ namespace StatusHandler
 
             case 304:   // Not Modified
             {
-                // TODO: to be implemented
+                // TODO: HTTP 304
                 add_header("Cache-Control", "");
                 add_header("Content-Location", "");
                 add_header("Date", "");
@@ -340,7 +338,5 @@ namespace StatusHandler
                 break;
             }
         }
-
-        add_header("Content-Length", std::to_string(response->get_body().size()));
     }
 }

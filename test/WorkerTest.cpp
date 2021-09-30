@@ -5,6 +5,4 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-TEST(worker_tests, to_do_test)
-{
-}
+// TODO: test workers

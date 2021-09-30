@@ -1,8 +1,12 @@
-#include "SqliteHandler.hpp"
+#include "Cache.hpp"
 #include "Compressor.hpp"
+#include "SqliteHandler.hpp"
 
 #include <stdexcept>
 #include <sys/stat.h>
+
+#define get_uri connection->get_request()->get_request_uri()
+#define get_response connection->get_response()
 
 namespace
 {
@@ -118,7 +122,8 @@ UserInfo::UserInfo(std::string name, std::string password, std::string age, std:
 }
 
 SqliteHandler::SqliteHandler()
-    : m_connection{nullptr},
+    : m_cache{new HTTP::Cache(16)},
+      m_connection{nullptr},
       m_statement{nullptr},
       m_resource_root_directory_path{ ServerConfiguration::instance()->get_resource_directory_path() }
 {
@@ -431,16 +436,28 @@ std::vector<Sentence> SqliteHandler::search_sentence(const std::string& keyword)
     return fetched_result;
 }
 
-bool SqliteHandler::fetch_resource(const std::shared_ptr<Connection> connection)
+bool SqliteHandler::fetch_resource(const std::shared_ptr<HTTP::Connection> connection)
 {
     std::string buffer;
 
+    std::string cache_lookup_result = m_cache->get(connection->get_request()->get_request_uri_string());
+    
+    // if cache hit, don't query databse.
+    if(!cache_lookup_result.empty())
+    {
+        Logger::debug("cache hit: " + get_uri->get_query());
+        
+        get_response->deserialize(cache_lookup_result);
+        
+        return true;
+    }
+
     if(connection->get_request()->has_query())
     {
-        Logger::info("user query: " + connection->get_request()->get_request_uri()->get_query_paramters()["q"]);
+        Logger::info("user query: " + get_uri->get_query_paramters()["q"]);
 
         auto sentences = search_sentence(
-            connection->get_request()->get_request_uri()->get_query_paramters()["q"]
+            get_uri->get_query_paramters()["q"]
         );
         
         if(sentences.empty())
@@ -489,16 +506,16 @@ bool SqliteHandler::fetch_resource(const std::shared_ptr<Connection> connection)
             "</html>"
         };
 
-        connection->get_response()->set_content_type("text/html");
+        get_response->set_content_type("text/html");
     }
-    else
+    else    // client requests files
     {
         std::string resource_absolute_path;
 
-        if(connection->get_request()->get_request_uri()->get_path_string() == "/")
+        if(get_uri->get_path_string() == "/")
             resource_absolute_path = m_resource_root_directory_path + "index.html";
         else
-            resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(connection->get_request()->get_request_uri()->get_path_string());
+            resource_absolute_path = m_resource_root_directory_path + formalize_resource_path(get_uri->get_path_string());
         
         if(!is_resource_exists(resource_absolute_path))
         {
@@ -518,23 +535,27 @@ bool SqliteHandler::fetch_resource(const std::shared_ptr<Connection> connection)
         
         resource.read(&buffer[0], static_cast<std::streamsize>(resource_size));
 
-        connection->get_response()->set_content_type(
+        get_response->set_content_type(
             parse_content_type(
-                connection->get_request()->get_request_uri()->get_path_string()
+                get_uri->get_path_string()
             )
         );
     }
 
+    // if client requests compressed data
     if(connection->get_request()->get_header("Accept-Encoding").find("deflate") != std::string::npos)
     {
-        connection->get_response()->set_body(Compressor::compress(buffer));
-        connection->get_response()->add_header("Content-Encoding", "deflate");
-    }
-    else
-    {
-        connection->get_response()->set_body(buffer);
+        buffer = Compressor::compress(buffer);
+        get_response->add_header("Content-Encoding", "deflate");
     }
     
+    get_response->set_body(buffer);
+
+    m_cache->insert(
+        connection->get_request()->get_request_uri_string(), 
+        get_response->serialize_headers() + buffer
+    );
+
     return true;
 }
 

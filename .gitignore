@@ -5,6 +5,7 @@ out/
 build/
 googletest/
 bin/
+redis-plus-plus/
 
 *.mp3
 *.cap

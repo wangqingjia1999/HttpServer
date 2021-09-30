@@ -170,9 +170,12 @@ namespace Message
         auto second_space_position = request_line.find_last_of(' ');
 
         m_method = request_line.substr(0, first_space_position);
-
-        if(!parse_uri(request_line.substr(first_space_position+1, (second_space_position-first_space_position-1))))
+        
+        m_request_uri = request_line.substr(first_space_position+1, (second_space_position-first_space_position-1));
+        if(!parse_uri(m_request_uri))
         {
+            m_request_uri.clear();
+            m_method.clear();
             return false;
         }
     
@@ -212,6 +215,11 @@ namespace Message
     std::string Message::Request::get_request_method()
     {
         return m_method;
+    }
+
+    std::string Message::Request::get_request_uri_string()
+    {
+        return m_request_uri;
     }
 
     std::shared_ptr<Uri> Message::Request::get_request_uri()

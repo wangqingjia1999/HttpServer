@@ -18,7 +18,7 @@ public:
      * @return 
      *      True if succeeds.
      */
-    virtual bool fetch_resource(const std::shared_ptr<Connection> connection) = 0;
+    virtual bool fetch_resource(const std::shared_ptr<HTTP::Connection> connection) = 0;
 
 public:
     IResourceHandler() noexcept {}

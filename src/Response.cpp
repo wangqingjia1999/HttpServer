@@ -2,9 +2,6 @@
 #include "Logger.hpp"
 #include "Timer.hpp"
 
-#include <memory>
-
-
 namespace
 {
 	// only response has status code.
@@ -178,26 +175,24 @@ namespace Message
 	void Message::Response::set_body(const std::string& body)
 	{
 		m_body = body;
+		add_header("Content-Length", std::to_string(m_body.size()));
 	}
 
 	void Message::Response::set_body(std::string&& body)
 	{
 		m_body = std::move(body);
+		add_header("Content-Length", std::to_string(m_body.size()));
 	}
 
 	void Message::Response::set_content_type(const std::string& content_type)
 	{
 		m_content_type = content_type;
+		add_header("Content-Type", m_content_type);
 		return;
 	}
 
 	bool Message::Response::add_header(const std::string& name, const std::string& value)
 	{
-		if (name.empty())
-		{
-			return false;
-		}
-
 		// insert new or update existing header
 		m_headers[name] = value;
 		return true;
@@ -260,6 +255,50 @@ namespace Message
 		m_reason_phrase.clear();
 	}
 	
+	std::string Message::Response::serialize_headers()
+	{
+		std::string serialized_headers_string;
+
+		for(auto header : m_headers)
+		{
+			if(header.first == "Date" || header.first == "Host" || header.first == "Server")
+				continue;
+
+			serialized_headers_string += (header.first + ":" + header.second + "\n");
+		}
+
+		// custom end delimiter
+		serialized_headers_string += "\n\n\n\n";
+
+		return serialized_headers_string;
+	}
+
+	void Message::Response::deserialize(const std::string& message)
+	{
+		auto headers_end_delimiter = message.find("\n\n\n\n");
+
+		if(headers_end_delimiter == std::string::npos)
+			return;
+
+		for(unsigned int i=0;i<headers_end_delimiter;++i)
+		{
+			unsigned int r = i;
+			
+			std::string header_key, header_value;
+
+			while(r < headers_end_delimiter && message[r] != ':')
+				header_key += message[r++];
+			++r;
+			while(r < headers_end_delimiter && message[r] != '\n')
+				header_value += message[r++];
+
+			i = r;
+
+			add_header(header_key, header_value);
+		}
+
+		set_body(message.substr(headers_end_delimiter+5));
+	}
 }
 
 

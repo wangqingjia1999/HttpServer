@@ -42,7 +42,7 @@ Worker::Worker(const int worker_socket)
     : m_epfd{ -1 },
       m_worker_socket{ worker_socket },
       m_worker_socket_handler{ new WorkerSocket() },
-      m_connection{ std::make_shared<Connection>() },
+      m_connection{ std::make_shared<HTTP::Connection>() },
       m_resource_handler{ new SqliteHandler() },
       m_server_socket{ new WorkerSocket() }
 {
@@ -196,6 +196,9 @@ bool Worker::handle_post_request()
             }
         }
     }
+    
+    // TODO: decouple POST request processing logic from Worker
+
     return true;
 }
 
@@ -219,27 +222,7 @@ void Worker::request_core_handler(const std::string& raw_request_string)
     }
     else if(get_request->get_request_method() == "POST")
     {   
-        if(get_request->get_header("Content-Type") == "application/x-www-form-urlencoded")
-        {
-            if(!handle_post_request())
-                StatusHandler::handle_status_code(get_response, 400);
-
-            if(post_data_map.find("username") != post_data_map.end())
-            {
-                UserInfo user_info;
-                user_info.m_name = post_data_map["username"];
-                user_info.m_password = post_data_map["password"];
-                user_info.m_age = post_data_map["age"];
-                user_info.m_email = post_data_map["email"];
-
-                // TODO: Add user (user as resource)
-
-                StatusHandler::handle_status_code(get_response, 200);
-                
-                return;            
-            }
-        }
-        
+        StatusHandler::handle_status_code(get_response, 501);
         return;
     }
     else if(get_request->get_request_method() == "PUT")

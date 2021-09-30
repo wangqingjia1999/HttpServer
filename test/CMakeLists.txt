@@ -172,3 +172,11 @@ target_link_libraries(compressor_test PUBLIC
     compressor_lib
     gtest_main
 )
+
+add_executable(cache_test
+    CacheTest.cpp
+)
+target_link_libraries(cache_test PUBLIC 
+    cache_lib
+    gtest_main
+)

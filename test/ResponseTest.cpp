@@ -31,9 +31,9 @@ namespace
 TEST(response_tests, add_headers) {
     Message::Response response;
 
-    ASSERT_EQ(response.add_header("Date", "Mon, 27 Jul 2009 12:28:53 GMT"), true);
-    ASSERT_EQ(response.add_header("Accept-Ranges", "bytes"), true);
-    ASSERT_EQ(response.add_header("Content-Type", "text/plain"), true);
+    ASSERT_TRUE(response.add_header("Date", "Mon, 27 Jul 2009 12:28:53 GMT"));
+    ASSERT_TRUE(response.add_header("Accept-Ranges", "bytes"));
+    ASSERT_TRUE(response.add_header("Content-Type", "text/plain"));
     ASSERT_EQ(response.get_header("Date"), "Mon, 27 Jul 2009 12:28:53 GMT");
     ASSERT_EQ(response.get_header("Accept-Ranges"), "bytes");
     ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
@@ -76,3 +76,52 @@ TEST(response_tests, map_status_code_to_reaseon_phrase)
     ASSERT_EQ(response.get_status_code_reason_string(505), "HTTP Version Not Supported");
 }
 
+TEST(response_tests, response_header_serialization_test)
+{
+    Message::Response response;
+
+    ASSERT_TRUE(response.add_header("Date", "Mon, 27 Jul 2009 12:28:53 GMT"));
+    ASSERT_TRUE(response.add_header("Accept-Ranges", "bytes"));
+    ASSERT_TRUE(response.add_header("Content-Length", "51"));
+    ASSERT_TRUE(response.add_header("Content-Type", "text/plain"));
+
+    std::string expected_result {
+        "Accept-Ranges:bytes\n"
+        "Content-Length:51\n"
+        "Content-Type:text/plain\n"
+        "\n\n\n\n"
+    };
+
+    ASSERT_EQ(response.serialize_headers(), expected_result);
+}
+
+TEST(response_tests, response_header_serialization_empty_header_test)
+{
+    Message::Response response;
+
+    std::string expected_result {
+        "\n\n\n\n"
+    };
+
+    ASSERT_EQ(response.serialize_headers(), expected_result);
+}
+
+TEST(response_tests, response_header_deserialization_test)
+{
+    Message::Response response;
+
+    std::string serialzied_message {
+        "Accept-Ranges:bytes\n"
+        "Content-Length:51\n"
+        "Content-Type:text/plain\n"
+        "\n\n\n\n"
+        "<html>this is body of response.</html>"
+    };
+    
+    response.deserialize(serialzied_message);
+
+    ASSERT_EQ(response.get_header("Content-Length"), "38");
+    ASSERT_EQ(response.get_header("Accept-Ranges"), "bytes");
+    ASSERT_EQ(response.get_header("Content-Type"), "text/plain");
+    ASSERT_EQ(response.get_body(), "<html>this is body of response.</html>");
+}

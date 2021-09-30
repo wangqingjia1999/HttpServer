@@ -59,6 +59,7 @@ Shortest transaction:           0.00
 * GCC 9.3.0
 * [Cmake](https://cmake.org/)
 * [Googletest](https://github.com/google/googletest)
+* [redis-plus-plus](https://github.com/sewenew/redis-plus-plus)
 
 ## How to build? 
 ```shell
