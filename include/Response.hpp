@@ -2,14 +2,14 @@
 
 #include "Request.hpp"
 
+#include <fstream>
 #include <map>
-#include <set>
+#include <memory>
 #include <regex>
+#include <set>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <memory>
-#include <sstream>
-#include <fstream>
 
 #include <unistd.h>
 
@@ -18,162 +18,162 @@ namespace Message
 	class Response
 	{
 	public:
-		Response(); 
+		Response();
 		~Response() noexcept;
-		
+
 		Response(const Response&);
 		Response& operator=(const Response&);
-		
+
 		Response(Response&&) noexcept = delete;
 		Response& operator=(Response&&) noexcept = delete;
 
 	public:
 		/**
 		 * Whether response has header with name of @name.
-		 * 
-		 * @param[in] name  
+		 *
+		 * @param[in] name
 		 * 		Header name.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		True if has header with name of @name.
 		 */
 		bool has_header(const std::string& name);
 
 		/**
 		 * Get response's status code.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		An integer represents status code.
 		 */
 		int get_status_code();
 
 		/**
 		 * Get response's protocol version.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		Protocol version. Default value is "HTTP/1.1".
 		 */
 		std::string get_protocol_version();
 
 		/**
 		 * Get response's reason phrase.
-		 * 	
-		 * @return 
+		 *
+		 * @return
 		 * 		Reason phrase.
 		 */
 		std::string get_reason_phrase();
 
 		/**
 		 * Get response's body.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		Response's body string.
 		 */
 		std::string get_body();
 
 		/**
 		 * Get response's specific header value of @header_name.
-		 * 
-		 * @param[in] header_name  
-		 * 		Response header name. 
-		 * 
-		 * @return  
+		 *
+		 * @param[in] header_name
+		 * 		Response header name.
+		 *
+		 * @return
 		 * 		Corresponding header value.
 		 */
 		std::string get_header(const std::string& header_name);
 
 		/**
 		 * Get status code's corresponding reason phrase.
-		 * 
-		 * @param[in] status_code  
+		 *
+		 * @param[in] status_code
 		 * 		Status code integer.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		Corresponding reason phrase of given status_code.
 		 */
 		std::string get_status_code_reason_string(const int status_code);
 
 		/**
 		 * Get response's body length
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		Response body length.
 		 */
 		std::string get_body_length();
 
 		/**
 		 * Get content type.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		Content type.
 		 */
 		std::string get_content_type();
 
 		/**
 		 * Set status code and corresponding reason phrase.
-		 * 
-		 * @param[in] status_code  
+		 *
+		 * @param[in] status_code
 		 * 		Response status code
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		True if succeeds.
 		 */
 		bool set_status(const int status_code);
-		
+
 		/**
 		 * Set HTTP protocol version.
-		 * 
-		 * @param[in] protocol_version  
+		 *
+		 * @param[in] protocol_version
 		 * 		Protocol version.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		True if succeeds.
 		 */
 		bool set_protocol_version(const std::string protocol_version);
-		
+
 		void set_body(const std::string& body);
 		void set_body(std::string&& body);
-		
+
 		/**
 		 * Set response body length.
-		 * 	
-		 * @param body_length  
+		 *
+		 * @param body_length
 		 * 		Length of response body.
-		 * 
-		 * @return 
+		 *
+		 * @return
 		 * 		True if succeeds.
 		 */
 		bool set_body_length(const std::streamoff body_length);
-		
+
 		/**
 		 * Add header.
-		 * 	
-		 * @param[in] name  
+		 *
+		 * @param[in] name
 		 * 		Header name
-		 * 
-		 * @param[in] value  
+		 *
+		 * @param[in] value
 		 * 		Corresponding header value
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		True if add successfully.
 		 */
 		bool add_header(const std::string& name, const std::string& value);
-		
+
 		/**
 		 * Set content type.
-		 * 
-		 * @param[in] content_type  
+		 *
+		 * @param[in] content_type
 		 * 		Content type.
 		 */
 		void set_content_type(const std::string& content_type);
 
 		/**
 		 * Set reason phrase.
-		 * 
-		 * @param[in] status_code  
+		 *
+		 * @param[in] status_code
 		 * 		Status code integer.
-		 * 
-		 * @return  
+		 *
+		 * @return
 		 * 		True if set reason phrase successfully.
 		 */
 		bool set_reason_phrase(const int new_stauts_code);
@@ -190,37 +190,37 @@ namespace Message
 
 		/**
 		 * @brief Serialize headers for the purpose of caching.
-		 * 
-		 * @return std::string 
+		 *
+		 * @return std::string
 		 */
 		std::string serialize_headers();
 
 		/**
 		 * @brief Deserialize caches message to generate the response.
-		 * 
+		 *
 		 * @param message Serialized respone obtained from cache.
 		 */
 		void deserialize(const std::string& message);
-		
+
 	private:
-		std::shared_ptr< Uri > m_uri;
-		
+		std::shared_ptr<Uri> m_uri;
+
 		// Status code of response
 		int m_status_code;
 
 		// Default protocol version
 		std::string m_protocol_version;
-		
+
 		// Reason phrase for specific status code.
 		std::string m_reason_phrase;
-		
+
 		// Header fields
-		std::map < std::string, std::string > m_headers;
-		
+		std::map<std::string, std::string> m_headers;
+
 		// Body of response message
 		std::string m_body;
-		
+
 		// Content type
 		std::string m_content_type;
 	};
-}
+} // namespace Message

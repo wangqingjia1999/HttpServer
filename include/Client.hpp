@@ -11,61 +11,61 @@ public:
 
 	Client(const Client&) = delete;
 	Client& operator=(const Client&) = delete;
-	
+
 	Client(Client&&) noexcept = delete;
 	Client& operator=(Client&&) noexcept = delete;
+
 public:
 	/**
 	 * Connect to target server.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if successfully connect to server.
 	 */
 	bool connect_to();
-	
+
 	/**
 	 * Send request to server.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if successfully send request to server.
 	 */
 	bool send_request();
 
-	/** 
+	/**
 	 * Parse received response from Server.
-	 * 	
-	 * @return 
+	 *
+	 * @return
 	 * 		True if successfully parse the response.
 	 */
 	bool parse_response();
 
 	/**
 	 * Generate request message.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if successfully generate message.
 	 */
 	bool generate_request();
 
 	/**
 	 * Parse Uri string.
-	 * 
-	 * @param[in] uri  
+	 *
+	 * @param[in] uri
 	 * 		Uri string.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if successfully parse Uri.
 	 */
 	bool parse_uri(const std::string uri);
 
 	/**
 	 * Get generated request string.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		Generated request string.
 	 */
 	std::string get_generated_request();
 
 private:
-	
 };

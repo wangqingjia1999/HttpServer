@@ -8,16 +8,21 @@ TEST(DecodeTests, ASCIICharacterSet)
 {
 	PercentEncoding percentEncode;
 
-	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
-	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
+	std::string decoded_uri_string =
+	    "https://tools.ietf.org/html/rfc3986#section-2";
+	std::string encoded_string =
+	    "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
 	ASSERT_EQ(percentEncode.decode(encoded_string), decoded_uri_string);
 
 	std::string decodedString1 = "ldap://[2001:db8::7]/c=GB?objectClass?one";
-	std::string encodedString1 = "ldap%3A%2F%2F%5B2001%3Adb8%3A%3A7%5D%2Fc%3DGB%3FobjectClass%3Fone";
+	std::string encodedString1 =
+	    "ldap%3A%2F%2F%5B2001%3Adb8%3A%3A7%5D%2Fc%3DGB%3FobjectClass%3Fone";
 	ASSERT_EQ(percentEncode.decode(encodedString1), decodedString1);
 
-	std::string decodedString2 = "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
-	std::string encodedString2 = "urn%3Aoasis%3Anames%3Aspecification%3Adocbook%3Adtd%3Axml%3A4.1.2";
+	std::string decodedString2 =
+	    "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
+	std::string encodedString2 =
+	    "urn%3Aoasis%3Anames%3Aspecification%3Adocbook%3Adtd%3Axml%3A4.1.2";
 	ASSERT_EQ(percentEncode.decode(encodedString2), decodedString2);
 
 	std::string decodedString3 = "mailto:John.Doe@example.com";
@@ -33,16 +38,21 @@ TEST(EncodeTests, ASCIICharacterSet)
 {
 	PercentEncoding percentEncode;
 
-	std::string decoded_uri_string = "https://tools.ietf.org/html/rfc3986#section-2";
-	std::string encoded_string = "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
+	std::string decoded_uri_string =
+	    "https://tools.ietf.org/html/rfc3986#section-2";
+	std::string encoded_string =
+	    "https%3A%2F%2Ftools.ietf.org%2Fhtml%2Frfc3986%23section-2";
 	ASSERT_EQ(percentEncode.encode(decoded_uri_string), encoded_string);
 
 	std::string decodedString1 = "ldap://[2001:db8::7]/c=GB?objectClass?one";
-	std::string encodedString1 = "ldap%3A%2F%2F%5B2001%3Adb8%3A%3A7%5D%2Fc%3DGB%3FobjectClass%3Fone";
+	std::string encodedString1 =
+	    "ldap%3A%2F%2F%5B2001%3Adb8%3A%3A7%5D%2Fc%3DGB%3FobjectClass%3Fone";
 	ASSERT_EQ(percentEncode.encode(decodedString1), encodedString1);
 
-	std::string decodedString2 = "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
-	std::string encodedString2 = "urn%3Aoasis%3Anames%3Aspecification%3Adocbook%3Adtd%3Axml%3A4.1.2";
+	std::string decodedString2 =
+	    "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
+	std::string encodedString2 =
+	    "urn%3Aoasis%3Anames%3Aspecification%3Adocbook%3Adtd%3Axml%3A4.1.2";
 	ASSERT_EQ(percentEncode.encode(decodedString2), encodedString2);
 
 	std::string decodedString3 = "mailto:John.Doe@example.com";

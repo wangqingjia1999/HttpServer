@@ -3,56 +3,35 @@
 namespace
 {
 	// General delimiters
-	const CharacterSet GEN_DELIMS
-	{
-		':', '/', '?' , '#' , '[' , ']' , '@',
+	const CharacterSet GEN_DELIMS{
+	    ':', '/', '?', '#', '[', ']', '@',
 	};
 
 	// Subcomponents delimiters
-	const CharacterSet SUB_DELIMS
-	{
-		'!', '$', '&', '\'', '(', ')',
-		'*', '+', ',', ';', '=',
+	const CharacterSet SUB_DELIMS{
+	    '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=',
 	};
 
-	const CharacterSet RESERVED
-	{
-		GEN_DELIMS,
-		SUB_DELIMS,
+	const CharacterSet RESERVED{
+	    GEN_DELIMS,
+	    SUB_DELIMS,
 	};
 
 	/**
 	 * Uri producers and normalizers should use uppercase hexadecimal digits
 	 * for all percent-encodings.
 	 */
-	const std::map<int, char> hex_mapper
-	{
-		{0,'0'},
-		{1,'1'},
-		{2,'2'},
-		{3,'3'},
-		{4,'4'},
-		{5,'5'},
-		{6,'6'},
-		{7,'7'},
-		{8,'8'},
-		{9,'9'},
-		{10,'A'},
-		{11,'B'},
-		{12,'C'},
-		{13,'D'},
-		{14,'E'},
-		{15,'F'}
-	};
-}
+	const std::map<int, char> hex_mapper{
+	    {0, '0'},  {1, '1'},  {2, '2'},  {3, '3'}, {4, '4'},  {5, '5'},
+	    {6, '6'},  {7, '7'},  {8, '8'},  {9, '9'}, {10, 'A'}, {11, 'B'},
+	    {12, 'C'}, {13, 'D'}, {14, 'E'}, {15, 'F'}};
+} // namespace
 
-PercentEncoding::~PercentEncoding()
-{
-}
+PercentEncoding::~PercentEncoding() {}
 
-PercentEncoding::PercentEncoding() 
-	: decoded_character(0), 
-	  remaining_characters(0)
+PercentEncoding::PercentEncoding()
+    : decoded_character(0)
+    , remaining_characters(0)
 {
 }
 
@@ -62,11 +41,12 @@ std::string PercentEncoding::encode(const std::string& unencoded_string)
 	 * Under normal circumstances, the only time to encode is during the process
 	 * of assembling the Uri from its components.
 	 * '%' is the indicator of percent-encoding.
-	 * 
+	 *
 	 * Two steps to encode:
-	 * 	1. Convert the character string into a sequence of bytes using the UTF-8 encoding;
-	 * 	2. Convert each byte that is not an ASCII letter or digit to %HH, where HH is 
-	 * 	   the hexadecimal value of the byte.
+	 * 	1. Convert the character string into a sequence of bytes using the UTF-8
+	 * encoding;
+	 * 	2. Convert each byte that is not an ASCII letter or digit to %HH, where
+	 * HH is the hexadecimal value of the byte.
 	 */
 	std::string encoded_string;
 	for (size_t i = 0; i < unencoded_string.size(); ++i)
@@ -86,9 +66,8 @@ std::string PercentEncoding::encode(const std::string& unencoded_string)
 			encoded_string.push_back(unencoded_string[i]);
 		}
 	}
-	return  encoded_string;
+	return encoded_string;
 }
-
 
 std::string PercentEncoding::decode(const std::string& encoded_string)
 {

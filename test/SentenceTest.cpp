@@ -2,7 +2,4 @@
 
 #include <gtest/gtest.h>
 
-TEST(sentence_tests, first)
-{
-    
-}
+TEST(sentence_tests, first) {}

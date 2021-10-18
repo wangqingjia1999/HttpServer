@@ -1,11 +1,11 @@
 #pragma once
 
-#include <regex>
-#include <string>
-#include <vector>
 #include <algorithm>
 #include <functional>
+#include <regex>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "CharacterSet.hpp"
 #include "PercentEncoding.hpp"
@@ -28,106 +28,106 @@ public:
 public:
 	/**
 	 * Equality comparison operator.
-	 * 
-	 * @param[in] other 
+	 *
+	 * @param[in] other
 	 * 		The other Uri to which to compare this Uri.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 * 		True if equal.
 	 */
 	bool operator==(const Uri& other) const;
 
 	/**
 	 * Get scheme of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		Scheme string.
 	 */
 	std::string get_scheme();
 
 	/**
 	 * Get Host of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		Host string.
 	 */
 	std::string get_host();
 
 	/**
 	 * Get path vector of Uri.
-	 * 	
-	 * @return  
+	 *
+	 * @return
 	 * 		A vector of path elements
 	 */
-	std::vector< std::string > get_path();
+	std::vector<std::string> get_path();
 
 	/**
 	 * Get path string of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		A path string.
 	 */
 	std::string get_path_string();
 
 	/**
 	 * Get port number of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		A int number represents port.
 	 */
 	int get_port();
 
 	/**
 	 * Get query string of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		A query string.
 	 */
 	std::string get_query();
 
 	/**
 	 * Get fragment string of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		A fragment string.
 	 */
 	std::string get_fragment();
 
 	/**
 	 * Get user info of Uri.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		A user info string.
 	 */
 	std::string get_user_info();
 
 	/**
 	 * Parse an Uri string.
-	 * 
-	 * @param[in] uri  
+	 *
+	 * @param[in] uri
 	 * 		Uri string to be parsed.
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if successfully parse.
 	 */
 	bool parse_from_string(const std::string& uri);
-	
+
 	bool has_port();
 	bool has_fragment();
 	bool has_query();
 
 	/**
 	 * Is relative reference?
-	 * 
-	 * @return  
+	 *
+	 * @return
 	 * 		True if it is relative reference.
-	 */  
+	 */
 	bool is_relative_reference();
 
 	/**
 	 * Has relative path?
-	 * 	
-	 * @return  
+	 *
+	 * @return
 	 * 		True if it has relativ path.
 	 */
 	bool has_relative_path();
@@ -136,83 +136,84 @@ public:
 	/**
 	 * Extract the scheme from uri if any,
 	 * return the remaining string.
-	 * 
-	 * @param[in] uri 
+	 *
+	 * @param[in] uri
 	 * 		Uri string that may contain scheme.
-	 * 
-	 * @param[out] remains 
+	 *
+	 * @param[out] remains
 	 * 		Remaining string after parsing/extracting.
-	 * 
+	 *
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_scheme(const std::string& uri, std::string & remains);
+	bool parse_scheme(const std::string& uri, std::string& remains);
 
 	/**
 	 * Parse user info from Uri string.
-	 * 
-	 * @param[in] authority 
+	 *
+	 * @param[in] authority
 	 * 		Authority string.
-	 * 
+	 *
 	 * @param[out] remains
-	 * 		Remaining authority string with the user info substring being deleted.
-	 * 
-	 * @return 
+	 * 		Remaining authority string with the user info substring being
+	 * deleted.
+	 *
+	 * @return
 	 * 		True if succeeds.
 	 */
 	bool parse_user_info(std::string& authority, std::string& remains);
-	
+
 	/**
 	 * Parse host of an URI if any.
-	 * 
+	 *
 	 * @param[in] authority
 	 * 		Authority of an URI.
-	 * 
+	 *
 	 * @param[out] remains
 	 * 		Remains after weeding out the host.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 * 		True if succeeds.
 	 */
 	bool parse_host(std::string& authority, std::string& remains);
 
 	/**
 	 * Parse port of an URI if any.
-	 * 
+	 *
 	 * @param[in] authority
 	 * 		Authority of an URI.
-	 * 
+	 *
 	 * @param[out] remains
 	 * 		Remains after weeding out the port.
 	 *
-	 * @return 
+	 * @return
 	 * 		True if succeeds.
 	 */
 	bool parse_port(std::string& authority);
 
 	/**
 	 * Parse authority of an URI if any.
-	 * 
+	 *
 	 * @param[in] uri
 	 * 		Given URI.
-	 * 
+	 *
 	 * @param[out] remains
 	 * 		Remains after weeding out the authority.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_authority(std::string& uri, std::string& remains);	
+	bool parse_authority(std::string& uri, std::string& remains);
 
 	/**
 	 * Parse path of an URI if any.
-	 * 
+	 *
 	 * @param[in] uri
-	 * 		Given URI.		
-	 * 
+	 * 		Given URI.
+	 *
 	 * @param[out] remains
 	 * 		Remains after weeding out the path.
-	 * 
+	 *
 	 * @return
 	 * 		True if succeeds.
 	 */
@@ -220,13 +221,13 @@ public:
 
 	/**
 	 * Parse query of an URI if any.
-	 * 
+	 *
 	 * @param[in] uri
 	 * 		Uri string.
-	 * 
-	 * @param[out] remains 
+	 *
+	 * @param[out] remains
 	 * 		Remains after weeding out the query.
-	 * 
+	 *
 	 * @return
 	 * 		True if succeeds.
 	 */
@@ -234,12 +235,12 @@ public:
 
 	/**
 	 * Parse fragment of an URI if any.
-	 * 
+	 *
 	 * @param[in] uri
 	 * 		Uri string.
-	 * @param[out] remains 
+	 * @param[out] remains
 	 * 		Remains after weeding out the fragment.
-	 * 
+	 *
 	 * @return
 	 * 		True if succeeds.
 	 */
@@ -247,11 +248,11 @@ public:
 
 	/**
 	 * Parse query parameters.
-	 * 
+	 *
 	 * @param[in] query_string
 	 * 		Query string inside uri string.
 	 *
-	 * @return 
+	 * @return
 	 * 		True if succeeds.
 	 */
 	bool parse_query_parameters(const std::string& query_string);
@@ -274,7 +275,7 @@ public:
 	bool clear_path();
 
 	QueryParameters& get_query_paramters();
-	
+
 private:
 	std::string m_scheme;
 
@@ -288,7 +289,7 @@ private:
 	uint16_t m_port;
 
 	bool m_is_relative_path;
-	std::vector < std::string > m_path;
+	std::vector<std::string> m_path;
 
 	bool m_has_query;
 	std::string m_query;

@@ -2,33 +2,59 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 TEST(compressor_tests, compress_test_test)
 {
-    std::string uncompressed_string = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.";
+	std::string uncompressed_string =
+	    "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean "
+	    "commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus "
+	    "et magnis dis parturient montes, nascetur ridiculus mus. Donec quam "
+	    "felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla "
+	    "consequat massa quis enim. Donec pede justo, fringilla vel, aliquet "
+	    "nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, "
+	    "venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. "
+	    "Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. "
+	    "Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, "
+	    "consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, "
+	    "viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus "
+	    "varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies "
+	    "nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. "
+	    "Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem "
+	    "quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam "
+	    "nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec "
+	    "odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis "
+	    "faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus "
+	    "tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec "
+	    "sodales sagittis magna. Sed consequat, leo eget bibendum sodales, "
+	    "augue velit cursus nunc.";
 
-    std::string compressed_string = Compressor::compress( uncompressed_string );
+	std::string compressed_string = Compressor::compress(uncompressed_string);
 
-    std::cout << "Compressed data: " << uncompressed_string.size() << " -> " << compressed_string.size()
-              << " ( " << std::setprecision(1) << std::fixed
-              << ( (1.0 - (float)compressed_string.size() / (float)uncompressed_string.size()) * 100.0)
-              << "% saved ).\n";
+	std::cout << "Compressed data: " << uncompressed_string.size() << " -> "
+	          << compressed_string.size() << " ( " << std::setprecision(1)
+	          << std::fixed
+	          << ((1.0 - (float)compressed_string.size() /
+	                         (float)uncompressed_string.size()) *
+	              100.0)
+	          << "% saved ).\n";
 
-    std::ofstream output("compressed_string");
-    output << compressed_string;
-    output.close();
+	std::ofstream output("compressed_string");
+	output << compressed_string;
+	output.close();
 
-    system("zlib-flate -uncompress < compressed_string > uncompressed_string");
+	system("zlib-flate -uncompress < compressed_string > uncompressed_string");
 
-    std::ifstream compressed_result("uncompressed_string");
-    std::string intput_string((std::istreambuf_iterator<char>(compressed_result)), std::istreambuf_iterator<char>());
-    
-    compressed_result.close();
+	std::ifstream compressed_result("uncompressed_string");
+	std::string intput_string(
+	    (std::istreambuf_iterator<char>(compressed_result)),
+	    std::istreambuf_iterator<char>());
 
-    system("rm compressed_string");
-    system("rm uncompressed_string");
+	compressed_result.close();
 
-    EXPECT_EQ(uncompressed_string, intput_string);
+	system("rm compressed_string");
+	system("rm uncompressed_string");
+
+	EXPECT_EQ(uncompressed_string, intput_string);
 }

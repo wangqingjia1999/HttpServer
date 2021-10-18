@@ -1,24 +1,19 @@
 #include "CharacterSet.hpp"
 
-CharacterSet::~CharacterSet()
-{
-	m_character_set.clear();
-}
+CharacterSet::~CharacterSet() { m_character_set.clear(); }
 
-CharacterSet::CharacterSet()
-{
-}
+CharacterSet::CharacterSet() {}
 
-CharacterSet::CharacterSet(char c)
-{
-	m_character_set.insert(c);
-}
+CharacterSet::CharacterSet(char c) { m_character_set.insert(c); }
 
-CharacterSet::CharacterSet(std::initializer_list<const CharacterSet> character_sets)
+CharacterSet::CharacterSet(
+    std::initializer_list<const CharacterSet> character_sets)
 {
-	for (auto single_character_set = character_sets.begin(); single_character_set != character_sets.end(); ++single_character_set)
+	for (auto single_character_set = character_sets.begin();
+	     single_character_set != character_sets.end(); ++single_character_set)
 	{
-		m_character_set.insert(single_character_set->m_character_set.begin(), single_character_set->m_character_set.end());
+		m_character_set.insert(single_character_set->m_character_set.begin(),
+		                       single_character_set->m_character_set.end());
 	}
 }
 
@@ -28,7 +23,7 @@ CharacterSet::CharacterSet(char first, char last)
 	{
 		std::swap(first, last);
 	}
-	
+
 	for (char c = first; c <= last; ++c)
 	{
 		m_character_set.insert(c);
