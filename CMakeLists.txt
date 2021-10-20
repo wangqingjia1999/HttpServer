@@ -6,6 +6,20 @@ project(${this})
 
 set(CMAKE_CXX_STANDARD 11)
 
+string(CONCAT CLANG_TIDY_CHECK_FILTER
+    "*,"
+    "-fuchsia-*,"
+    "-modernize-use-trailing-return-type,"
+    "-*-magic-numbers,"
+    "-llvm-header-guard,"
+)
+
+set(CMAKE_CXX_CLANG_TIDY 
+    clang-tidy;
+    -header-filter=include/;
+    -checks=${CLANG_TIDY_CHECK_FILTER};
+)
+
 enable_testing()
 
 add_subdirectory(src)

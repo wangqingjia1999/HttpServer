@@ -8,8 +8,8 @@
 class CharacterSet
 {
 public:
-	~CharacterSet();
-	CharacterSet();
+	~CharacterSet() = default;
+	CharacterSet() = default;
 
 	CharacterSet(const CharacterSet&) = default;
 	CharacterSet& operator=(const CharacterSet&) = default;
@@ -17,18 +17,16 @@ public:
 	CharacterSet(CharacterSet&&) = default;
 	CharacterSet& operator=(CharacterSet&&) = default;
 
-public:
 	bool operator==(const CharacterSet& other) const;
 	bool operator!=(const CharacterSet& other) const;
 
-public:
 	/**
 	 * Construct one character.
 	 *
 	 * @param[in] c
 	 * 		A character.
 	 */
-	CharacterSet(char c);
+	explicit CharacterSet(char c);
 
 	/**
 	 * Construct a list of characters.
@@ -37,6 +35,14 @@ public:
 	 * 		A list of characters.
 	 */
 	CharacterSet(std::initializer_list<const CharacterSet> character_sets);
+
+	/**
+	 * @brief Construct a new Character Set object
+	 *
+	 * @param characters
+	 * 		characters to be inserted into set
+	 */
+	CharacterSet(std::initializer_list<const char> characters);
 
 	/**
 	 * Construct a range of arguments.
@@ -60,6 +66,13 @@ public:
 	 */
 	bool is_contains(char c) const;
 
-public:
+	/**
+	 * @brief Get the character set object
+	 *
+	 * @return std::set<char>
+	 */
+	std::set<char> get_character_set() const;
+
+private:
 	std::set<char> m_character_set;
 };

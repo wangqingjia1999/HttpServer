@@ -94,7 +94,8 @@ namespace
 		for (int i = 0; i < new_hex_string.size(); i += 2)
 		{
 			std::string buffer = new_hex_string.substr(i, 2);
-			uint8_t byte = (uint8_t)std::stol(buffer.c_str(), nullptr, 16);
+			uint8_t byte =
+			    (uint8_t)std::stol(buffer.c_str(), nullptr, 16); // NOLINT
 			byte_sequence.push_back(byte);
 		}
 		return byte_sequence;
@@ -139,7 +140,7 @@ namespace
 		size_t bits = 0;
 		uint16_t buffer = 0;
 		std::stringstream output;
-		// main loop
+
 		for (auto byte : bytes_sequence)
 		{
 			buffer <<= 8;
@@ -303,10 +304,10 @@ namespace Base64
 		return decode_implementation(encoded_string, false, has_padding);
 	}
 
-	std::string encode_url(const std::string& unencoded_string,
+	std::string encode_url(const std::string& unencoded_url_string,
 	                       bool has_padding)
 	{
-		return encode_implementation(unencoded_string, true, false,
+		return encode_implementation(unencoded_url_string, true, false,
 		                             has_padding);
 	}
 

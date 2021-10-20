@@ -12,7 +12,6 @@ public:
 	using clock_type = std::chrono::high_resolution_clock;
 	using milisecond_duration_type = std::chrono::duration<double, std::milli>;
 
-public:
 	/**
 	 * Get current time.
 	 *
@@ -51,12 +50,15 @@ private:
 
 inline std::string Timer::get_current_http_time()
 {
-	time_t now = std::time(0);
+	time_t now = std::time(nullptr);
 	tm* current_time = std::gmtime(&now);
-	char current_time_string[30];
+
+	char current_time_string[30]; // NOLINT
+	// NOLINTNEXTLINE
 	std::strftime(current_time_string, 30, "%a, %d %b %Y %H:%M:%S GMT",
 	              current_time);
-	return current_time_string;
+
+	return std::string(current_time_string);
 }
 
 inline void Timer::reset_start_time() { start_time = clock_type::now(); }
@@ -74,8 +76,9 @@ inline Timer::milisecond_duration_type Timer::get_elapsed_time() const
  */
 inline std::string get_current_time()
 {
-	std::time_t now = std::time(0);
-	char buffer[30];
+	std::time_t now = std::time(nullptr);
+	char buffer[30]; // NOLINT
+	// NOLINTNEXTLINE
 	std::strftime(buffer, sizeof(buffer), "[%Y-%m-%d %H:%M:%S]",
 	              std::gmtime(&now));
 	return buffer;
@@ -89,8 +92,9 @@ inline std::string get_current_time()
  */
 inline std::string get_date()
 {
-	std::time_t now = std::time(0);
-	char buffer[11];
+	std::time_t now = std::time(nullptr);
+	char buffer[11]; // NOLINT
+	// NOLINTNEXTLINE
 	std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", std::gmtime(&now));
 	return buffer;
 }

@@ -39,7 +39,7 @@ private:
 	int m_listening_port;
 	std::string m_listening_ip;
 
-	char m_receive_buffer[8192];
+	char m_receive_buffer[8192]; // NOLINT
 
 	Server_Socket_State m_server_socket_state;
 };

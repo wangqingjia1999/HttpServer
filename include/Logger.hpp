@@ -49,22 +49,34 @@ namespace
 		std::ofstream log_file(m_log_directory_path + get_date() + ".log",
 		                       std::ios_base::app);
 		if (!log_file.is_open())
+		{
 			return;
+		}
 
 		log_file << get_current_time();
 		if (log_level == LogLevel::INFO)
+		{
 			log_file << " [info] ";
+		}
 		else if (log_level == LogLevel::WARN)
+		{
 			log_file << " [warning] ";
+		}
 		else if (log_level == LogLevel::ERROR)
+		{
 			log_file << " [error] ";
+		}
 		else
+		{
 			log_file << " [debug] ";
+		}
 
 		log_file << log_message;
 
 		if (log_errno != 0)
+		{
 			log_file << " : " << std::string{strerror(errno)};
+		}
 
 		log_file << '\n';
 

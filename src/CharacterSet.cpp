@@ -1,19 +1,14 @@
 #include "CharacterSet.hpp"
 
-CharacterSet::~CharacterSet() { m_character_set.clear(); }
-
-CharacterSet::CharacterSet() {}
-
 CharacterSet::CharacterSet(char c) { m_character_set.insert(c); }
 
 CharacterSet::CharacterSet(
     std::initializer_list<const CharacterSet> character_sets)
 {
-	for (auto single_character_set = character_sets.begin();
-	     single_character_set != character_sets.end(); ++single_character_set)
+	for (const auto& character_set : character_sets)
 	{
-		m_character_set.insert(single_character_set->m_character_set.begin(),
-		                       single_character_set->m_character_set.end());
+		m_character_set.insert(character_set.get_character_set().begin(),
+		                       character_set.get_character_set().end());
 	}
 }
 
@@ -30,6 +25,14 @@ CharacterSet::CharacterSet(char first, char last)
 	}
 }
 
+CharacterSet::CharacterSet(std::initializer_list<const char> characters)
+{
+	for (const auto character : characters)
+	{
+		m_character_set.insert(character);
+	}
+}
+
 bool CharacterSet::operator==(const CharacterSet& other) const
 {
 	return this->m_character_set == other.m_character_set;
@@ -43,4 +46,9 @@ bool CharacterSet::operator!=(const CharacterSet& other) const
 bool CharacterSet::is_contains(char c) const
 {
 	return m_character_set.find(c) != m_character_set.cend();
+}
+
+std::set<char> CharacterSet::get_character_set() const
+{
+	return m_character_set;
 }

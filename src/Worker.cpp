@@ -214,7 +214,7 @@ void Worker::request_core_handler(const std::string& raw_request_string)
 		Logger::error(
 		    "worker parse request error with original request being: \n" +
 		    raw_request_string);
-		StatusHandler::handle_status_code(get_response, 400);
+		StatusHandler::handle_status_code(get_response, 400); // NOLINT
 		return;
 	}
 

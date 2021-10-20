@@ -8,12 +8,11 @@
 #include <vector>
 
 #include <arpa/inet.h>
+#include <csignal>
 #include <cstdio>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <signal.h>
-#include <stdio.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -38,7 +37,7 @@ namespace // private variables
 {
 	int m_cpu_cores;
 
-	static std::vector<Channel> m_worker_channels;
+	std::vector<Channel> m_worker_channels;
 	bool m_is_monitor_worker;
 
 	std::queue<int> pending_client_sockets;
@@ -62,7 +61,7 @@ namespace
 			 * fds[0]: master side socket
 			 * fds[1]: worker side socket
 			 */
-			int fds[2];
+			int fds[2]; // NOLINT
 
 			if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, fds) == -1)
 			{
@@ -70,7 +69,7 @@ namespace
 				throw std::runtime_error("socketpair() error");
 			}
 
-			pid_t child_pid;
+			pid_t child_pid = 0;
 			switch (child_pid = fork())
 			{
 			case -1:
@@ -98,7 +97,8 @@ namespace
 
 			default:
 			{
-				m_worker_channels.push_back(Channel{fds[0], fds[1], child_pid});
+				m_worker_channels.emplace_back(
+				    Channel{fds[0], fds[1], child_pid});
 				break;
 			}
 			}
@@ -143,9 +143,13 @@ namespace
 							                     (sockaddr*)(&accepted_socket),
 							                     &accepted_socket_length);
 							if (accepted_fd > 0)
+							{
 								pending_client_sockets.push(accepted_fd);
+							}
 							else
+							{
 								break;
+							}
 						}
 
 						if (!m_is_monitor_worker)
@@ -195,10 +199,12 @@ namespace
 						if (pending_client_sockets.empty())
 						{
 							for (auto worker_channel : m_worker_channels)
+							{
 								epoll_ctl(m_epfd, EPOLL_CTL_DEL,
 								          worker_channel.get_master_socket(),
 								          nullptr);
-							m_is_monitor_worker = false;
+								m_is_monitor_worker = false;
+							}
 						}
 
 						continue;
@@ -244,8 +250,12 @@ namespace // signal handlers
 				{
 					for (auto iter = m_worker_channels.begin();
 					     iter != m_worker_channels.end(); ++iter)
+					{
 						if (iter->get_worker_pid() == died_child_pid)
+						{
 							m_worker_channels.erase(iter);
+						}
+					}
 
 					spawn_worker(1);
 
@@ -258,7 +268,7 @@ namespace // signal handlers
 
 	void register_signal()
 	{
-		if (signal(SIGCHLD, sigchld_handler) < 0)
+		if (signal(SIGCHLD, sigchld_handler) == SIG_ERR)
 		{
 			std::runtime_error("can't register handler for SIGCHLD");
 		}

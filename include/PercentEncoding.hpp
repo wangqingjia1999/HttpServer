@@ -5,13 +5,11 @@
 #include <sstream>
 #include <string>
 
-#include "CharacterSet.hpp"
-
 class PercentEncoding
 {
 public:
-	~PercentEncoding();
 	PercentEncoding();
+	~PercentEncoding() = default;
 
 	PercentEncoding(const PercentEncoding&) = delete;
 	PercentEncoding& operator=(const PercentEncoding&) = delete;
@@ -19,7 +17,6 @@ public:
 	PercentEncoding(PercentEncoding&&) = delete;
 	PercentEncoding& operator=(PercentEncoding&&) = delete;
 
-public:
 	/**
 	 * Encode raw unencoded string.
 	 *
@@ -54,7 +51,6 @@ private:
 	 */
 	char convert_decimal_to_hexo_character(int n);
 
-private:
 	int decoded_character;
 	int remaining_characters;
 };

@@ -9,11 +9,8 @@ class Channel
 {
 public:
 	Channel() = delete;
+	Channel(int master_socket, int worker_socket, pid_t pid);
 
-public:
-	Channel(const int master_socket, const int worker_socket, const pid_t pid);
-
-public:
 	int get_master_socket();
 	int get_worker_socket();
 	pid_t get_worker_pid();

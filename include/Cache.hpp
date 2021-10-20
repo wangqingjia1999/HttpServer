@@ -5,8 +5,6 @@
 #include <memory>
 #include <string>
 
-using namespace sw::redis;
-
 namespace HTTP
 {
 	/**
@@ -22,7 +20,7 @@ namespace HTTP
 	{
 	public:
 		Cache();
-		~Cache();
+		~Cache() = default;
 
 		Cache(const Cache& other) = delete;
 		Cache& operator=(const Cache& other) = delete;
@@ -30,16 +28,14 @@ namespace HTTP
 		Cache(Cache&& other) = delete;
 		Cache& operator=(Cache&& other) = delete;
 
-	public:
-		explicit Cache(const int cache_capacity);
+		explicit Cache(int cache_capacity);
 
-	public:
 		std::string get(const std::string& uri);
 		bool insert(const std::string& uri, const std::string& resource);
 		bool erase(const std::string& uri);
 
 	private:
-		std::unique_ptr<Redis> m_cache;
+		std::unique_ptr<sw::redis::Redis> m_cache;
 
 		/**
 		 * If cache size is greater than m_cache_capacity,

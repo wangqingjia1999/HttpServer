@@ -44,7 +44,7 @@ namespace UnixDomainHelper
 	{
 		struct msghdr message = {0};
 
-		char data_buffer[256];
+		char data_buffer[256]; // NOLINT
 
 		struct iovec io_vector = {.iov_base = data_buffer,
 		                          .iov_len = sizeof(data_buffer)};
@@ -52,7 +52,7 @@ namespace UnixDomainHelper
 		message.msg_iov = &io_vector;
 		message.msg_iovlen = 1;
 
-		char control_message_buffer[256];
+		char control_message_buffer[256]; // NOLINT
 		message.msg_control = &control_message_buffer;
 		message.msg_controllen = sizeof(control_message_buffer);
 

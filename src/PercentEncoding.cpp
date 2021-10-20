@@ -1,21 +1,16 @@
 #include "PercentEncoding.hpp"
+#include "CharacterSet.hpp"
 
 namespace
 {
 	// General delimiters
-	const CharacterSet GEN_DELIMS{
-	    ':', '/', '?', '#', '[', ']', '@',
-	};
+	const CharacterSet GEN_DELIMS{':', '/', '?', '#', '[', ']', '@'};
 
 	// Subcomponents delimiters
-	const CharacterSet SUB_DELIMS{
-	    '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=',
-	};
+	const CharacterSet SUB_DELIMS{'!', '$', '&', '\'', '(', ')',
+	                              '*', '+', ',', ';',  '='};
 
-	const CharacterSet RESERVED{
-	    GEN_DELIMS,
-	    SUB_DELIMS,
-	};
+	const CharacterSet RESERVED{GEN_DELIMS, SUB_DELIMS};
 
 	/**
 	 * Uri producers and normalizers should use uppercase hexadecimal digits
@@ -26,8 +21,6 @@ namespace
 	    {6, '6'},  {7, '7'},  {8, '8'},  {9, '9'}, {10, 'A'}, {11, 'B'},
 	    {12, 'C'}, {13, 'D'}, {14, 'E'}, {15, 'F'}};
 } // namespace
-
-PercentEncoding::~PercentEncoding() {}
 
 PercentEncoding::PercentEncoding()
     : decoded_character(0)
@@ -54,7 +47,7 @@ std::string PercentEncoding::encode(const std::string& unencoded_string)
 		// only encode reserved characters
 		if (RESERVED.is_contains(unencoded_string[i]))
 		{
-			int second = unencoded_string[i] % 16;
+			int second = unencoded_string[i] % 16; // NOLINT
 			int first = (unencoded_string[i] - second) / 16;
 
 			encoded_string.push_back('%');
