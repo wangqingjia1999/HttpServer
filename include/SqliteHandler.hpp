@@ -25,7 +25,7 @@ struct UserInfo
 	std::string m_age;
 	std::string m_email;
 
-	UserInfo();
+	UserInfo() = default;
 	UserInfo(std::string name, std::string password, std::string age,
 	         std::string email);
 };
@@ -42,9 +42,7 @@ public:
 	SqliteHandler(SqliteHandler&& other) = delete;
 	SqliteHandler& operator=(SqliteHandler&& other) = delete;
 
-public:
-	virtual bool
-	fetch_resource(const std::shared_ptr<HTTP::Connection> connection) override;
+	bool fetch_resource(std::shared_ptr<HTTP::Connection> connection) override;
 
 	/**
 	 * Whether the table exists?
@@ -160,9 +158,8 @@ private:
 	bool bind_text_data(const std::string& placeholder,
 	                    const std::string& text_data);
 
-private:
-	sqlite3* m_connection;
-	sqlite3_stmt* m_statement;
+	sqlite3* m_connection = nullptr;
+	sqlite3_stmt* m_statement = nullptr;
 	std::string m_resource_root_directory_path;
 	std::unique_ptr<HTTP::Cache> m_cache;
 };

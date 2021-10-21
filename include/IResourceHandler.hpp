@@ -19,11 +19,10 @@ public:
 	 *      True if succeeds.
 	 */
 	virtual bool
-	fetch_resource(const std::shared_ptr<HTTP::Connection> connection) = 0;
+	fetch_resource(std::shared_ptr<HTTP::Connection> connection) = 0;
 
-public:
-	IResourceHandler() noexcept {}
-	~IResourceHandler() {}
+	IResourceHandler() noexcept = default;
+	~IResourceHandler() = default;
 
 	IResourceHandler(const IResourceHandler& other) = delete;
 	IResourceHandler& operator=(const IResourceHandler& other) = delete;

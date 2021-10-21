@@ -8,10 +8,9 @@ namespace HTTP
 	{
 	}
 
-	Connection::Connection(const RequestPtr& request,
-	                       const ResponsePtr& response)
-	    : m_request(request)
-	    , m_response(response)
+	Connection::Connection(RequestPtr request, ResponsePtr response)
+	    : m_request(std::move(request))
+	    , m_response(std::move(response))
 	{
 	}
 

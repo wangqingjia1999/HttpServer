@@ -270,14 +270,14 @@ namespace // signal handlers
 	{
 		if (signal(SIGCHLD, sigchld_handler) == SIG_ERR)
 		{
-			std::runtime_error("can't register handler for SIGCHLD");
+			throw std::runtime_error("can't register handler for SIGCHLD");
 		}
 	}
 } // namespace
 
 namespace Master
 {
-	void listen_at(const std::string& ip, const int port)
+	void listen_at(const std::string& ip, int port)
 	{
 		m_cpu_cores = get_nprocs();
 		m_listening_ip = ip;

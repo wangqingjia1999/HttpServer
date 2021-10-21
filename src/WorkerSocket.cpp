@@ -5,20 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-WorkerSocket::WorkerSocket()
-    : m_epfd{-1}
-    , m_listening_fd{-1}
-    , m_listening_port{-1}
-    , m_listening_ip{}
-    , m_receive_buffer{0}
-    , m_server_socket_state{Server_Socket_State::UNKNOWN_SOCKET}
-{
-}
-
-WorkerSocket::~WorkerSocket() {}
-
-bool WorkerSocket::write_to(const int client_socket,
-                            const std::string& data_string)
+bool WorkerSocket::write_to(int client_socket, const std::string& data_string)
 {
 	int send_result =
 	    send(client_socket, data_string.c_str(), data_string.size(), 0);
@@ -32,7 +19,7 @@ bool WorkerSocket::write_to(const int client_socket,
 	return true;
 }
 
-bool WorkerSocket::read_from(const int client_socket)
+bool WorkerSocket::read_from(int client_socket)
 {
 	memset(&m_receive_buffer, 0, sizeof(m_receive_buffer));
 
@@ -50,11 +37,9 @@ bool WorkerSocket::read_from(const int client_socket)
 				close(client_socket);
 				return false;
 			}
-			else
-			{
-				// read the whole buffer
-				return true;
-			}
+
+			// read the whole buffer
+			return true;
 		}
 	}
 

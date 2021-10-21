@@ -143,7 +143,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_scheme(const std::string& uri, std::string& remains);
+	bool parse_scheme(const std::string& uri, std::string& remains); // NOLINT
 
 	/**
 	 * Parse user info from Uri string.
@@ -158,6 +158,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
+	// NOLINTNEXTLINE
 	bool parse_user_info(std::string& authority, std::string& remains);
 
 	/**
@@ -172,7 +173,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_host(std::string& authority, std::string& remains);
+	bool parse_host(std::string& authority, std::string& remains); // NOLINT
 
 	/**
 	 * Parse port of an URI if any.
@@ -186,7 +187,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_port(std::string& authority);
+	bool parse_port(std::string& authority); // NOLINT
 
 	/**
 	 * Parse authority of an URI if any.
@@ -200,7 +201,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_authority(std::string& uri, std::string& remains);
+	bool parse_authority(std::string& uri, std::string& remains); // NOLINT
 
 	/**
 	 * Parse path of an URI if any.
@@ -214,7 +215,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_path(std::string& uri, std::string& remains);
+	bool parse_path(std::string& uri, std::string& remains); // NOLINT
 
 	/**
 	 * Parse query of an URI if any.
@@ -228,7 +229,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_query(std::string& uri, std::string& remains);
+	bool parse_query(std::string& uri, std::string& remains); // NOLINT
 
 	/**
 	 * Parse fragment of an URI if any.
@@ -241,7 +242,7 @@ public:
 	 * @return
 	 * 		True if succeeds.
 	 */
-	bool parse_fragment(std::string& uri, std::string& remains);
+	bool parse_fragment(std::string& uri, std::string& remains); // NOLINT
 
 	/**
 	 * Parse query parameters.

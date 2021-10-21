@@ -14,18 +14,16 @@ class Worker
 {
 public:
 	Worker() = delete;
-	~Worker() noexcept;
+	~Worker();
 
-	Worker(const Worker& other);
-	Worker& operator=(const Worker& other);
+	Worker(const Worker& other) = delete;
+	Worker& operator=(const Worker& other) = delete;
 
-	Worker(Worker&& other);
-	Worker& operator=(Worker&& other);
+	Worker(Worker&& other) = delete;
+	Worker& operator=(Worker&& other) = delete;
 
-public:
-	explicit Worker(const int worker_socket);
+	explicit Worker(int worker_socket);
 
-public:
 	/**
 	 * Parse raw request.
 	 *

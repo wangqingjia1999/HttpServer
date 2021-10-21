@@ -14,12 +14,10 @@ public:
 	Sentence(Sentence&& other) = default;
 	Sentence& operator=(Sentence&& other) = default;
 
-public:
 	Sentence(const std::string& text, const std::string& publisher);
 	Sentence(const std::string& text, const std::string& url,
 	         const std::string& publisher);
 
-public:
 	void set_body(const std::string& body);
 	void set_url(const std::string& url);
 	void set_publisher(const std::string& publisher);

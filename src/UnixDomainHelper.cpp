@@ -6,7 +6,7 @@
 
 namespace UnixDomainHelper
 {
-	bool send_fd(const int socket, const int fd)
+	bool send_fd(int socket, int fd)
 	{
 		char data_buffer[] = " ";
 		struct iovec io_vector = {.iov_base = &data_buffer,
@@ -40,9 +40,9 @@ namespace UnixDomainHelper
 		return true;
 	}
 
-	int read_fd(const int socket)
+	int read_fd(int socket)
 	{
-		struct msghdr message = {0};
+		struct msghdr message = {nullptr};
 
 		char data_buffer[256]; // NOLINT
 

@@ -13,6 +13,6 @@
 
 namespace Master
 {
-	void listen_at(const std::string& ip, const int port);
+	void listen_at(const std::string& ip, int port);
 	void clear_up();
 }; // namespace Master

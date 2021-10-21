@@ -22,7 +22,7 @@ namespace HTTP
 		Connection(Connection&& other) = default;
 		Connection& operator=(Connection&& other) = default;
 
-		Connection(const RequestPtr& request, const ResponsePtr& response);
+		Connection(RequestPtr request, ResponsePtr response);
 
 		void set_request(const RequestPtr& request);
 		void set_response(const ResponsePtr& response);

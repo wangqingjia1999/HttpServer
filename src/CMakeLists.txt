@@ -40,11 +40,6 @@ target_link_libraries(worker_socket_lib PRIVATE
     logger_lib
 )
 
-add_library(client_lib STATIC
-    ../include/Client.hpp
-    Client.cpp
-)
-
 add_library(character_set_lib STATIC
     ../include/CharacterSet.hpp
     CharacterSet.cpp

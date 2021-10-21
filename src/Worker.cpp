@@ -77,7 +77,9 @@ void Worker::event_loop()
 		case -1:
 		{
 			if (errno != EINTR)
+			{
 				Logger::error("worker epoll_wait() error", errno);
+			}
 			continue;
 		}
 
@@ -221,23 +223,30 @@ void Worker::request_core_handler(const std::string& raw_request_string)
 	if (get_request->get_request_method() == "GET")
 	{
 		if (!m_resource_handler->fetch_resource(m_connection))
+		{
 			StatusHandler::handle_status_code(get_response, 404);
+		}
 		else
+		{
 			StatusHandler::handle_status_code(get_response, 200);
+		}
 
 		return;
 	}
-	else if (get_request->get_request_method() == "POST")
+
+	if (get_request->get_request_method() == "POST")
 	{
 		StatusHandler::handle_status_code(get_response, 501);
 		return;
 	}
-	else if (get_request->get_request_method() == "PUT")
+
+	if (get_request->get_request_method() == "PUT")
 	{
 		StatusHandler::handle_status_code(get_response, 501);
 		return;
 	}
-	else if (get_request->get_request_method() == "HEAD")
+
+	if (get_request->get_request_method() == "HEAD")
 	{
 		StatusHandler::handle_status_code(get_response, 501);
 		return;
