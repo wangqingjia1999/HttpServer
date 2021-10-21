@@ -86,7 +86,6 @@ namespace Message
 
 	Message::Response::Response()
 	    : m_uri(std::make_shared<Uri>())
-	    , m_status_code(0)
 	    , m_protocol_version("HTTP/1.1")
 	{
 	}
@@ -134,12 +133,9 @@ namespace Message
 		auto iterator = m_headers.find(header_name);
 		if (iterator != m_headers.end())
 		{
-			return iterator->second.c_str();
+			return iterator->second;
 		}
-		else
-		{
-			return "";
-		}
+		return "";
 	}
 
 	std::string
@@ -191,9 +187,9 @@ namespace Message
 		return true;
 	}
 
-	bool Message::Response::set_reason_phrase(const int status_code)
+	bool Message::Response::set_reason_phrase(const int new_stauts_code)
 	{
-		auto header_position = status_code_map.find(status_code);
+		auto header_position = status_code_map.find(new_stauts_code);
 		if (header_position == status_code_map.cend())
 		{
 			return false;
@@ -254,7 +250,7 @@ namespace Message
 	{
 		std::string serialized_headers_string;
 
-		for (auto header : m_headers)
+		for (const auto& header : m_headers)
 		{
 			if (header.first == "Date" || header.first == "Host" ||
 			    header.first == "Server")

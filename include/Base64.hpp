@@ -53,7 +53,7 @@ namespace Base64
 	/**
 	 * Encode the given URL string into Base64 URL string.
 	 *
-	 * @param[in] unencoded_uri_string
+	 * @param[in] unencoded_url_string
 	 *      The unencoded URL string.
 	 *
 	 * @param[in] has_padding
@@ -62,13 +62,13 @@ namespace Base64
 	 * @return
 	 *      The encoded URL string.
 	 */
-	std::string encode_url(const std::string& unencoded_uri_string,
+	std::string encode_url(const std::string& unencoded_url_string,
 	                       bool has_padding = true);
 
 	/**
 	 * Decode the given Base64 encoded string.
 	 *
-	 * @param[in] encoded_uri_string
+	 * @param[in] encoded_url_string
 	 *      The encoded URL string.
 	 *
 	 * @param[in] has_padding
@@ -76,6 +76,6 @@ namespace Base64
 	 *
 	 * @return  The decoded URL string.
 	 */
-	std::string decode_url(const std::string& encoded_uri_string,
+	std::string decode_url(const std::string& encoded_url_string,
 	                       bool has_padding = true);
 } // namespace Base64

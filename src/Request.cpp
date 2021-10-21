@@ -204,17 +204,17 @@ namespace Message
 		return true;
 	}
 
-	void Message::Request::set_method(const std::string new_method)
+	void Message::Request::set_method(std::string new_method)
 	{
 		m_method = new_method;
 	}
 
-	void Message::Request::set_http_version(const std::string new_http_version)
+	void Message::Request::set_http_version(std::string new_http_version)
 	{
 		m_http_version = new_http_version;
 	}
 
-	void Message::Request::set_user_agent(const std::string new_user_agent)
+	void Message::Request::set_user_agent(std::string new_user_agent)
 	{
 		m_headers_map.insert({"User-Agent", new_user_agent});
 	}

@@ -13,9 +13,8 @@ namespace HTTP
 		using RequestPtr = std::shared_ptr<Message::Request>;
 		using ResponsePtr = std::shared_ptr<Message::Response>;
 
-	public:
 		Connection();
-		~Connection();
+		~Connection() = default;
 
 		Connection(const Connection& other) = default;
 		Connection& operator=(const Connection& other) = default;
@@ -23,16 +22,13 @@ namespace HTTP
 		Connection(Connection&& other) = default;
 		Connection& operator=(Connection&& other) = default;
 
-	public:
-		Connection(RequestPtr& request, ResponsePtr& response);
+		Connection(const RequestPtr& request, const ResponsePtr& response);
 
-	public:
-		void set_request(RequestPtr& request);
-		void set_response(ResponsePtr& response);
+		void set_request(const RequestPtr& request);
+		void set_response(const ResponsePtr& response);
 		RequestPtr& get_request();
 		ResponsePtr& get_response();
 
-	public:
 		bool operator==(const Connection& other) const;
 		bool operator!=(const Connection& other) const;
 

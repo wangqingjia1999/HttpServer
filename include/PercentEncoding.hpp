@@ -8,7 +8,7 @@
 class PercentEncoding
 {
 public:
-	PercentEncoding();
+	PercentEncoding() = default;
 	~PercentEncoding() = default;
 
 	PercentEncoding(const PercentEncoding&) = delete;
@@ -51,6 +51,6 @@ private:
 	 */
 	char convert_decimal_to_hexo_character(int n);
 
-	int decoded_character;
-	int remaining_characters;
+	int decoded_character = 0;
+	int remaining_characters = 0;
 };

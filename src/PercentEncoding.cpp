@@ -22,12 +22,6 @@ namespace
 	    {12, 'C'}, {13, 'D'}, {14, 'E'}, {15, 'F'}};
 } // namespace
 
-PercentEncoding::PercentEncoding()
-    : decoded_character(0)
-    , remaining_characters(0)
-{
-}
-
 std::string PercentEncoding::encode(const std::string& unencoded_string)
 {
 	/**

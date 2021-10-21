@@ -15,9 +15,8 @@ class Uri
 public:
 	using QueryParameters = std::unordered_map<std::string, std::string>;
 
-public:
-	~Uri() noexcept;
-	Uri();
+	~Uri() = default;
+	Uri() = default;
 
 	Uri(const Uri& other) = default;
 	Uri& operator=(const Uri& other) = default;
@@ -25,7 +24,6 @@ public:
 	Uri(Uri&&) noexcept = default;
 	Uri& operator=(Uri&&) noexcept = default;
 
-public:
 	/**
 	 * Equality comparison operator.
 	 *
@@ -75,7 +73,7 @@ public:
 	 * @return
 	 * 		A int number represents port.
 	 */
-	int get_port();
+	int get_port() const;
 
 	/**
 	 * Get query string of Uri.
@@ -112,9 +110,9 @@ public:
 	 */
 	bool parse_from_string(const std::string& uri);
 
-	bool has_port();
-	bool has_fragment();
-	bool has_query();
+	bool has_port() const;
+	bool has_fragment() const;
+	bool has_query() const;
 
 	/**
 	 * Is relative reference?
@@ -132,7 +130,6 @@ public:
 	 */
 	bool has_relative_path();
 
-public:
 	/**
 	 * Extract the scheme from uri if any,
 	 * return the remaining string.
@@ -259,20 +256,18 @@ public:
 
 	bool is_absolute_path();
 
-public:
-	bool set_scheme(std::string& scheme);
-	bool set_host(std::string& host);
-	bool set_port(int port);
-	bool set_query(std::string query);
-	bool set_fragment(std::string& fragment);
-	bool set_user_info(std::string& user_info);
+	void set_scheme(const std::string& scheme);
+	void set_host(const std::string& host);
+	void set_port(int port);
+	void set_query(const std::string& query);
+	void set_fragment(const std::string& fragment);
+	void set_user_info(const std::string& user_info);
 
-public:
-	bool clear_port();
-	bool clear_query();
-	bool clear_fragment();
-	bool clear_scheme();
-	bool clear_path();
+	void clear_port();
+	void clear_query();
+	void clear_fragment();
+	void clear_scheme();
+	void clear_path();
 
 	QueryParameters& get_query_paramters();
 
@@ -285,16 +280,16 @@ private:
 
 	std::string m_host;
 
-	bool m_has_port;
-	uint16_t m_port;
+	bool m_has_port = false;
+	uint16_t m_port = 0;
 
-	bool m_is_relative_path;
+	bool m_is_relative_path = false;
 	std::vector<std::string> m_path;
 
-	bool m_has_query;
+	bool m_has_query = false;
 	std::string m_query;
 
-	bool m_has_fragment;
+	bool m_has_fragment = false;
 	std::string m_fragment;
 
 	QueryParameters m_query_parameters;

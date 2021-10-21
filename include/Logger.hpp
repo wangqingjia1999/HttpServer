@@ -15,7 +15,7 @@
 
 namespace
 {
-	static std::string m_log_directory_path = {};
+	std::string m_log_directory_path = {};
 
 	enum class LogLevel
 	{

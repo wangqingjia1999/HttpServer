@@ -7,8 +7,10 @@ CharacterSet::CharacterSet(
 {
 	for (const auto& character_set : character_sets)
 	{
-		m_character_set.insert(character_set.get_character_set().begin(),
-		                       character_set.get_character_set().end());
+		for (const auto& character : character_set.get_character_set())
+		{
+			m_character_set.insert(character);
+		}
 	}
 }
 

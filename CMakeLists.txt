@@ -12,6 +12,8 @@ string(CONCAT CLANG_TIDY_CHECK_FILTER
     "-modernize-use-trailing-return-type,"
     "-*-magic-numbers,"
     "-llvm-header-guard,"
+    "-hicpp-no-array-decay,"
+    "-cppcoreguidelines-pro-bounds-array-to-pointer-decay,"
 )
 
 set(CMAKE_CXX_CLANG_TIDY 

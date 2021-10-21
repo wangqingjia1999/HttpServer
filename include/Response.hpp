@@ -21,13 +21,12 @@ namespace Message
 		Response();
 		~Response() noexcept;
 
-		Response(const Response&);
-		Response& operator=(const Response&);
+		Response(const Response& other);
+		Response& operator=(const Response& other);
 
 		Response(Response&&) noexcept = delete;
 		Response& operator=(Response&&) noexcept = delete;
 
-	public:
 		/**
 		 * Whether response has header with name of @name.
 		 *
@@ -91,7 +90,7 @@ namespace Message
 		 * @return
 		 * 		Corresponding reason phrase of given status_code.
 		 */
-		std::string get_status_code_reason_string(const int status_code);
+		std::string get_status_code_reason_string(int status_code);
 
 		/**
 		 * Get response's body length
@@ -118,7 +117,7 @@ namespace Message
 		 * @return
 		 * 		True if succeeds.
 		 */
-		bool set_status(const int status_code);
+		bool set_status(int status_code);
 
 		/**
 		 * Set HTTP protocol version.
@@ -129,7 +128,7 @@ namespace Message
 		 * @return
 		 * 		True if succeeds.
 		 */
-		bool set_protocol_version(const std::string protocol_version);
+		bool set_protocol_version(std::string protocol_version);
 
 		void set_body(const std::string& body);
 		void set_body(std::string&& body);
@@ -143,7 +142,7 @@ namespace Message
 		 * @return
 		 * 		True if succeeds.
 		 */
-		bool set_body_length(const std::streamoff body_length);
+		bool set_body_length(std::streamoff body_length);
 
 		/**
 		 * Add header.
@@ -176,7 +175,7 @@ namespace Message
 		 * @return
 		 * 		True if set reason phrase successfully.
 		 */
-		bool set_reason_phrase(const int new_stauts_code);
+		bool set_reason_phrase(int new_stauts_code);
 
 		/**
 		 * Assemble response string from member variables.
@@ -206,7 +205,7 @@ namespace Message
 		std::shared_ptr<Uri> m_uri;
 
 		// Status code of response
-		int m_status_code;
+		int m_status_code = 0;
 
 		// Default protocol version
 		std::string m_protocol_version;

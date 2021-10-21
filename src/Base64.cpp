@@ -311,8 +311,9 @@ namespace Base64
 		                             has_padding);
 	}
 
-	std::string decode_url(const std::string& encoded_string, bool has_padding)
+	std::string decode_url(const std::string& encoded_url_string,
+	                       bool has_padding)
 	{
-		return decode_implementation(encoded_string, true, has_padding);
+		return decode_implementation(encoded_url_string, true, has_padding);
 	}
 } // namespace Base64

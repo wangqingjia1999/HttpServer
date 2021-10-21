@@ -24,7 +24,7 @@ namespace StatusHandler
 	 * 		Possible arguments of specific status code for the convenience of
 	 * processing status.
 	 */
-	void handle_status_code(std::shared_ptr<Message::Response>& response,
-	                        const int status_code,
+	void handle_status_code(const std::shared_ptr<Message::Response>& response,
+	                        int status_code,
 	                        const std::string& additional_info = "");
 } // namespace StatusHandler

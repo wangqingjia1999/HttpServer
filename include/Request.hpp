@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include "Uri.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <algorithm>
 #include <map>
@@ -18,13 +18,12 @@ namespace Message
 		~Request() noexcept;
 		Request();
 
-		Request& operator=(const Request&);
-		Request(const Request&);
+		Request& operator=(const Request& other);
+		Request(const Request& other);
 
 		Request(Request&&) noexcept;
 		Request& operator=(Request&&) noexcept;
 
-	public:
 		/**
 		 * Generate request message.
 		 *
@@ -85,8 +84,8 @@ namespace Message
 		bool has_query() const;
 
 		void set_raw_request(std::string raw_request_string);
-		void set_method(const std::string new_method = "GET");
-		void set_http_version(const std::string new_http_version = "HTTP/1.1");
+		void set_method(std::string new_method = "GET");
+		void set_http_version(std::string new_http_version = "HTTP/1.1");
 		void set_user_agent(std::string new_user_agent = "Bitate");
 
 		std::string get_raw_request();

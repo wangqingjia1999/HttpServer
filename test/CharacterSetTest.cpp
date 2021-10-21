@@ -32,7 +32,7 @@ TEST(character_set_tests, construct_two_arguments)
 	}
 }
 
-TEST(character_set_tests, construct_a_list_of_arguments)
+TEST(character_set_tests, construct_a_list_of_characters)
 {
 	CharacterSet character_set_list{'a', 'b', 'd', 'e', '@', '$', '%'};
 
@@ -56,4 +56,23 @@ TEST(character_set_tests, comparison_operators_test)
 	CharacterSet character_set_3{'a', 'b', 'c', 'd'};
 
 	ASSERT_TRUE(character_set_2 == character_set_3);
+}
+
+TEST(character_set_tests, construct_a_list_of_character_sets)
+{
+	CharacterSet character_set_1('A', 'D');
+
+	CharacterSet character_set_2('a', 'd');
+
+	CharacterSet character_set_3{character_set_1, character_set_2};
+
+	for (char character = 'a'; character <= 'd'; ++character)
+	{
+		ASSERT_TRUE(character_set_3.is_contains(character));
+	}
+
+	for (char character = 'A'; character <= 'D'; ++character)
+	{
+		ASSERT_TRUE(character_set_3.is_contains(character));
+	}
 }

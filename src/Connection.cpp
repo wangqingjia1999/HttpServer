@@ -8,17 +8,19 @@ namespace HTTP
 	{
 	}
 
-	Connection::~Connection() {}
-
-	Connection::Connection(RequestPtr& request, ResponsePtr& response)
+	Connection::Connection(const RequestPtr& request,
+	                       const ResponsePtr& response)
 	    : m_request(request)
 	    , m_response(response)
 	{
 	}
 
-	void Connection::set_request(RequestPtr& request) { m_request = request; }
+	void Connection::set_request(const RequestPtr& request)
+	{
+		m_request = request;
+	}
 
-	void Connection::set_response(ResponsePtr& response)
+	void Connection::set_response(const ResponsePtr& response)
 	{
 		m_response = response;
 	}
