@@ -10,9 +10,8 @@
 
 namespace StatusHandler
 {
-	void handle_status_code(std::shared_ptr<Message::Response>& response,
-	                        const int status_code,
-	                        const std::string& additional_info)
+	void handle_status_code(const std::shared_ptr<Message::Response>& response,
+	                        int status_code, const std::string& additional_info)
 	{
 		response->set_status(status_code);
 		response->set_reason_phrase(status_code);
@@ -47,7 +46,7 @@ namespace StatusHandler
 			 */
 			add_header("Connection", "upgrade");
 
-			// TODO: Support HTTP/2.0
+			// TODO(bitate): Support HTTP/2.0
 			add_header("Upgrade", "HTTP/2.0");
 
 			break;
@@ -331,6 +330,10 @@ namespace StatusHandler
 		}
 
 		case 505: // HTTP Version Not Supported
+		{
+			break;
+		}
+		default:
 		{
 			break;
 		}

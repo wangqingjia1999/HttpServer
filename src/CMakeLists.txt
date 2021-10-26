@@ -105,6 +105,9 @@ target_link_libraries(status_handler_lib PUBLIC
     timer_lib
     response_lib
 )
+target_link_libraries(status_handler_lib PRIVATE 
+    server_configuration_lib
+)
 
 add_library(server_configuration_lib
     ../include/ServerConfiguration.hpp

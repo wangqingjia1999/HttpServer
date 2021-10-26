@@ -5,7 +5,6 @@ High performance HTTP/1.1 server on Linux.
 # Contents
   * [Background](#background)
   * [Demo](#demo)
-  * [TODOs](#todos)
   * [Benchmark](#benchmark)
   * [Build Environment](#build-environment)
   * [How to build?](#how-to-build)
@@ -21,19 +20,6 @@ You can easily look up an English word/phrase by typing it into the search bar( 
 It will highlights the word/phrase that you search. And you can further go into the original page by clicking on the hyper-link at the right side of each entity.
 
 ![query-result](docs/screenshots/query_result.png)
-
-## TODOs
-- [ ] HTTP Request Method
-  - [ ] HEAD
-  - [x] GET
-  - [ ] PUT
-  - [ ] POST
-- [ ] Performance Optimization
-  - [x] Compression
-  - [ ] Caching
-  - [ ] Timer per connection
-- [ ] Content Relevance
-  - [ ] Order Query Results By Relevence
 
 ## Benchmark
 Benchmark is done with the help of [siege](https://www.joedog.org/siege-manual/)

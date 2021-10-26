@@ -25,8 +25,6 @@ Worker process's role:
 
 ## HTTP State Machine ?
 
-
-
 # Lessons Learned
 
 ## accept() keeps returning '0'
