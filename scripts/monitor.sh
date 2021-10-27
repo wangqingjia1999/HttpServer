@@ -1,10 +1,22 @@
 #!/bin/bash
 
-process_name="word_finder"														# processes' name
-log_file_path="/home/word-finder/logs/monitor-$(date +%Y-%m-%d).log"			# where to record monitoring info
-run_interval=60																	# run this script every 60 seconds
-cpu_usage_threshold="95.00"														# upper limit for cpu usage per-process
-mem_usage_threshold="95.00"														# upper limit for mem usage per-process
+# run this script in background with command: 
+# $ ./monitor.sh &
+
+# processes' name
+process_name="word_finder_main"
+
+# where to record monitoring info
+log_file_path="/home/word-finder/logs/monitor-$(date +%Y-%m-%d).log"
+
+# run this script every 60 seconds
+run_interval=60
+
+# upper limit for cpu usage per-process
+cpu_usage_threshold="95.00"
+
+# upper limit for mem usage per-process
+mem_usage_threshold="95.00"
 
 # $1: pid
 # $2: cpu usage
@@ -21,7 +33,9 @@ report_error() {
 	# kill all processes
 	python3 $PWD/kill.py
 
-	# TODO(bitate): restart master process
+	# restart master
+	master_path=$(find ../ -name "$process_name")
+	./"$master_path"
 }
 
 while true;
