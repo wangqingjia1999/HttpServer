@@ -3,26 +3,35 @@
 #include "Logger.hpp"
 #include "Uri.hpp"
 
-#include <cstdio>
-
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <functional>
 #include <map>
 #include <memory>
 #include <sstream>
 
 namespace Message
 {
+	struct CaseInsensitiveComparator
+	{
+		bool operator()(const std::string& lhs, const std::string& rhs) const
+		{
+			return ::strcasecmp(lhs.c_str(), rhs.c_str()) < 0;
+		}
+	};
+
 	class Request
 	{
 	public:
-		~Request() noexcept;
-		Request();
+		~Request() = default;
+		Request() = default;
 
-		Request& operator=(const Request& other);
-		Request(const Request& other);
+		Request& operator=(const Request& other) = default;
+		Request(const Request& other) = default;
 
-		Request(Request&&) noexcept;
-		Request& operator=(Request&&) noexcept;
+		Request(Request&&) noexcept = default;
+		Request& operator=(Request&&) noexcept = default;
 
 		/**
 		 * Generate request message.
@@ -79,8 +88,6 @@ namespace Message
 		bool parse_uri(const std::string& Uri);
 
 		bool has_header(const std::string& header_name) const;
-		bool has_http_version() const;
-		bool has_method(const std::string& method) const;
 		bool has_query() const;
 
 		void set_raw_request(std::string raw_request_string);
@@ -110,7 +117,7 @@ namespace Message
 		 * For normal get: /index.html
 		 * For more info, see: https://tools.ietf.org/html/rfc2616#section-5.1.2
 		 */
-		std::shared_ptr<Uri> m_uri;
+		std::shared_ptr<Uri> m_uri = std::make_shared<Uri>();
 
 		// Generated/Received raw request string
 		std::string m_raw_request;
@@ -122,13 +129,16 @@ namespace Message
 		std::string m_request_uri;
 
 		// Default http_version
-		std::string m_http_version;
+		std::string m_http_version = "HTTP/1.1";
 
 		// Store the generated/received raw headers
 		std::string m_headers;
 
-		// Contain the header {key: value} pairs
-		std::map<std::string, std::string> m_headers_map;
+		using CaseInsensitiveMap =
+		    std::map<std::string, std::string, CaseInsensitiveComparator>;
+
+		// Contain the header {key:value} pairs
+		CaseInsensitiveMap m_headers_map;
 
 		// Request body string
 		std::string m_body;

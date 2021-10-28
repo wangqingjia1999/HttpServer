@@ -168,3 +168,21 @@ TEST(request_tests, whether_request_contains_query_string_test)
 	ASSERT_TRUE(request.has_query());
 	ASSERT_EQ(request.get_request_uri()->get_query(), "q=test");
 }
+
+TEST(request_tests, case_insensitive_headers_test)
+{
+	Message::Request request;
+
+	std::string raw_request{"GET / HTTP/1.1\r\n"
+	                        "HoSt: www.bitate.com\r\n"
+	                        "ConNecTion: keep-alive\r\n"
+	                        "CONTENT-Length: 61\r\n"
+	                        "\r\n"};
+
+	request.set_raw_request(raw_request);
+	ASSERT_TRUE(request.parse_raw_request());
+
+	ASSERT_EQ(request.get_header("Host"), "www.bitate.com");
+	ASSERT_EQ(request.get_header("Connection"), "keep-alive");
+	ASSERT_EQ(request.get_header("Content-Length"), "61");
+}

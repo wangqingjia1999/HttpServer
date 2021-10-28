@@ -6,21 +6,9 @@
 
 namespace Message
 {
-	Message::Request::Request()
-	    : m_uri(std::make_shared<Uri>())
-	    , m_http_version("HTTP/1.1")
-	{
-	}
-
-	Message::Request::Request(const Request& other) { *this = other; }
-
-	Message::Request::~Request() = default;
-
-	Request& Message::Request::operator=(const Request& other) { return *this; }
-
 	void Message::Request::set_raw_request(std::string raw_request_string)
 	{
-		m_raw_request = raw_request_string;
+		m_raw_request = std::move(raw_request_string);
 	}
 
 	bool Message::Request::generate_request()
@@ -34,11 +22,10 @@ namespace Message
 		raw_request_string_stream << m_method << " " << m_uri->get_path_string()
 		                          << " " << m_http_version << "\r\n";
 		// set m_headers
-		for (auto position = m_headers_map.cbegin();
-		     position != m_headers_map.cend(); ++position)
+		for (const auto& header : m_headers_map)
 		{
-			raw_request_string_stream << position->first.c_str() << ": "
-			                          << position->second.c_str() << "\r\n";
+			raw_request_string_stream << header.first << ": " << header.second
+			                          << "\r\n";
 		}
 		// set m_headers end delimiter
 		raw_request_string_stream << "\r\n";
@@ -206,17 +193,17 @@ namespace Message
 
 	void Message::Request::set_method(std::string new_method)
 	{
-		m_method = new_method;
+		m_method = std::move(new_method);
 	}
 
 	void Message::Request::set_http_version(std::string new_http_version)
 	{
-		m_http_version = new_http_version;
+		m_http_version = std::move(new_http_version);
 	}
 
 	void Message::Request::set_user_agent(std::string new_user_agent)
 	{
-		m_headers_map.insert({"User-Agent", new_user_agent});
+		m_headers_map.insert({"User-Agent", std::move(new_user_agent)});
 	}
 
 	std::string Message::Request::get_request_method() { return m_method; }
@@ -237,7 +224,7 @@ namespace Message
 		{
 			return "";
 		}
-		return iterator->second.c_str();
+		return iterator->second;
 	}
 
 	std::string Message::Request::get_body() { return m_body; }
@@ -259,16 +246,6 @@ namespace Message
 	bool Message::Request::has_header(const std::string& header_name) const
 	{
 		return m_headers_map.find(header_name) != m_headers_map.end();
-	}
-
-	bool Message::Request::has_http_version() const
-	{
-		return m_http_version != "";
-	}
-
-	bool Message::Request::has_method(const std::string& m_method) const
-	{
-		return m_method == m_method;
 	}
 
 	bool Message::Request::has_query() const { return m_uri->has_query(); }
